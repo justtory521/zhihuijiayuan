@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorGrayBgComm"
+              android:orientation="vertical">
+
+    <include
+        layout="@layout/layout_title"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="父亲姓名"
+                android:textColor="@color/gray_55"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/et_father_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingRight="12dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical|right"
+                android:hint="请输入父亲姓名"
+                android:maxLength="20"
+                android:singleLine="true"
+                android:textColor="@color/gray_22"
+                android:textColorHint="@color/gray_88"
+                android:textSize="14sp"/>
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/gray_ee"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="联系方式（父亲）"
+                android:textColor="@color/gray_55"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/et_father_phone"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingRight="12dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:digits="@string/phone_number"
+                android:gravity="center_vertical|right"
+                android:hint="请输入联系方式（父亲）"
+                android:maxLength="11"
+                android:singleLine="true"
+                android:textColor="@color/gray_22"
+                android:textColorHint="@color/gray_88"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/gray_ee"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="母亲姓名"
+                android:textColor="@color/gray_55"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/et_mother_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingRight="12dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical|right"
+                android:hint="请输入母亲姓名"
+                android:maxLength="12"
+                android:singleLine="true"
+                android:textColor="@color/gray_22"
+                android:textColorHint="@color/gray_88"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/gray_ee"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="联系方式（母亲）"
+                android:textColor="@color/gray_55"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/et_mother_phone"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingRight="12dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:digits="@string/phone_number"
+                android:gravity="center_vertical|right"
+                android:hint="请输入联系方式（母亲）"
+                android:maxLength="11"
+                android:singleLine="true"
+                android:textColor="@color/gray_22"
+                android:textColorHint="@color/gray_88"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/gray_ee"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="是否独生子女"
+                android:textColor="@color/gray_55"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_only_child"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingRight="12dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical|right"
+                android:hint="请输入是否独生子女"
+                android:singleLine="true"
+                android:textColor="@color/gray_22"
+                android:textColorHint="@color/gray_88"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_edit_family_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/gray_88"
+        android:textSize="12sp"/>
+
+    <Button
+        android:id="@+id/btn_edit_family_info"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/btn_edit"
+        android:text="修改"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"/>
+
+
+</LinearLayout>

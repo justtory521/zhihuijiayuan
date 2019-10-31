@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_card"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="155dp"
+        android:layout_height="107dp"
+        android:gravity="center">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="145dp"
+            android:layout_height="90dp"
+            android:orientation="vertical"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="5dp">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/card_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:placeholderImage="@mipmap/default_card_bg"
+                app:placeholderImageScaleType="centerCrop"
+                app:roundedCornerRadius="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/ic_portrait"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    app:placeholderImage="@mipmap/default_card_portrait"
+                    app:roundAsCircle="true" />
+
+                <TextView
+                    android:id="@+id/text_card_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:gravity="left|center_vertical"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/colorTextBlack"
+        android:textSize="14sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/text_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:gravity="left|center_vertical"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/colorTextGray"
+        android:textSize="12sp">
+
+    </TextView>
+</LinearLayout>

@@ -1,0 +1,255 @@
+apply plugin: 'com.android.application'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+        maven { url 'https://dl.bintray.com/umsdk/release' }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+        maven { url 'https://www.jitpack.io' }
+        maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url "http://dl.bintray.com/nuptboyzhb/maven" }
+        maven { url 'https://dl.bintray.com/xuuhaoo/maven/' }
+    }
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '27.0.3'
+    signingConfigs {
+        release {
+            storeFile file('../keystoreZhihuijiayuan.jks')
+            storePassword "tdr123456"
+            keyAlias "key0"
+            keyPassword "tdr123456"
+        }
+
+        debug {
+            storeFile file('../keystoreZhihuijiayuan.jks')
+            storePassword "tdr123456"
+            keyAlias "key0"
+            keyPassword "tdr123456"
+        }
+    }
+    defaultConfig {
+        versionCode 25
+        versionName "2.1.2"
+        applicationId "tendency.hz.zhihuijiayuan"
+        minSdkVersion 19
+        targetSdkVersion 28
+        multiDexEnabled true
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : "tendency.hz.zhihuijiayuan",
+                JPUSH_APPKEY : "b4fa2277335d8b97fb7e6705", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
+
+        ndk {
+            abiFilters "armeabi", "x86"
+        }
+
+        packagingOptions {
+            //解决编译时com.android.builder.merge.DuplicateRelativeFileException: More than one file was found with OS independent path 'META-INF/rxjava.properties'这个错误
+            exclude 'META-INF/rxjava.properties'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']    //disable automatic ndk-build
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: '*.jar', dir: 'libs')
+
+    // SUB-PROJECT DEPENDENCIES START
+
+    // SUB-PROJECT DEPENDENCIES END
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support:support-compat:28.0.0'
+
+    //NoHttp
+    implementation 'com.yanzhenjie.nohttp:nohttp:1.1.1'
+
+    //权限获取
+    annotationProcessor 'com.zhy:mpermission-compiler:1.0.0'
+    implementation 'com.zhy:mpermission-api:1.0.0'
+
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+
+    //异步图片加载
+    implementation 'com.facebook.fresco:fresco:0.12.0'
+    implementation 'com.facebook.fresco:animated-gif:0.12.0'
+
+    //等待框
+
+    //    implementation 'com.github.gittjy:LoadingDialog:1.0.2'
+
+    //    implementation 'com.android.support:cardview-v7:28.0.0-alpha1'
+
+    //    implementation 'com.android.support:appcompat-v7:28.0.0-alpha1'
+    implementation 'com.google.code.gson:gson:2.2.4'
+
+    //右滑返回
+    implementation 'me.imid.swipebacklayout.lib:library:1.0.0'
+
+    //图片选择器
+    implementation 'com.jaikydota.imagespickers:imagespickers:1.0.6'
+
+    //如果使用图片加载框架，添加依赖，下面用Glide示例
+
+    //    implementation 'com.github.bumptech.glide:glide:4.9.0'
+
+    //    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.belerweb:pinyin4j:2.5.0'
+
+    //跑马灯效果
+    implementation 'com.sunfusheng:marqueeview:1.3.3'
+
+    //集成bugly
+    implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    implementation 'com.tencent.bugly:nativecrashreport:latest.release'
+
+    //    implementation files('libs/jcore-android-1.2.0.jar')
+
+    //极光推送
+    implementation 'cn.jiguang.sdk:jpush:3.3.4'
+
+    // 此处以JPush 3.3.4 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:2.1.2'
+
+    // 此处以JCore 2.1.2 版本为例。
+    implementation 'org.jetbrains:annotations:15.0'
+
+    //微信支付
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+
+    //支付宝
+    implementation files('libs/alipaySdk-20180601.jar')
+    implementation files('libs/BaiduLBS_Android.jar')
+    implementation 'com.android.support:design:28.0.0'
+
+    //侧滑菜单
+    implementation 'com.justkiddingbaby:slidemenu:1.3.0'
+
+    //轮播图
+    implementation 'com.youth.banner:banner:1.4.10'
+
+    //右滑返回
+    implementation 'me.imid.swipebacklayout.lib:library:1.0.0'
+
+    //地址选择器
+    implementation 'com.smartTop:jd-address:1.0.3'
+
+    //选择器
+    implementation 'com.contrarywind:Android-PickerView:3.2.4'
+
+    //sqlite查看
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+
+    //Gif加载
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.1'
+    implementation files('libs/Msc.jar')
+
+    //友盟统计
+    implementation 'com.umeng.umsdk:analytics:7.5.4'
+
+    //角标
+    implementation 'q.rorbin:badgeview:1.1.3'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-15'
+    implementation 'com.android.support:support-v4:28.0.0'
+
+    //分包
+    implementation 'com.android.support:multidex:1.0.1'
+
+    //zxing
+    implementation 'cn.bingoogolapple:bga-qrcode-zxing:1.3.6'
+    implementation 'cn.bingoogolapple:bga-baseadapter:1.2.9@aar'
+    implementation 'cn.bingoogolapple:bga-flowlayout:1.0.0@aar'
+
+    //蓝牙通讯
+
+    //    implementation 'com.inuker.bluetooth:library:1.4.0'
+
+    //butterknife
+    implementation 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    //扫码
+    implementation project(':zbar')
+
+    //adapter
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+
+    //tablayout
+    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+
+    //图片选择
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.4'
+
+    //eventbus
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation files('libs/umeng-share-QQ-simplify-6.9.4.jar')
+    implementation files('libs/umeng-share-sina-simplify-6.9.4.jar')
+    implementation files('libs/umeng-sharetool-6.9.4.jar')
+    implementation files('libs/umeng-share-wechat-simplify-6.9.4.jar')
+    implementation files('libs/umeng-shareboard-widget-6.9.4.jar')
+    implementation files('libs/umeng-share-core-6.9.4.jar')
+    implementation files('libs/umeng-common-2.0.0.jar')
+    implementation project(path: ':camera')
+
+    //录音
+    implementation 'com.github.zhaolewei:ZlwAudioRecorder:1.0.6'
+    implementation project(path: ':bluetooth')
+    implementation 'com.apkfuns.logutils:library:1.7.5'
+    implementation 'com.apkfuns.log2file:log2file:1.3.1'
+
+    //内存泄露
+
+    //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+
+    //    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
+
+    //    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
+    implementation files('libs/blecomm-api.jar')
+
+
+    api 'com.tencent.tbs.tbssdk:sdk:43697'
+}

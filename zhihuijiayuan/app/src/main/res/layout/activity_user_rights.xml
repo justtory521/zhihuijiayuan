@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/gray_fe">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/cl_rights"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/ctl_rights"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="68dp"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerCrop"
+                        android:src="@mipmap/bg_footmask"/>
+
+                    <include
+                        layout="@layout/layout_footmask"/>
+
+                </RelativeLayout>
+
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+
+            <com.flyco.tablayout.SlidingTabLayout
+                android:id="@+id/stl_user_rights"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                app:tl_indicator_color="@color/blue_0d8"
+                app:tl_indicator_height="2dp"
+                app:tl_indicator_width="58dp"
+                app:tl_textSelectColor="@color/gray_22"
+                app:tl_textUnselectColor="@color/gray_77"
+                app:tl_textsize="14sp">
+            </com.flyco.tablayout.SlidingTabLayout>
+
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_user_rights"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
+            android:background="@color/gray_f5">
+        </android.support.v4.view.ViewPager>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <include
+        layout="@layout/layout_title"/>
+</RelativeLayout>

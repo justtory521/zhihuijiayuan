@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="2dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="false">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_name_certificate"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginLeft="15dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/gray_22"
+            android:textSize="15sp"/>
+
+
+        <TextView
+            android:id="@+id/tv_certificate_time"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/gray_88"
+            android:textSize="13sp"/>
+
+        <View
+            android:id="@+id/view_certificate"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/tv_name_certificate"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/gray_ee"/>
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/sdv_certificate"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/view_certificate"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            fresco:actualImageScaleType="fitCenter"
+            fresco:placeholderImage="@mipmap/default_card_bg"
+            fresco:placeholderImageScaleType="centerCrop"
+            fresco:roundedCornerRadius="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_certificate_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_below="@id/view_certificate"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="33dp"
+            android:background="@drawable/bg_certificate_tag"
+            android:gravity="center_vertical"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/iv_delete_service"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_below="@id/sdv_certificate"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="40dp"
+            android:paddingRight="15dp"
+            android:scaleType="center"
+            android:src="@mipmap/ic_delete_service"/>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

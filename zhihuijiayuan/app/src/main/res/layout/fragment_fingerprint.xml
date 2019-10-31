@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="51dp"
+        android:layout_height="53dp"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/ic_fingerprint"/>
+
+    <TextView
+        android:id="@+id/tv_fingerprint_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:hint="请验证您的指纹"
+        android:textColorHint="@color/gray_33"
+        android:textSize="15sp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="26dp"
+        android:background="@color/gray_ee"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <TextView
+            android:id="@+id/tv_cancel_fingerprint"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="取消"
+            android:textColorHint="@color/gray_55"
+            android:textSize="15sp"/>
+
+        <View
+            android:id="@+id/view_fingerprint"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/gray_ee"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_input_pwd"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="输入密码"
+            android:textColorHint="@color/gray_55"
+            android:textSize="15sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>
