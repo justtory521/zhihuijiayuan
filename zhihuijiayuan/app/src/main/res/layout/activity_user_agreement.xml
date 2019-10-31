@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+
+    <include
+        layout="@layout/layout_title"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_title"
+        android:layout_marginBottom="69dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <TextView
+            android:id="@+id/tv_agreement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginRight="19dp"
+            android:layout_marginBottom="19dp"
+            android:textSize="14sp"
+            android:textColor="@color/gray_55"
+            android:lineSpacingExtra="6dp"/>
+
+    </ScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="22dp"
+        android:background="@color/gray_f8"
+        android:gravity="center"
+        android:text="*在法律允许的范围内“智慧家园”平台拥有最终解释权"
+        android:textColor="@color/gray_3b9"
+        android:textSize="13sp"/>
+
+</RelativeLayout>

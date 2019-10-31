@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_user_serve"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <TextView
+            android:id="@+id/tv_serve_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:textColor="@color/gray_22"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tv_serve_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:textColor="@color/blue_0d8"
+            android:textSize="14sp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginLeft="16dp">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/sdv_serve"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            fresco:actualImageScaleType="focusCrop"
+            fresco:placeholderImage="@mipmap/default_card_bg"
+            fresco:placeholderImageScaleType="focusCrop"
+            fresco:roundedCornerRadius="4dp"/>
+
+        <TextView
+            android:id="@+id/tv_serve_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="17dp"
+            android:layout_toRightOf="@id/sdv_serve"
+            android:textColor="@color/gray_22"
+            android:textSize="15sp"/>
+
+    </RelativeLayout>
+</LinearLayout>
