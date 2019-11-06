@@ -195,7 +195,8 @@
                 android:gravity="center"
                 android:layout_marginTop="42dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/bound_0d8_19dp"/>
+                android:background="@drawable/bound_0d8_19dp"
+                android:visibility="gone"/>
 
 
             <TextView
