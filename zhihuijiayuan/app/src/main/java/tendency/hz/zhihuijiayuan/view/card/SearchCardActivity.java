@@ -83,8 +83,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
     }
 
     private void initData() {
-        mThemeVal = super.getIntent().getStringExtra("ThemeVal");
-        mCardPrenInter = new CardPrenImpl(this);
+        mThemeVal = getIntent().getStringExtra("ThemeVal");
         mCardPrenInter = new CardPrenImpl(this);
         mAdapter = new SreachCardRecyclerAdapter(this, mList);
     }
@@ -277,11 +276,8 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mCardItem = null;
-        mAdapter = null;
-        mManager = null;
-        mCardPrenInter = null;
         mThemeVal = null;
+        super.onDestroy();
     }
 }

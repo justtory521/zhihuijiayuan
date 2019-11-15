@@ -280,11 +280,13 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
      * @param view
      */
     public void chooseSex(View view) {
-        showSexDialog(value -> {
-            mSex = value;
-            mBinding.textSex.setText(ConfigUnits.getInstance().getSexById(mSex));
-            missSexDialog();
-        }, mUser.getSex());
+        if (mUser !=null){
+            showSexDialog(value -> {
+                mSex = value;
+                mBinding.textSex.setText(ConfigUnits.getInstance().getSexById(mSex));
+                missSexDialog();
+            }, mUser.getSex());
+        }
 
     }
 
@@ -446,7 +448,6 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPersonalPrenInter = null;
         mBasePrenInter = null;
         mUser = null;
         mAddressPicker = null;
