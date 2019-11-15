@@ -186,7 +186,9 @@ public class RegisterSmsActivity extends BaseActivity implements AllViewInter {
                 ViewUnits.getInstance().missLoading();
                 EventBus.getDefault().post("login_success");
                 if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //改标识表示从卡片页面跳转过来
-                    mListener.getLoginResultListener(mCallBack, "1");
+                    if (mListener !=null){
+                        mListener.getLoginResultListener(mCallBack, "1");
+                    }
                     finish();
                 } else {
                     Intent intent1 = new Intent(RegisterSmsActivity.this, MainActivity.class);  //跳转至首页

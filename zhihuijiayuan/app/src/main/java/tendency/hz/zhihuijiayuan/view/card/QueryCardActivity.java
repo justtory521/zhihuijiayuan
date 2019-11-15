@@ -405,12 +405,6 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
 
 
     @Override
-    public void finish() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        super.finish();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         mCardPrenInter = null;

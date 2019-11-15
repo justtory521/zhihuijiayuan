@@ -268,7 +268,9 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
             case NetCode.Personal.getPersonalInfo:
                 ViewUnits.getInstance().missLoading();
                 if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //该标识表示从卡片页面跳转过来
-                    mListener.getLoginResultListener(mCallBack, "1");
+                    if (mListener !=null){
+                        mListener.getLoginResultListener(mCallBack, "1");
+                    }
                     finish();
                 } else {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);  //跳转至首页

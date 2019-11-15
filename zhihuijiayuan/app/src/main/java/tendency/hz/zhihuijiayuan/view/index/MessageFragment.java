@@ -148,6 +148,9 @@ public class MessageFragment extends Fragment implements AllViewInter {
             }
         });
         mAdapter.setOnClickListener((view, postion) -> {
+            if (postion < 0){
+                return;
+            }
             Intent intent = new Intent(getActivity(), CardContentActivity.class);
             CardItem cardItem = new CardItem();
             cardItem.setCardID(mList.get(postion).getCardID());

@@ -428,21 +428,22 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 break;
             case NetCode.Card.deleteCard:
                 //列表删除后，即使刷新
+                if (mPosition >= mCardItems.size()){
+                    return;
+                }
                 mCardItems.remove(mPosition);
                 mAdapter.notifyItemRemoved(mPosition);
-                mAdapter.notifyItemRangeChanged(0, mCardItems.size() - 2);
-                mAdapter.notifyDataSetChanged();
+                mAdapter.notifyItemChanged(mPosition, mCardItems.size() - mPosition);
                 break;
             case NetCode.Card.anonymousCancel:
-                if (mCardItems.size() == 0) {
+                if (mPosition >= mCardItems.size()){
                     return;
                 }
                 CacheUnits.getInstance().deleteMyCacheCardById(mCardItems.get(mPosition).getCardID());
                 //列表删除后，即使刷新
                 mCardItems.remove(mPosition);
                 mAdapter.notifyItemRemoved(mPosition);
-                mAdapter.notifyItemRangeChanged(0, mCardItems.size() - 2);
-                mAdapter.notifyDataSetChanged();
+                mAdapter.notifyItemChanged(mPosition, mCardItems.size() - mPosition);
                 break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;

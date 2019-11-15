@@ -334,10 +334,10 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     @Override
     public void onBackPressed() {
         LogUtils.log("返回");
-        if (mWebView.canGoBack()){
+        if (mWebView.canGoBack()) {
             LogUtils.log("返回1");
             mWebView.goBack();
-        }else {
+        } else {
             super.onBackPressed();
         }
 
@@ -852,7 +852,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         isConnect = false;
 
-        if (countDownTimer !=null){
+        if (countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
         }
@@ -967,7 +967,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
             //图片压缩成功
             String img = PictureSelector.obtainMultipleResult(data).get(0).getCompressPath();
-            if (!TextUtils.isEmpty(img)) {
+            if (!TextUtils.isEmpty(img) && mListener != null) {
                 mListener.getImage(Base64Utils.encode(ImageUtils.getInstance().image2byte(img)));
             }
 
@@ -1148,7 +1148,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     }
 
 
-
     /**
      * 定时，超过25s未连接成功提示连接超时
      */
@@ -1269,7 +1268,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     OnBleCommProgressListener onServiceProgressListener = new OnBleCommProgressListener() {
         @Override
         public void onScanDevice(String device_addr, String device_name, byte adv_flag) {
-            Log.d(TAG, CardContentActivity.this+","+"onScanDevice " + device_addr + ' ' + device_name+","+isConnect+","+disconnectOnclick);
+            Log.d(TAG, CardContentActivity.this + "," + "onScanDevice " + device_addr + ' ' + device_name + "," + isConnect + "," + disconnectOnclick);
             if (blueToothAddress.toUpperCase().equals(device_addr.toUpperCase()) && blueToothName.equals(device_name)
                     && !isConnect && !disconnectOnclick && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN) {
                 LogUtils.log("开始连接");
@@ -1288,7 +1287,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                     countDownTimer.cancel();
                     countDownTimer = null;
                 }
-            } else if (errorCode == BleCommStatus.BLE_ERROR_CONNECTION_TIMEOUT){
+            } else if (errorCode == BleCommStatus.BLE_ERROR_CONNECTION_TIMEOUT) {
                 LogUtils.log("超时重连");
                 isConnect = false;
                 disconnectOnclick = false;
@@ -1297,7 +1296,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         @Override
         public void onDisConnection(String device_address, int errorCode) {
-            LogUtils.log(CardContentActivity.this+",onDisConnection:" + errorCode);
+            LogUtils.log(CardContentActivity.this + ",onDisConnection:" + errorCode);
 
             if (disconnectOnclick) {
                 sendCallback(disconnectCallback, "200", "success", "手动断开蓝牙2");

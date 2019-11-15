@@ -184,7 +184,7 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
             SPUtils.getInstance().put(SPUtils.FILE_USER, SPUtils.realName, mStrName);
             SPUtils.getInstance().put(SPUtils.FILE_USER, SPUtils.cardId, mStrCardID);
             finish();
-            if (type == 1) {
+            if (type == 1 && mValidateListener !=null) {
                 mValidateListener.validate("200", "success", mStrCardID);
             }
 
@@ -198,7 +198,9 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
         ViewUnits.getInstance().missLoading();
 
         if (type == 1) {
-            mValidateListener.validate("500", "fail", object.toString());
+            if (mValidateListener !=null){
+                mValidateListener.validate("500", "fail", object.toString());
+            }
             finish();
         }
     }
