@@ -325,6 +325,7 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
                 mList.clear();
                 mList.addAll((List<CardItem>) object);
                 mAdapter.notifyDataSetChanged();
+                mBinding.recyclerSreachResult.scheduleLayoutAnimation();
                 if (mList.size() == 0) {
                     mBinding.layoutNoSreachResult.setVisibility(View.VISIBLE);
                     mBinding.swipeRefresh.setVisibility(View.GONE);

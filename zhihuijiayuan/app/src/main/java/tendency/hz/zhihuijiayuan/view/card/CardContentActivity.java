@@ -244,8 +244,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         webSetting.setUserAgentString(webSetting.getUserAgentString() + "-Android");  //设置用户代理
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webSetting.setSupportZoom(true);
-        webSetting.setBuiltInZoomControls(true);
+        webSetting.setSupportZoom(false);
+        webSetting.setBuiltInZoomControls(false);
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(true);
         webSetting.setLoadWithOverviewMode(true);
@@ -763,11 +763,11 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
      * 修改按钮样式
      */
     @Override
-    public void setBtnStyle(String btnColor, String solidColor, String strokeColor) {
+    public void setBtnStyle(String btnColor, String strokeColor) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //分享按钮
+                //分享按钮样式
                 GradientDrawable drawableLeft = new GradientDrawable();
                 drawableLeft.setShape(GradientDrawable.OVAL);
                 drawableLeft.setColor(Color.parseColor(btnColor));
@@ -808,7 +808,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 mBinding.ivShareCard.setImageDrawable(ld);
 
 
-                //关闭按钮
+                //关闭按钮样式
                 GradientDrawable drawableOut = new GradientDrawable();
                 drawableOut.setShape(GradientDrawable.OVAL);
                 drawableOut.setStroke(ViewUnits.getInstance().dp2px(CardContentActivity.this, 2), Color.parseColor(btnColor));
@@ -836,9 +836,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
                 //背景
                 GradientDrawable gd = new GradientDrawable();
-                gd.setColor(Color.parseColor(strokeColor));
-                gd.setCornerRadius(ViewUnits.getInstance().dp2px(CardContentActivity.this, 15));
-                gd.setStroke(ViewUnits.getInstance().dp2px(CardContentActivity.this, 1), Color.parseColor(solidColor));
+                gd.setCornerRadius(ViewUnits.getInstance().dp2px(CardContentActivity.this, 14.5f));
+                gd.setStroke(ViewUnits.getInstance().dp2px(CardContentActivity.this, 0.5f), Color.parseColor(strokeColor));
                 mBinding.btnDelete.setBackground(gd);
 
                 mBinding.viewLine.setBackgroundColor(Color.parseColor(strokeColor));

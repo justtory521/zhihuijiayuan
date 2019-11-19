@@ -372,7 +372,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                         mBaiduLocationClient1.stop();
                         mBaiduLocationClient1 = null;
                     }
-                }else {
+                } else {
                     sendCallBack(callBack, "500", "fail", "定位失败");
                 }
 
@@ -451,7 +451,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void setTitleBar(String titleBar) {
-        LogUtils.log("状态栏："+titleBar);
+        LogUtils.log("状态栏：" + titleBar);
         try {
             JSONObject jsonObject = new JSONObject(titleBar);
             Log.e(TAG, jsonObject.toString());
@@ -466,6 +466,31 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * 设置按钮
+     *
+     * @param value 1:浅色 2：深色
+     */
+    @JavascriptInterface
+    public void setToolbar(String  value) {
+        LogUtils.log("按钮：" + value);
+        try {
+            JSONObject jsonObject = new JSONObject(value);
+            int toolbarColor = jsonObject.getInt("colorType");
+            if (toolbarColor != 2) {
+                mCallBack.setBtnStyle("#000000","#EAEAEA");
+            } else {
+                mCallBack.setBtnStyle("#FFFFFF", "#80FFFFFF");
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
+        }
+
+    }
+
 
     @JavascriptInterface
     public void beginPatrol(String callBack) {
@@ -489,7 +514,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                 public void onReceiveLocation(BDLocation bdLocation) {
                     if (bdLocation != null && bdLocation.getLatitude() > 1 && bdLocation.getLongitude() > 1) {
                         sendCallBack(callBack, "200", "success", bdLocation.getLatitude() + "," + bdLocation.getLongitude());
-                    }else {
+                    } else {
                         sendCallBack(callBack, "500", "fail", "定位失败");
                     }
                 }

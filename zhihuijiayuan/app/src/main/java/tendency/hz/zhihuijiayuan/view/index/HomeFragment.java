@@ -92,6 +92,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         mBinding.recyclerCardMain.setLayoutManager(mManager);
         mBinding.recyclerCardMain.setAdapter(mAdapter);
 
+
         setListener();
 
         checkLocationPermission();
@@ -392,6 +393,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         mCardItems.clear();
         mCardItems.addAll(cardItems);
         mAdapter.notifyDataSetChanged();
+        mBinding.recyclerCardMain.scheduleLayoutAnimation();
         mBinding.imgLoading.setVisibility(View.GONE);
         if (mCardItems.size() == 0) {
             mBinding.layoutNoCard.setVisibility(View.VISIBLE);

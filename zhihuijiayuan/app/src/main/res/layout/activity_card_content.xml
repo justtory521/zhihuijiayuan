@@ -102,8 +102,8 @@
 
                 <LinearLayout
                     android:id="@+id/btn_delete"
-                    android:layout_width="83dp"
-                    android:layout_height="30dp"
+                    android:layout_width="84.5dp"
+                    android:layout_height="29dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="12dp"
@@ -113,9 +113,8 @@
 
                     <ImageView
                         android:id="@+id/iv_share_card"
-                        android:layout_width="41dp"
+                        android:layout_width="42dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:onClick="more"
                         android:scaleType="center"
                         android:src="@drawable/layer_share">
@@ -124,17 +123,15 @@
 
                     <View
                         android:id="@+id/view_line"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="7dp"
-                        android:layout_marginTop="7dp"
-                        android:background="@color/colorGrayLine02" />
+                        android:layout_width="0.5dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/gray_ea" />
 
                     <ImageView
                         android:id="@+id/iv_close_card"
-                        android:layout_width="41dp"
+                        android:layout_width="42dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:onClick="finish1"
                         android:scaleType="center"
                         android:src="@drawable/layer_close">

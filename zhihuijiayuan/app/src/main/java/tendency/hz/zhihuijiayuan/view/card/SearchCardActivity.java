@@ -165,6 +165,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 if (!isLoading) {
                     mAdapter.setHasMore(true);
                     mAdapter.notifyDataSetChanged();
+                    mBinding.recyclerCardFind.scheduleLayoutAnimation();
                     isLoading = true;
                     mPage++;
                     new Handler().postDelayed(() -> mCardPrenInter.getChoiceSreach(NetCode.Card.findListLoad, mThemeVal, "", mPage + ""), 100);
@@ -192,6 +193,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                     mList.addAll((List<CardItem>) object);
                 }
                 mAdapter.notifyDataSetChanged();
+                mBinding.recyclerCardFind.scheduleLayoutAnimation();
                 if (mList.size() == 0) {
                     mBinding.layoutNoSreachResult.setVisibility(View.VISIBLE);
                     mBinding.swipeRefresh.setVisibility(View.GONE);
@@ -211,6 +213,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 }
 
                 mAdapter.notifyDataSetChanged();
+                mBinding.recyclerCardFind.scheduleLayoutAnimation();
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 break;
             case NetCode.Card.anonymousFocus:

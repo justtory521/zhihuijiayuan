@@ -40,6 +40,7 @@ public class BannerDetailsActivity extends BaseActivity implements AllViewInter 
         mBinding.webView.setLayerType(View.LAYER_TYPE_HARDWARE,null);
         WebSettings webSettings = mBinding.webView.getSettings();
         webSettings.setJavaScriptEnabled(true);  //设置与JS交互权限
+        webSettings.setSupportZoom(false);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //设置运行JS弹窗
         webSettings.setUserAgentString(webSettings.getUserAgentString() + "-Android");  //设置用户代理
         webSettings.setDomStorageEnabled(true);
