@@ -1341,7 +1341,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             if (!defaultAdapter.isEnabled()) {
                 defaultAdapter.enable();
 
-                new CountDownTimer(10000, 500) {
+                new CountDownTimer(10000, 400) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         if (defaultAdapter.isEnabled()) {

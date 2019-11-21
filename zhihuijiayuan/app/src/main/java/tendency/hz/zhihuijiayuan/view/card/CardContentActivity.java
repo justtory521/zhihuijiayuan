@@ -181,6 +181,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         initData();
 
+
     }
 
     @Override
@@ -861,7 +862,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             LogUtils.log("开始断开蓝牙。。。。");
             disconnectOnclick = true;
             bleCommMethod.bleDisConnect();
-//            bleCommMethod.bleClose();
         }
 
 
@@ -1103,7 +1103,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 //
 //        // 支持输入日志到文件
 //        String filePath = getExternalFilesDir(null) + "/LogUtils/logs/";
-//        com.apkfuns.logutils.LogUtils.getLog2FileConfig()
+//        com.apkfuns.logutils.LogUtils.getLog2FileConfig() onStartSuccess send message requirement success
 //                .configLog2FileEnable(true)  // 是否输出日志到文件
 //                .configLogFileEngine(new LogFileEngineFactory(this)) // 日志文件引擎实现
 //                .configLog2FilePath(filePath)  // 日志路径
@@ -1135,7 +1135,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             if (bleCommMethod.bleGetOperator() == BleCommStatus.OPER_TRAN) {
                 sendCallback(connectCallback, "200", "success", "连接成功");
             } else {
-//                bleCommMethod.bleClose();
+
                 isConnect = false;
                 disconnectOnclick = false;
                 LogUtils.log("扫描：" + this.blueToothName);
@@ -1143,6 +1143,9 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 startTimer();
             }
         }
+
+        IntentFilter statusFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+       registerReceiver(mStatusReceive, statusFilter);
 
     }
 
@@ -1229,7 +1232,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             callBackResult(callback, "未知错误，联系管理员");
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -1241,9 +1243,30 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             LogUtils.log("手动断开");
             disconnectOnclick = true;
             bleCommMethod.bleDisConnect();
-//            bleCommMethod.bleClose();
         } else {
             sendCallback(disconnectCallback, "200", "success", "手动断开成功1");
+        }
+    }
+
+    private BroadcastReceiver mStatusReceive = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
+            if (blueState == BluetoothAdapter.STATE_ON){
+                reOpenBluetooth();
+            }
+        }
+    };
+
+    /**
+     * 重新开启蓝牙，开始扫描
+     */
+    private void reOpenBluetooth() {
+        if (!disconnectOnclick && this.blueToothName != null) {
+            LogUtils.log("重新开启蓝牙");
+            isConnect = false;
+            bleCommMethod.bleRestart(this.blueToothName);
+            startTimer();
         }
     }
 
@@ -1267,12 +1290,12 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     OnBleCommProgressListener onServiceProgressListener = new OnBleCommProgressListener() {
         @Override
         public void onScanDevice(String device_addr, String device_name, byte adv_flag) {
-            Log.d(TAG, CardContentActivity.this + "," + "onScanDevice " + device_addr + ' ' + device_name + "," + isConnect + "," + disconnectOnclick);
+            Log.d(TAG,  device_addr + ' ' + device_name + "," + isConnect + "," + disconnectOnclick);
             if (blueToothAddress.toUpperCase().equals(device_addr.toUpperCase()) && blueToothName.equals(device_name)
                     && !isConnect && !disconnectOnclick && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN) {
                 LogUtils.log("开始连接");
                 isConnect = true;
-                bleCommMethod.bleStartConnect(device_addr, new byte[]{1, 2, 3, 4, 5, 6}, 10000); /* 10000毫秒之後,连接超时*/
+                bleCommMethod.bleStartConnect(device_addr, new byte[]{1, 2, 3, 4, 5, 6}, 5000); /* 5000毫秒之後,连接超时*/
             }
         }
 
@@ -1295,13 +1318,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         @Override
         public void onDisConnection(String device_address, int errorCode) {
-            LogUtils.log(CardContentActivity.this + ",onDisConnection:" + errorCode);
+            LogUtils.log("onDisConnection:" + errorCode + "," + bleCommMethod.bleGetOperator());
 
             if (disconnectOnclick) {
                 sendCallback(disconnectCallback, "200", "success", "手动断开蓝牙2");
             } else {
                 isConnect = false;
-                if (connectCallback != null && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN) {
+                if (connectCallback != null) {
                     sendCallback(connectCallback, "500", "success", "蓝牙断开1");
                 }
             }
@@ -1410,6 +1433,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                     Log.w(TAG, "onStartFailure reserve operation  " + oper + ' ' + errorCode);
                     strErrorMsg = "onStartFailure reserve operation  " + oper + ' ' + errorCode;
                     break;
+            }
+        }
+
+        @Override
+        public void onStateChange(int i) {
+            if (i == BluetoothAdapter.STATE_ON){
+                reOpenBluetooth();
             }
         }
 
