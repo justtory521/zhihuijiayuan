@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_card"
     android:layout_width="match_parent"
     android:layout_height="120dp"
-    android:background="@null"
-    android:gravity="center"
-    android:orientation="vertical">
+    app:contentView="@+id/fl_card_content"
+    app:rightMenuView="@+id/rl_delete_card">
 
     <FrameLayout
+        android:id="@+id/fl_card_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
@@ -54,4 +54,20 @@
                 android:textSize="15sp" />
         </LinearLayout>
     </FrameLayout>
-</LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_delete_card"
+        android:layout_width="46dp"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_delete_card"
+            android:layout_width="34dp"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_delete_card" />
+    </RelativeLayout>
+
+
+</com.guanaj.easyswipemenulibrary.EasySwipeMenuLayout>

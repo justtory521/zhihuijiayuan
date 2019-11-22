@@ -1286,7 +1286,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
     };
 
-
     OnBleCommProgressListener onServiceProgressListener = new OnBleCommProgressListener() {
         @Override
         public void onScanDevice(String device_addr, String device_name, byte adv_flag) {

@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -50,10 +51,12 @@ import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.CacheUnits;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
 import tendency.hz.zhihuijiayuan.units.QrCodeUnits;
+import tendency.hz.zhihuijiayuan.units.ScreenUtils;
 import tendency.hz.zhihuijiayuan.units.SpeechUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
+import tendency.hz.zhihuijiayuan.widget.RotateXAnimation;
 
 import static tendency.hz.zhihuijiayuan.bean.base.Request.Permissions.REQUEST_RECORD_PERMISSIONS;
 
@@ -306,6 +309,31 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         }
     }
 
+    /**
+     * rv入场动画
+     */
+    private void enterAnimation(){
+        mBinding.recyclerSreachResult.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+                        mBinding.recyclerSreachResult.getViewTreeObserver().removeOnPreDrawListener(this);
+                        for (int i = 0; i <  mBinding.recyclerSreachResult.getChildCount(); i++) {
+                            View v =  mBinding.recyclerSreachResult.getChildAt(i);
+
+                            RotateXAnimation rotateXAnimation = new RotateXAnimation(v.getWidth()/2,v.getHeight()/2);
+                            rotateXAnimation.setDuration(400);
+                            rotateXAnimation.setStartOffset(100*i);
+                            v.setAnimation(rotateXAnimation);
+
+                        }
+
+                        return true;
+                    }
+                });
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onSuccessed(int what, Object object) {
@@ -325,7 +353,7 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
                 mList.clear();
                 mList.addAll((List<CardItem>) object);
                 mAdapter.notifyDataSetChanged();
-                mBinding.recyclerSreachResult.scheduleLayoutAnimation();
+                enterAnimation();
                 if (mList.size() == 0) {
                     mBinding.layoutNoSreachResult.setVisibility(View.VISIBLE);
                     mBinding.swipeRefresh.setVisibility(View.GONE);

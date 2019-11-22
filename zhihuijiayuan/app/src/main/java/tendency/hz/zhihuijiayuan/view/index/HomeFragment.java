@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,8 @@ import android.view.ViewGroup;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
+import com.chad.library.adapter.base.BaseItemDraggableAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.zhy.m.permission.MPermissions;
 
 import java.util.ArrayList;
@@ -58,6 +61,8 @@ import tendency.hz.zhihuijiayuan.view.card.CardContentActivity;
 import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
 import tendency.hz.zhihuijiayuan.view.picker.CityPickerActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
+import tendency.hz.zhihuijiayuan.widget.CradItemDecoration;
+import tendency.hz.zhihuijiayuan.widget.ItemTouchCallback;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -72,6 +77,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
     private MainCardRecyclerAdapter mAdapter;
     private LinearLayoutManager mManager;
     private List<CardItem> mCardItems = new ArrayList<>();
+    private BaseItemDraggableAdapter<CardItem, BaseViewHolder> adapter;
     private int mPosition;  //操作条目
     private CardItem mCardItemOnClick;  //当前点击的卡片
     private FragmentInteraction mFragmentInteraction;
@@ -89,8 +95,11 @@ public class HomeFragment extends Fragment implements AllViewInter {
 
         mAdapter = new MainCardRecyclerAdapter(getActivity(), mCardItems);
         mManager = new LinearLayoutManager(getActivity());
+        mBinding.recyclerCardMain.addItemDecoration(new CradItemDecoration(ViewUnits.getInstance().dp2px(getActivity(), 6)));
         mBinding.recyclerCardMain.setLayoutManager(mManager);
         mBinding.recyclerCardMain.setAdapter(mAdapter);
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter));
+        helper.attachToRecyclerView( mBinding.recyclerCardMain);
 
 
         setListener();
@@ -147,6 +156,12 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 if (postion < 0) return;
                 mPosition = postion;
                 jumpToCard(mCardItems.get(postion));
+            }
+
+            @Override
+            public void deleteCrad(int position) {
+                mPosition = position;
+                deleteItem(mCardItems.get(position));
             }
 
             @Override
@@ -435,7 +450,8 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 }
                 mCardItems.remove(mPosition);
                 mAdapter.notifyItemRemoved(mPosition);
-                mAdapter.notifyItemChanged(mPosition, mCardItems.size() - mPosition);
+                mAdapter.notifyItemRangeChanged(mPosition, mCardItems.size() - mPosition);
+
                 break;
             case NetCode.Card.anonymousCancel:
                 if (mPosition >= mCardItems.size()){
@@ -445,7 +461,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 //列表删除后，即使刷新
                 mCardItems.remove(mPosition);
                 mAdapter.notifyItemRemoved(mPosition);
-                mAdapter.notifyItemChanged(mPosition, mCardItems.size() - mPosition);
+                mAdapter.notifyItemRangeChanged(mPosition, mCardItems.size() - mPosition);
                 break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;

@@ -9,5 +9,7 @@ import android.view.View;
 public interface HomeCardItemOnClickInter {
     void onItemOnClick(View view, int postion);
 
+    void deleteCrad(int position);
+
     void addMoreCardOnClick(View view, int position);
 }

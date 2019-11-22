@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.umeng.socialize.ShareAction;
@@ -33,10 +34,12 @@ import tendency.hz.zhihuijiayuan.presenter.CardPrenImpl;
 import tendency.hz.zhihuijiayuan.presenter.prenInter.CardPrenInter;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.QrCodeUnits;
+import tendency.hz.zhihuijiayuan.units.ScreenUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.ClassicsHeader;
+import tendency.hz.zhihuijiayuan.widget.RotateXAnimation;
 
 /**
  * Created by JasonYao on 2018/4/12.
@@ -155,6 +158,31 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
 
     }
 
+    /**
+     * rv入场动画
+     */
+    private void enterAnimation(){
+        mBinding.recyclerCardFind.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+                        mBinding.recyclerCardFind.getViewTreeObserver().removeOnPreDrawListener(this);
+                        for (int i = 0; i <  mBinding.recyclerCardFind.getChildCount(); i++) {
+                            View v =  mBinding.recyclerCardFind.getChildAt(i);
+
+                            RotateXAnimation rotateXAnimation = new RotateXAnimation(v.getWidth()/2,v.getHeight()/2);
+                            rotateXAnimation.setDuration(400);
+                            rotateXAnimation.setStartOffset(100*i);
+                            v.setAnimation(rotateXAnimation);
+
+                        }
+
+                        return true;
+                    }
+                });
+    }
+
     private class MyOnScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -165,7 +193,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 if (!isLoading) {
                     mAdapter.setHasMore(true);
                     mAdapter.notifyDataSetChanged();
-                    mBinding.recyclerCardFind.scheduleLayoutAnimation();
+                    enterAnimation();
                     isLoading = true;
                     mPage++;
                     new Handler().postDelayed(() -> mCardPrenInter.getChoiceSreach(NetCode.Card.findListLoad, mThemeVal, "", mPage + ""), 100);
@@ -193,7 +221,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                     mList.addAll((List<CardItem>) object);
                 }
                 mAdapter.notifyDataSetChanged();
-                mBinding.recyclerCardFind.scheduleLayoutAnimation();
+                enterAnimation();
                 if (mList.size() == 0) {
                     mBinding.layoutNoSreachResult.setVisibility(View.VISIBLE);
                     mBinding.swipeRefresh.setVisibility(View.GONE);
@@ -213,7 +241,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 }
 
                 mAdapter.notifyDataSetChanged();
-                mBinding.recyclerCardFind.scheduleLayoutAnimation();
+                enterAnimation();
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 break;
             case NetCode.Card.anonymousFocus:

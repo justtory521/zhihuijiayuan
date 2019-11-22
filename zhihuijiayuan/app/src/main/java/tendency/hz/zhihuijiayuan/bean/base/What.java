@@ -6,7 +6,7 @@ package tendency.hz.zhihuijiayuan.bean.base;
 
 public class What {
     public static final String TOKEN_HEADER = "Bearer ";
-    public static final String PAGE_SIZE = "20";
+    public static final String PAGE_SIZE = "50";
     public static final int PICKERPHOTO = 0x2001; //选择图片请求标识码
     public static final int TAKEPHOTO = 0x2002; //拍照请求标识码
     public static final int SCANQRCODE = 0x2003; //扫描二维码
