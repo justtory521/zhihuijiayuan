@@ -39,11 +39,13 @@ public class RotateXAnimation extends Animation {
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-        final Matrix matrix = t.getMatrix();
+        float degrees = 90+ ((-90) * interpolatedTime);
+        Matrix matrix = t.getMatrix();
         camera.save();
         //设置camera的位置
-        camera.setLocation(0,0,180);
-        camera.rotateX(180 * interpolatedTime);
+//        camera.setLocation(0,0,180);
+        camera.translate(0.0f, 0.0f, 0);
+        camera.rotateX(degrees);
         //把我们的摄像头加在变换矩阵上
         camera.getMatrix(matrix);
         //设置翻转中心点
