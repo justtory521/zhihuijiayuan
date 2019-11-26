@@ -33,6 +33,7 @@ public class Request {
         public static final int CARD_JUMP_TO_CITYPICKER = 0x100a; //从卡片页面跳转至城市选择页面
         public static final int CREDIT_TO_PERSONAL = 0x100b; //从智慧信用跳转至个人资料
         public static final int SCAN_ID_CARD = 0x100c; //身份证扫描
+        public static final int CARD_CARDCONTENT_JUMP = 0x100d; //卡片跳转至卡片页面，不弹出关注tips
     }
 
     public static final class Broadcast {

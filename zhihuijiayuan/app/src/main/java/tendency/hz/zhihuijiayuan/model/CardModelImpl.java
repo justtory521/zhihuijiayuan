@@ -410,6 +410,9 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
                 List<CardItem> cardItems = mGson.fromJson(jsaMyCardList.toString(), new TypeToken<List<CardItem>>() {
                 }.getType());
 
+
+                CacheUnits.getInstance().deleteMyCacheCard();
+                CacheUnits.getInstance().insertMyCacheCards(cardItems);
                 mAllPrenInter.onSuccess(what, cardItems);
                 break;
             case NetCode.Card2.getAnonymousList:
@@ -418,10 +421,11 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
                 }.getType());
 
                 CacheUnits.getInstance().deleteMyCacheCard();
-                CacheUnits.getInstance().refreshMyCards(cardItems2);
+                CacheUnits.getInstance().insertMyCacheCards(cardItems2);
                 mAllPrenInter.onSuccess(what, cardItems2);
                 break;
             case NetCode.Card.cardAttentionAdd:
+                CacheUnits.getInstance().insertMyCacheCard(mCardItem);   //卡缓存至本地
                 mAllPrenInter.onSuccess(what, null);
                 break;
             case NetCode.Card.infoSync:

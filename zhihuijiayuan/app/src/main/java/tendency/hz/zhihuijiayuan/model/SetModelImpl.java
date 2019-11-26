@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,7 +53,31 @@ public class SetModelImpl extends AllModelInter implements SetModelInter {
     }
 
     @Override
-    public void validate(int netCode, String cardId, String realName,String EditIDCardTime, String imgList) {
+    public void uploadFrontIDCard(int netCode, String img) {
+        if (netCode != NetCode.Set.uploadFrontIDCard) {
+            return;
+        }
+
+        List<NoHttpUtil.Param> params = new ArrayList<>();
+        params.add(new NoHttpUtil.Param("ImageStr", img));
+        NoHttpUtil.post(netCode, Uri.Base.UPLOADIMG, onResponseListener, params);
+    }
+
+    @Override
+    public void uploadBackIDCard(int netCode, String img) {
+        if (netCode != NetCode.Set.uploadBackIDCard) {
+            return;
+        }
+
+        List<NoHttpUtil.Param> params = new ArrayList<>();
+        params.add(new NoHttpUtil.Param("ImageStr", img));
+        NoHttpUtil.post(netCode, Uri.Base.UPLOADIMG, onResponseListener, params);
+    }
+
+    @Override
+    public void validate(int netCode, String cardId, String realName, String sex, String nation,
+                         String birthday, String address, String issue, String validate,
+                         String frontCardPic, String backCardPic, String editIDCardTime) {
         if (netCode != NetCode.Set.validate) {
             return;
         }
@@ -60,7 +85,15 @@ public class SetModelImpl extends AllModelInter implements SetModelInter {
         List<NoHttpUtil.Param> params = new ArrayList<>();
         params.add(new NoHttpUtil.Param("CardID", cardId));
         params.add(new NoHttpUtil.Param("RealName", realName));
-        params.add(new NoHttpUtil.Param("EditIDCardTime", EditIDCardTime));
+        params.add(new NoHttpUtil.Param("Sex", sex));
+        params.add(new NoHttpUtil.Param("Nation", nation));
+        params.add(new NoHttpUtil.Param("Birthday", birthday));
+        params.add(new NoHttpUtil.Param("Address", address));
+        params.add(new NoHttpUtil.Param("Issue", issue));
+        params.add(new NoHttpUtil.Param("Valid", validate));
+        params.add(new NoHttpUtil.Param("FrontCardPic", frontCardPic));
+        params.add(new NoHttpUtil.Param("BackCardPic", backCardPic));
+        params.add(new NoHttpUtil.Param("EditIDCardTime", editIDCardTime));
         Log.e(TAG, params.toString());
 
         NoHttpUtil.post(netCode, Uri.Set.VALIDATE, onResponseListener, params);
@@ -186,6 +219,11 @@ public class SetModelImpl extends AllModelInter implements SetModelInter {
                 break;
             case NetCode.Set.wxSubscribeMessage:
                 mAllPrenInter.onSuccess(what, null);
+                break;
+            case NetCode.Set.uploadFrontIDCard:
+            case NetCode.Set.uploadBackIDCard:
+                JSONArray jsonArray = ((JSONObject) object).getJSONArray("Data");
+                mAllPrenInter.onSuccess(what, jsonArray.get(0).toString());
                 break;
             default:
                 mAllPrenInter.onSuccess(what, object);

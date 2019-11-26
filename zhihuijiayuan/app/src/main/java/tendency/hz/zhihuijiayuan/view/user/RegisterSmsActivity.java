@@ -180,6 +180,11 @@ public class RegisterSmsActivity extends BaseActivity implements AllViewInter {
                 }
                 break;
             case NetCode.Card.infoSync:
+                mCardPrenInter.myCardList(NetCode.Card.myCardListRefresh, "", "1");
+                break;
+            case NetCode.Card.myCardListRefresh:
+            case NetCode.Card2.getAnonymousList:
+                ViewUnits.getInstance().missLoading();
                 mPersonalPrenInter.getPersonalInfo(NetCode.Personal.getPersonalInfo);  //获取用户信息
                 break;
             case NetCode.Personal.getPersonalInfo:

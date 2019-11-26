@@ -35,6 +35,7 @@ import java.util.Map;
 import tendency.hz.zhihuijiayuan.MainActivity;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.adapter.MainFragmentPagerAdapter;
+import tendency.hz.zhihuijiayuan.bean.CardItem;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.databinding.ActivityLoginBinding;
@@ -249,7 +250,6 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
                         UserUnits.getInstance().setToken(token);
                         ConfigUnits.getInstance().setPhoneAnalogIMEI(clientID);
                         CacheUnits.getInstance().clearMessage();  //清除消息
-
                         mCardPrenInter.infoSync(NetCode.Card.infoSync, CacheUnits.getInstance().getMyCacheCardIds());   //同步卡片
                     } else {
                         Intent bindPhone = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -263,6 +263,10 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
                 }
                 break;
             case NetCode.Card.infoSync:
+                mCardPrenInter.myCardList(NetCode.Card.myCardListRefresh, "", "1");
+                break;
+            case NetCode.Card.myCardListRefresh:
+            case NetCode.Card2.getAnonymousList:
                 mPersonalPrenInter.getPersonalInfo(NetCode.Personal.getPersonalInfo);  //获取用户信息
                 break;
             case NetCode.Personal.getPersonalInfo:

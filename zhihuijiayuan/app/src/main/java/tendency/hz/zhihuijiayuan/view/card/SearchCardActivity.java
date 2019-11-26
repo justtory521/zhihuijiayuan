@@ -118,7 +118,9 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
             @Override
             public void onItemOnClick(View view, int postion) {
                 mCardItem = mList.get(postion);
-                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
+
+                jumpToCard(mCardItem);
+//                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
             }
 
             @Override
@@ -244,10 +246,10 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 enterAnimation();
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
                 if (BaseUnits.getInstance().isApkInstalled(this, appCardItem.getAndroidAppID())) {  //应用卡，先判断手机是否下载该app
@@ -287,15 +289,16 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
     public void onFailed(int what, Object object) {
         isLoading = false;
         ViewUnits.getInstance().missLoading();
-        switch (what) {
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
-            default:
-                ViewUnits.getInstance().showToast(object.toString());
-                break;
-        }
+        ViewUnits.getInstance().showToast(object.toString());
+//        switch (what) {
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
+//            default:
+//                ViewUnits.getInstance().showToast(object.toString());
+//                break;
+//        }
     }
 
     @Override

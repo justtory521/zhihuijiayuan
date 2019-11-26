@@ -137,7 +137,12 @@ public class RegisterSetPwdActivity extends BaseActivity implements AllViewInter
                 UserUnits.getInstance().setAllUserInfo(user);  //登录成功，缓存用户数据
                 mCardPrenInter.infoSync(NetCode.Card.infoSync, CacheUnits.getInstance().getMyCacheCardIds());
                 break;
+
             case NetCode.Card.infoSync:
+                mCardPrenInter.myCardList(NetCode.Card.myCardListRefresh, "", "1");
+                break;
+            case NetCode.Card.myCardListRefresh:
+            case NetCode.Card2.getAnonymousList:
                 ViewUnits.getInstance().missLoading();
                 mPersonalPrenInter.getPersonalInfo(NetCode.Personal.getPersonalInfo);  //获取用户信息
                 break;

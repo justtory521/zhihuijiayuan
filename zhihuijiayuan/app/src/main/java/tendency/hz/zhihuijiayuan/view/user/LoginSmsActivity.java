@@ -115,6 +115,10 @@ public class LoginSmsActivity extends BaseActivity implements AllViewInter {
                 mCardPrenInter.infoSync(NetCode.Card.infoSync, CacheUnits.getInstance().getMyCacheCardIds());   //同步卡片
                 break;
             case NetCode.Card.infoSync:
+                mCardPrenInter.myCardList(NetCode.Card.myCardListRefresh, "", "1");
+                break;
+            case NetCode.Card.myCardListRefresh:
+            case NetCode.Card2.getAnonymousList:
                 mPersonalPrenInter.getPersonalInfo(NetCode.Personal.getPersonalInfo);  //获取用户信息
                 break;
             case NetCode.Personal.getPersonalInfo:

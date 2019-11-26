@@ -187,9 +187,9 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
         }
     }
 
-    private void addCard(CardItem cardItem) {
-        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
-    }
+//    private void addCard(CardItem cardItem) {
+//        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
+//    }
 
     /**
      * Android6.0动态获取所有权限
@@ -333,11 +333,13 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
                     SPUtils.getInstance().put(SPUtils.FILE_CARD, SPUtils.invitationCode, mInvitationCode);
                 }
 
-                if ("1".equals(mCardItem.getFocusStatus())) {  //用户已经关注，直接跳转转卡详情页面
-                    jumpToCard(mCardItem);
-                } else {  //用户未关注，先执行领卡
-                    addCard(mCardItem);
-                }
+
+                jumpToCard(mCardItem);
+//                if ("1".equals(mCardItem.getFocusStatus())) {  //用户已经关注，直接跳转转卡详情页面
+//                    jumpToCard(mCardItem);
+//                } else {  //用户未关注，先执行领卡
+//                    addCard(mCardItem);
+//                }
                 break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
@@ -353,27 +355,31 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
                     BaseUnits.getInstance().loadApk(this, appCardItem.getAndroidDownUrl());
                 }
                 break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
         }
 
     }
 
     @Override
     public void onFailed(int what, Object object) {
-        switch (what) {
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
-            default:
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                break;
-        }
+//        switch (what) {
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
+//            default:
+//                Intent intent = new Intent(this, MainActivity.class);
+//                startActivity(intent);
+//                finish();
+//                break;
+//        }
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 

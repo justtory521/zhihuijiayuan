@@ -1974,6 +1974,9 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
 
     }
 
+    /**
+     * @param value 相同卡片刷新页面，其他卡片打开新的卡片
+     */
     private void openOrRefresh(String value) {
 
         if (CardContentActivity.getInstance().getCardId().equals(value)) {

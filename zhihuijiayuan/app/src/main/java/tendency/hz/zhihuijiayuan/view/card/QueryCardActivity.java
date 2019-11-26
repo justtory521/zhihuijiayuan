@@ -168,7 +168,8 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
             @Override
             public void onItemOnClick(View view, int postion) {
                 mCardItem = mList.get(postion);
-                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
+                jumpToCard(mCardItem);
+//                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
             }
 
             @Override
@@ -237,7 +238,8 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
 
         mHotSreachAdapter.setListener((view, postion) -> {
             mCardItem = mHotSreachLists.get(postion);
-            mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mHotSreachLists.get(postion));
+            jumpToCard(mCardItem);
+//            mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mHotSreachLists.get(postion));
         });
     }
 
@@ -364,10 +366,10 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 hideInput();
                 break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
                 if (BaseUnits.getInstance().isApkInstalled(this, appCardItem.getAndroidAppID())) {  //应用卡，先判断手机是否下载该app
@@ -414,16 +416,17 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
     @Override
     public void onFailed(int what, Object object) {
         ViewUnits.getInstance().missLoading();
+        ViewUnits.getInstance().showToast(object.toString());
         hideInput();
-        switch (what) {
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
-            default:
-                ViewUnits.getInstance().showToast(object.toString());
-                break;
-        }
+//        switch (what) {
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
+//            default:
+//                ViewUnits.getInstance().showToast(object.toString());
+//                break;
+//        }
     }
 
     @Override

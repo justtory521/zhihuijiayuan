@@ -27,8 +27,21 @@ public class SetPrenImpl implements SetPrenInter, AllPrenInter {
     }
 
     @Override
-    public void validate(int netCode, String cardId, String realName, String EditIDCardTime, String imgList) {
-        mSetModelInter.validate(netCode, cardId, realName, EditIDCardTime, imgList);
+    public void uploadFrontIDCard(int netCode, String img) {
+        mSetModelInter.uploadFrontIDCard(netCode,img);
+    }
+
+    @Override
+    public void uploadBackIDCard(int netCode, String img) {
+        mSetModelInter.uploadBackIDCard(netCode,img);
+    }
+
+    @Override
+    public void validate(int netCode, String cardId, String realName, String sex, String nation,
+                         String birthday, String address, String issue, String validate,
+                         String frontCardPic, String backCardPic, String editIDCardTime) {
+        mSetModelInter.validate(netCode, cardId, realName, sex,nation,birthday,address,issue
+                ,validate,frontCardPic,backCardPic,editIDCardTime);
     }
 
     @Override
