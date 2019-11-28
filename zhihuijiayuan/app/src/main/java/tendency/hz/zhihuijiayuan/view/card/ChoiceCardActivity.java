@@ -179,7 +179,7 @@ public class ChoiceCardActivity extends BaseActivity implements AllViewInter {
                 break;
             case NetCode.Card2.checkCanOperate:
                 Log.e(TAG, "当前卡片可用");
-                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mCardItem);
+//                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mCardItem);
                 break;
             case NetCode.Card.anonymousFocus:
             case NetCode.Card.cardAttentionAdd:

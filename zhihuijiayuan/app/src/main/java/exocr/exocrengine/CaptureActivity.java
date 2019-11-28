@@ -237,6 +237,7 @@ public class CaptureActivity extends BaseActivity implements SurfaceHolder.Callb
                 idCardBean.setAddress(result.address);
                 idCardBean.setNation(result.nation);
                 idCardBean.setNumber(result.cardnum);
+                idCardBean.setBirthday(result.birth);
             } else {
                 idCardBean = new IDCardBean();
                 idCardBean.setPath(result.bitmapPath);

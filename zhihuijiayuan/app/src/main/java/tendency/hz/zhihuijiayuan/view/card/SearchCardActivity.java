@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.umeng.socialize.ShareAction;
@@ -33,10 +34,12 @@ import tendency.hz.zhihuijiayuan.presenter.CardPrenImpl;
 import tendency.hz.zhihuijiayuan.presenter.prenInter.CardPrenInter;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.QrCodeUnits;
+import tendency.hz.zhihuijiayuan.units.ScreenUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.ClassicsHeader;
+import tendency.hz.zhihuijiayuan.widget.RotateXAnimation;
 
 /**
  * Created by JasonYao on 2018/4/12.
@@ -83,8 +86,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
     }
 
     private void initData() {
-        mThemeVal = super.getIntent().getStringExtra("ThemeVal");
-        mCardPrenInter = new CardPrenImpl(this);
+        mThemeVal = getIntent().getStringExtra("ThemeVal");
         mCardPrenInter = new CardPrenImpl(this);
         mAdapter = new SreachCardRecyclerAdapter(this, mList);
     }
@@ -116,7 +118,9 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
             @Override
             public void onItemOnClick(View view, int postion) {
                 mCardItem = mList.get(postion);
-                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
+
+                jumpToCard(mCardItem);
+//                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
             }
 
             @Override
@@ -156,6 +160,31 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
 
     }
 
+    /**
+     * rv入场动画
+     */
+    private void enterAnimation(){
+        mBinding.recyclerCardFind.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+                        mBinding.recyclerCardFind.getViewTreeObserver().removeOnPreDrawListener(this);
+                        for (int i = 0; i <  mBinding.recyclerCardFind.getChildCount(); i++) {
+                            View v =  mBinding.recyclerCardFind.getChildAt(i);
+
+                            RotateXAnimation rotateXAnimation = new RotateXAnimation(v.getWidth()/2,v.getHeight()/2);
+                            rotateXAnimation.setDuration(400);
+                            rotateXAnimation.setStartOffset(100*i);
+                            v.setAnimation(rotateXAnimation);
+
+                        }
+
+                        return true;
+                    }
+                });
+    }
+
     private class MyOnScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -166,6 +195,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 if (!isLoading) {
                     mAdapter.setHasMore(true);
                     mAdapter.notifyDataSetChanged();
+                    enterAnimation();
                     isLoading = true;
                     mPage++;
                     new Handler().postDelayed(() -> mCardPrenInter.getChoiceSreach(NetCode.Card.findListLoad, mThemeVal, "", mPage + ""), 100);
@@ -193,6 +223,7 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                     mList.addAll((List<CardItem>) object);
                 }
                 mAdapter.notifyDataSetChanged();
+                enterAnimation();
                 if (mList.size() == 0) {
                     mBinding.layoutNoSreachResult.setVisibility(View.VISIBLE);
                     mBinding.swipeRefresh.setVisibility(View.GONE);
@@ -212,12 +243,13 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 }
 
                 mAdapter.notifyDataSetChanged();
+                enterAnimation();
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
                 if (BaseUnits.getInstance().isApkInstalled(this, appCardItem.getAndroidAppID())) {  //应用卡，先判断手机是否下载该app
@@ -257,15 +289,16 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
     public void onFailed(int what, Object object) {
         isLoading = false;
         ViewUnits.getInstance().missLoading();
-        switch (what) {
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
-            default:
-                ViewUnits.getInstance().showToast(object.toString());
-                break;
-        }
+        ViewUnits.getInstance().showToast(object.toString());
+//        switch (what) {
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
+//            default:
+//                ViewUnits.getInstance().showToast(object.toString());
+//                break;
+//        }
     }
 
     @Override
@@ -277,11 +310,8 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mCardItem = null;
-        mAdapter = null;
-        mManager = null;
-        mCardPrenInter = null;
         mThemeVal = null;
+        super.onDestroy();
     }
 }

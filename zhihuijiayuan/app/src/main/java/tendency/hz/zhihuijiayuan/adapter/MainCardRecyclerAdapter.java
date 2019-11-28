@@ -39,6 +39,10 @@ public class MainCardRecyclerAdapter extends RecyclerView.Adapter {
         mListener = listener;
     }
 
+    public List<CardItem> getDataList(){
+        return mList;
+    }
+
     @SuppressLint("LongLogTag")
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -67,16 +71,16 @@ public class MainCardRecyclerAdapter extends RecyclerView.Adapter {
 
             ((MainCardItemHolder) holder).mTextViewName.setText(mList.get(position).getTitle());
 
-            if (position == 0) {
-                ((MainCardItemHolder) holder).marginParams.setMargins(0, 20, 0, 0);
-            } else if (position == mList.size() - 1) {
-                ((MainCardItemHolder) holder).marginParams.setMargins(0, 0, 0, 160);
-            } else {
-                ((MainCardItemHolder) holder).marginParams.setMargins(0, 0, 0, 0);
-            }
-            ((MainCardItemHolder) holder).marginParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            ((MainCardItemHolder) holder).mLayoutParams.height = ViewUnits.getInstance().dp2px(mContext, 120);
-            ((MainCardItemHolder) holder).mLayoutCard.setLayoutParams(((MainCardItemHolder) holder).marginParams);
+//            if (position == 0) {
+//                ((MainCardItemHolder) holder).marginParams.setMargins(0, 20, 0, 0);
+//            } else if (position == mList.size() - 1) {
+//                ((MainCardItemHolder) holder).marginParams.setMargins(0, 0, 0, 160);
+//            } else {
+//                ((MainCardItemHolder) holder).marginParams.setMargins(0, 0, 0, 0);
+//            }
+//            ((MainCardItemHolder) holder).marginParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//            ((MainCardItemHolder) holder).mLayoutParams.height = ViewUnits.getInstance().dp2px(mContext, 120);
+//            ((MainCardItemHolder) holder).mLayoutCard.setLayoutParams(((MainCardItemHolder) holder).marginParams);
 
         }
     }

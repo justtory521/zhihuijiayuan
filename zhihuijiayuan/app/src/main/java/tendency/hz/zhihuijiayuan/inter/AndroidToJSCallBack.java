@@ -19,7 +19,7 @@ public interface AndroidToJSCallBack {
     void setTitleBar(String btnBackType, String title, String textColor, String bgColor, String isDisplay);
 
 
-    void setBtnStyle(String btnColor, String solidColor, String strokeColor);
+    void setBtnStyle(String btnColor,String strokeColor);
 
 
 

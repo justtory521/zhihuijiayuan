@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -14,13 +15,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
+import com.chad.library.adapter.base.BaseItemDraggableAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.zhy.m.permission.MPermissions;
 
 import java.util.ArrayList;
@@ -58,6 +64,8 @@ import tendency.hz.zhihuijiayuan.view.card.CardContentActivity;
 import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
 import tendency.hz.zhihuijiayuan.view.picker.CityPickerActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
+import tendency.hz.zhihuijiayuan.widget.CradItemDecoration;
+import tendency.hz.zhihuijiayuan.widget.ItemTouchCallback;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -72,6 +80,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
     private MainCardRecyclerAdapter mAdapter;
     private LinearLayoutManager mManager;
     private List<CardItem> mCardItems = new ArrayList<>();
+    private BaseItemDraggableAdapter<CardItem, BaseViewHolder> adapter;
     private int mPosition;  //操作条目
     private CardItem mCardItemOnClick;  //当前点击的卡片
     private FragmentInteraction mFragmentInteraction;
@@ -89,8 +98,12 @@ public class HomeFragment extends Fragment implements AllViewInter {
 
         mAdapter = new MainCardRecyclerAdapter(getActivity(), mCardItems);
         mManager = new LinearLayoutManager(getActivity());
+        mBinding.recyclerCardMain.addItemDecoration(new CradItemDecoration(ViewUnits.getInstance().dp2px(getActivity(), 6)));
         mBinding.recyclerCardMain.setLayoutManager(mManager);
         mBinding.recyclerCardMain.setAdapter(mAdapter);
+//        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter));
+//        helper.attachToRecyclerView( mBinding.recyclerCardMain);
+
 
         setListener();
 
@@ -109,6 +122,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         }
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -117,8 +131,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
         if (!ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装,不需要获取卡片，自动绑定成功后，会执行安装
             getMyCard();
         }
-
-        mAdapter.notifyDataSetChanged();
     }
 
     private void getMyCard() {
@@ -149,6 +161,12 @@ public class HomeFragment extends Fragment implements AllViewInter {
             }
 
             @Override
+            public void deleteCard(int position) {
+                mPosition = position;
+                deleteItem(mCardItems.get(position));
+            }
+
+            @Override
             public void addMoreCardOnClick(View view, int position) {
                 Intent intent = new Intent(getActivity(), SearchCardActivity.class);
                 intent.putExtra("ThemeVal", "");
@@ -157,7 +175,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         });
 
         mBinding.marqueeView.setOnItemClickListener((position, textView) -> {
-            addCard(mCardRecommend.get(position));  //异步关注卡
+//            addCard(mCardRecommend.get(position));  //异步关注卡
             Intent intent = new Intent(getActivity(), CardContentActivity.class);
             intent.putExtra("cardItem", mCardRecommend.get(position));
             startActivity(intent);
@@ -187,8 +205,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 if (ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装
                     ConfigUnits.getInstance().setFirstInstallStatus(false);
                     mCardPrenInter.authFocusCard(NetCode.Card2.autoFocusCard);
-                } else {
-                    getMyCard();
                 }
 
 
@@ -328,9 +344,9 @@ public class HomeFragment extends Fragment implements AllViewInter {
         }
     }
 
-    private void addCard(CardItem cardItem) {
-        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
-    }
+//    private void addCard(CardItem cardItem) {
+//        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -389,17 +405,20 @@ public class HomeFragment extends Fragment implements AllViewInter {
      * 刷新列表，根据列表数据，跳转页面结构
      */
     private void refreshList(List<CardItem> cardItems) {
+        mBinding.imgLoading.setVisibility(View.GONE);
         mCardItems.clear();
         mCardItems.addAll(cardItems);
-        mAdapter.notifyDataSetChanged();
-        mBinding.imgLoading.setVisibility(View.GONE);
         if (mCardItems.size() == 0) {
             mBinding.layoutNoCard.setVisibility(View.VISIBLE);
             mBinding.recyclerCardMain.setVisibility(View.GONE);
-            return;
+        }else {
+            mBinding.layoutNoCard.setVisibility(View.GONE);
+            mBinding.recyclerCardMain.setVisibility(View.VISIBLE);
         }
-        mBinding.layoutNoCard.setVisibility(View.GONE);
-        mBinding.recyclerCardMain.setVisibility(View.VISIBLE);
+
+        mAdapter.notifyDataSetChanged();
+        mBinding.recyclerCardMain.scheduleLayoutAnimation();
+
     }
 
     @Override
@@ -408,7 +427,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         switch (what) {
             case NetCode.Set.cardQrCode:
                 CardItem cardItem = (CardItem) object;
-                addCard(cardItem);  //异步添加关注卡
+//                addCard(cardItem);  //异步添加关注卡
                 if ("1".equals(cardItem.getFocusStatus())) {  //用户已经关注，直接跳转转卡详情页面
                     jumpToCard(cardItem);
                 } else {  //用户未关注，跳转至领卡页面
@@ -418,31 +437,28 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 }
                 break;
             case NetCode.Card.myCardListRefresh:
+            case NetCode.Card2.getAnonymousList:
                 List<CardItem> cardItemsRefresh = (List<CardItem>) object;
                 refreshList(cardItemsRefresh);
-
-                break;
-            case NetCode.Card2.getAnonymousList:
-                List<CardItem> cardItemsAnonymousList = (List<CardItem>) object;
-                refreshList(cardItemsAnonymousList);
                 break;
             case NetCode.Card.deleteCard:
-                //列表删除后，即使刷新
-                mCardItems.remove(mPosition);
-                mAdapter.notifyItemRemoved(mPosition);
-                mAdapter.notifyItemRangeChanged(0, mCardItems.size() - 2);
-                mAdapter.notifyDataSetChanged();
-                break;
             case NetCode.Card.anonymousCancel:
-                if (mCardItems.size() == 0) {
+                if (mPosition >= mCardItems.size()){
                     return;
                 }
                 CacheUnits.getInstance().deleteMyCacheCardById(mCardItems.get(mPosition).getCardID());
                 //列表删除后，即使刷新
                 mCardItems.remove(mPosition);
                 mAdapter.notifyItemRemoved(mPosition);
-                mAdapter.notifyItemRangeChanged(0, mCardItems.size() - 2);
-                mAdapter.notifyDataSetChanged();
+                mAdapter.notifyItemRangeChanged(mPosition, mCardItems.size() - mPosition);
+
+                if (mCardItems.size() == 0) {
+                    mBinding.layoutNoCard.setVisibility(View.VISIBLE);
+                    mBinding.recyclerCardMain.setVisibility(View.GONE);
+                }else {
+                    mBinding.layoutNoCard.setVisibility(View.GONE);
+                    mBinding.recyclerCardMain.setVisibility(View.VISIBLE);
+                }
                 break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
@@ -497,7 +513,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
     public void onFailed(int what, Object object) {
         ViewUnits.getInstance().missLoading();
 
-        if (what == NetCode.Card.anonymousFocus || what == NetCode.Card.cardAttentionAdd) return;
+//        if (what == NetCode.Card.anonymousFocus || what == NetCode.Card.cardAttentionAdd) return;
 
         if (what == NetCode.Card2.checkCanOperate) { //卡片不能使用
             if (object.equals("网络错误!!")) {

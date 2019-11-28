@@ -137,7 +137,12 @@ public class RegisterSetPwdActivity extends BaseActivity implements AllViewInter
                 UserUnits.getInstance().setAllUserInfo(user);  //登录成功，缓存用户数据
                 mCardPrenInter.infoSync(NetCode.Card.infoSync, CacheUnits.getInstance().getMyCacheCardIds());
                 break;
+
             case NetCode.Card.infoSync:
+                mCardPrenInter.myCardList(NetCode.Card.myCardListRefresh, "", "1");
+                break;
+            case NetCode.Card.myCardListRefresh:
+            case NetCode.Card2.getAnonymousList:
                 ViewUnits.getInstance().missLoading();
                 mPersonalPrenInter.getPersonalInfo(NetCode.Personal.getPersonalInfo);  //获取用户信息
                 break;
@@ -160,7 +165,9 @@ public class RegisterSetPwdActivity extends BaseActivity implements AllViewInter
                 ViewUnits.getInstance().missLoading();
                 EventBus.getDefault().post("login_success");
                 if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //改标识表示从卡片页面跳转过来
-                    mListener.getLoginResultListener(mCallBack, "1");
+                    if (mListener !=null){
+                        mListener.getLoginResultListener(mCallBack, "1");
+                    }
                     finish();
                 } else {
                     Intent intent1 = new Intent(RegisterSetPwdActivity.this, MainActivity.class);  //跳转至首页

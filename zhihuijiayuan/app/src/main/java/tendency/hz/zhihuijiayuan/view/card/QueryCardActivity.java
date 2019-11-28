@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -50,10 +51,12 @@ import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.CacheUnits;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
 import tendency.hz.zhihuijiayuan.units.QrCodeUnits;
+import tendency.hz.zhihuijiayuan.units.ScreenUtils;
 import tendency.hz.zhihuijiayuan.units.SpeechUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
+import tendency.hz.zhihuijiayuan.widget.RotateXAnimation;
 
 import static tendency.hz.zhihuijiayuan.bean.base.Request.Permissions.REQUEST_RECORD_PERMISSIONS;
 
@@ -165,7 +168,8 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
             @Override
             public void onItemOnClick(View view, int postion) {
                 mCardItem = mList.get(postion);
-                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
+                jumpToCard(mCardItem);
+//                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mList.get(postion));
             }
 
             @Override
@@ -234,7 +238,8 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
 
         mHotSreachAdapter.setListener((view, postion) -> {
             mCardItem = mHotSreachLists.get(postion);
-            mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mHotSreachLists.get(postion));
+            jumpToCard(mCardItem);
+//            mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mHotSreachLists.get(postion));
         });
     }
 
@@ -306,6 +311,31 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         }
     }
 
+    /**
+     * rv入场动画
+     */
+    private void enterAnimation(){
+        mBinding.recyclerSreachResult.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+                        mBinding.recyclerSreachResult.getViewTreeObserver().removeOnPreDrawListener(this);
+                        for (int i = 0; i <  mBinding.recyclerSreachResult.getChildCount(); i++) {
+                            View v =  mBinding.recyclerSreachResult.getChildAt(i);
+
+                            RotateXAnimation rotateXAnimation = new RotateXAnimation(v.getWidth()/2,v.getHeight()/2);
+                            rotateXAnimation.setDuration(400);
+                            rotateXAnimation.setStartOffset(100*i);
+                            v.setAnimation(rotateXAnimation);
+
+                        }
+
+                        return true;
+                    }
+                });
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onSuccessed(int what, Object object) {
@@ -325,6 +355,7 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
                 mList.clear();
                 mList.addAll((List<CardItem>) object);
                 mAdapter.notifyDataSetChanged();
+                enterAnimation();
                 if (mList.size() == 0) {
                     mBinding.layoutNoSreachResult.setVisibility(View.VISIBLE);
                     mBinding.swipeRefresh.setVisibility(View.GONE);
@@ -335,10 +366,10 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 hideInput();
                 break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
                 if (BaseUnits.getInstance().isApkInstalled(this, appCardItem.getAndroidAppID())) {  //应用卡，先判断手机是否下载该app
@@ -385,16 +416,17 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
     @Override
     public void onFailed(int what, Object object) {
         ViewUnits.getInstance().missLoading();
+        ViewUnits.getInstance().showToast(object.toString());
         hideInput();
-        switch (what) {
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
-            default:
-                ViewUnits.getInstance().showToast(object.toString());
-                break;
-        }
+//        switch (what) {
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
+//            default:
+//                ViewUnits.getInstance().showToast(object.toString());
+//                break;
+//        }
     }
 
     @Override
@@ -403,12 +435,6 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
     }
 
-
-    @Override
-    public void finish() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        super.finish();
-    }
 
     @Override
     protected void onDestroy() {

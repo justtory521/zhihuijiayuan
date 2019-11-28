@@ -187,12 +187,13 @@ public class ChoiceFragment extends Fragment implements AllViewInter {
                 }
                 break;
             case NetCode.Card2.checkCanOperate:
-                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mCardItem);
-                break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
                 jumpToCard(mCardItem);
+//                mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mCardItem);
                 break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
                 if (BaseUnits.getInstance().isApkInstalled(getActivity(), appCardItem.getAndroidAppID())) {  //应用卡，先判断手机是否下载该app
@@ -253,10 +254,10 @@ public class ChoiceFragment extends Fragment implements AllViewInter {
                 }
 
                 break;
-            case NetCode.Card.anonymousFocus:
-            case NetCode.Card.cardAttentionAdd:
-                jumpToCard(mCardItem);
-                break;
+//            case NetCode.Card.anonymousFocus:
+//            case NetCode.Card.cardAttentionAdd:
+//                jumpToCard(mCardItem);
+//                break;
             default:
                 ViewUnits.getInstance().showToast(object.toString());
                 break;

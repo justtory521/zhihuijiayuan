@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -16,13 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.luck.picture.lib.PictureSelector;
-import com.luck.picture.lib.config.PictureConfig;
-import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.tools.PictureFileUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 
@@ -32,24 +24,21 @@ import butterknife.OnClick;
 import exocr.exocrengine.CaptureActivity;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.bean.IDCardBean;
-import tendency.hz.zhihuijiayuan.bean.base.App;
 import tendency.hz.zhihuijiayuan.bean.base.Field;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
-import tendency.hz.zhihuijiayuan.bean.base.What;
 import tendency.hz.zhihuijiayuan.inter.ValidateListener;
 import tendency.hz.zhihuijiayuan.presenter.SetPrenImpl;
 import tendency.hz.zhihuijiayuan.presenter.prenInter.SetPrenInter;
+import tendency.hz.zhihuijiayuan.units.Base64Utils;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.DateUtils;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
-import tendency.hz.zhihuijiayuan.units.PermissionUtils;
+import tendency.hz.zhihuijiayuan.units.ImageUtils;
 import tendency.hz.zhihuijiayuan.units.SPUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
-import tendency.hz.zhihuijiayuan.view.card.CardContentActivity;
 import tendency.hz.zhihuijiayuan.view.user.AgreementActivity;
-import tendency.hz.zhihuijiayuan.view.user.LoginActivity;
 import tendency.hz.zhihuijiayuan.view.user.PrivacyStatementActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 
@@ -82,9 +71,19 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
     @BindView(R.id.btn_send)
     CardView btnSend;
 
+    private String mRealName;//中文姓名
+    private String mCardID; //身份证号
+    private String mSex; //性别
+    private String mNation;//民族
+    private String mBirthday; //生日
+    private String mAddress; //地址
+    private String mIssue; //签发机关
+    private String mValidate; //有效期
+    private String mPhotoFace; //正面照片
+    private String mPhotoBack; //背面照片
 
-    private String mPhotoFace, mPhotoBack; //正面照片、背面照片
-    private String mStrName = "", mStrCardID = ""; //中文姓名、身份证号
+    private String mFrontPic;
+    private String mBackPic;
 
     private SetPrenInter mSetPrenInter;
 
@@ -116,7 +115,6 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
      */
     private void update() {
 
-
         if (FormatUtils.getInstance().isEmpty(mPhotoFace)) {
             ViewUnits.getInstance().showToast("身份证正面照片不可为空");
             return;
@@ -133,8 +131,10 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
         }
 
         ViewUnits.getInstance().showLoading(this, "请求中");
-        mSetPrenInter.validate(NetCode.Set.validate, mStrCardID, mStrName,
-                DateUtils.getDate(Field.DateType.year_month_day, System.currentTimeMillis()), null);
+
+        mSetPrenInter.uploadFrontIDCard(NetCode.Set.uploadFrontIDCard, Base64Utils.encodeDefault(ImageUtils.
+                getInstance().image2byte(mPhotoFace)));
+
     }
 
 
@@ -146,20 +146,20 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
             IDCardBean idCardBean = (IDCardBean) data.getSerializableExtra("id_card");
             if (idCardBean != null) {
                 if (idCardBean.getOrientation() == 1) {
-                    mStrName = idCardBean.getName();
-                    mStrCardID = idCardBean.getNumber();
+                    mRealName = idCardBean.getName();
+                    mCardID = idCardBean.getNumber();
                     mPhotoFace = idCardBean.getPath();
+                    mBirthday = idCardBean.getBirthday();
+                    mSex = idCardBean.getGender();
+                    mAddress = idCardBean.getAddress();
+                    mNation = idCardBean.getNation();
                     btnAddFace.setImageURI(Uri.fromFile(new File(idCardBean.getPath())));
 
-//                    value.put("gender", idCardBean.getGender());
-//                    value.put("address", idCardBean.getAddress());
-//                    value.put("IDNum", idCardBean.getNumber());
-//                    value.put("nation", idCardBean.getNation());
                 } else {
+                    mIssue = idCardBean.getPolice();
+                    mValidate = idCardBean.getDate();
                     mPhotoBack = idCardBean.getPath();
                     btnAddBack.setImageURI(Uri.fromFile(new File(idCardBean.getPath())));
-//                    value.put("issue", idCardBean.getPolice());
-//                    value.put("valid", idCardBean.getDate());
                 }
 
             }
@@ -178,16 +178,28 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
 
     @Override
     public void onSuccessed(int what, Object object) {
-        if (what == NetCode.Set.validate) {
-            ViewUnits.getInstance().showToast("提交成功");
-            ViewUnits.getInstance().missLoading();
-            SPUtils.getInstance().put(SPUtils.FILE_USER, SPUtils.realName, mStrName);
-            SPUtils.getInstance().put(SPUtils.FILE_USER, SPUtils.cardId, mStrCardID);
-            finish();
-            if (type == 1) {
-                mValidateListener.validate("200", "success", mStrCardID);
-            }
-
+        switch (what){
+            case NetCode.Set.uploadFrontIDCard:
+                mFrontPic = (String) object;
+                mSetPrenInter.uploadBackIDCard(NetCode.Set.uploadBackIDCard, Base64Utils.encodeDefault(ImageUtils.
+                        getInstance().image2byte(mPhotoBack)));
+                break;
+            case NetCode.Set.uploadBackIDCard:
+                mBackPic = (String) object;
+                mSetPrenInter.validate(NetCode.Set.validate, mCardID, mRealName,mSex.equals("男")?"1":"2"
+                        ,mNation,mBirthday,mAddress,mIssue,mValidate,mFrontPic,mBackPic,
+                        DateUtils.getDate(Field.DateType.standard_time_format, System.currentTimeMillis()));
+                break;
+            case NetCode.Set.validate:
+                ViewUnits.getInstance().showToast("提交成功");
+                ViewUnits.getInstance().missLoading();
+                SPUtils.getInstance().put(SPUtils.FILE_USER, SPUtils.realName, mRealName);
+                SPUtils.getInstance().put(SPUtils.FILE_USER, SPUtils.cardId, mCardID);
+                finish();
+                if (type == 1 && mValidateListener !=null) {
+                    mValidateListener.validate("200", "success", mCardID);
+                }
+                break;
         }
 
     }
@@ -198,7 +210,9 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
         ViewUnits.getInstance().missLoading();
 
         if (type == 1) {
-            mValidateListener.validate("500", "fail", object.toString());
+            if (mValidateListener !=null){
+                mValidateListener.validate("500", "fail", object.toString());
+            }
             finish();
         }
     }

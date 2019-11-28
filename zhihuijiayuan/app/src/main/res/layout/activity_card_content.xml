@@ -102,8 +102,8 @@
 
                 <LinearLayout
                     android:id="@+id/btn_delete"
-                    android:layout_width="83dp"
-                    android:layout_height="30dp"
+                    android:layout_width="84.5dp"
+                    android:layout_height="29dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="12dp"
@@ -113,9 +113,8 @@
 
                     <ImageView
                         android:id="@+id/iv_share_card"
-                        android:layout_width="41dp"
+                        android:layout_width="42dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:onClick="more"
                         android:scaleType="center"
                         android:src="@drawable/layer_share">
@@ -124,17 +123,15 @@
 
                     <View
                         android:id="@+id/view_line"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="7dp"
-                        android:layout_marginTop="7dp"
-                        android:background="@color/colorGrayLine02" />
+                        android:layout_width="0.5dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/gray_ea" />
 
                     <ImageView
                         android:id="@+id/iv_close_card"
-                        android:layout_width="41dp"
+                        android:layout_width="42dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:onClick="finish1"
                         android:scaleType="center"
                         android:src="@drawable/layer_close">
@@ -143,5 +140,44 @@
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_focus_card"
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:background="@drawable/bound_00_5db"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="60dp"
+            android:layout_marginLeft="8.5dp"
+            android:layout_marginRight="8.5dp"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="关注卡片后，可从首页快速进入噢～"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"/>
+
+            <TextView
+                android:id="@+id/tv_focus_card"
+                android:layout_width="60dp"
+                android:layout_height="27dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/bound_0d8_3dp"
+                android:text="关注"
+                android:gravity="center"
+                android:textColor="@android:color/white"/>
+
+            <ImageView
+                android:id="@+id/iv_close_focus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/ic_close_focus"/>
+        </RelativeLayout>
     </FrameLayout>
 </layout>

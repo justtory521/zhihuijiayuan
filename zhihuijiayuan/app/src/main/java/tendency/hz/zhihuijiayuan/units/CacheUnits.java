@@ -105,6 +105,25 @@ public class CacheUnits {
     }
 
     /**
+     * 将卡片缓存至我的卡片下
+     *
+     * @param cardItems
+     */
+    public void insertMyCacheCards(List<CardItem> cardItems) {
+        for (CardItem cardItem : cardItems) {
+            String sqlIns = "insert into " + Field.CacheMyCard.dbName + " values(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String[] arr = {
+                    cardItem.getCardID(), cardItem.getPoster(), cardItem.getLogo(), cardItem.getTitle(), cardItem.getSubTitle(), cardItem.getQRCodeImg(),
+                    cardItem.getEndTime(), cardItem.getAreaName(), cardItem.getCardUrl(), cardItem.getPosterUrl(), cardItem.getLogoUrl(),
+                    cardItem.getQRCodeUrl(), cardItem.getServiceTypeID(), String.valueOf(cardItem.getCardType())
+            };
+
+            DataDbHelper.getInstance().insert(sqlIns, arr);
+        }
+    }
+
+
+    /**
      * 检查该卡是否已被添加
      *
      * @param cardItem
@@ -117,14 +136,7 @@ public class CacheUnits {
         Cursor cursor = DataDbHelper.getInstance().get(sqlSel, new String[]{});
         Log.e(TAG, cardItem.getCardID());
         Log.e(TAG, cursor.getCount() + "");
-        if (cursor.getCount() != 0) {
-            while (cursor.moveToNext()) {
-                Log.e(TAG, "查询结果" + cursor.getString(1));
-            }
-            return false;
-        }
-
-        return true;
+        return cursor.getCount() != 0;
     }
 
     /**

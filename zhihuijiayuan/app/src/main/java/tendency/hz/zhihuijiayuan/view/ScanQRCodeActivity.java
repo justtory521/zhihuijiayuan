@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bertsir.zbar.CameraPreview;
+import cn.bertsir.zbar.Qr.ScanResult;
 import cn.bertsir.zbar.Qr.Symbol;
 import cn.bertsir.zbar.QrConfig;
 import cn.bertsir.zbar.ScanCallback;
@@ -65,6 +66,7 @@ public class ScanQRCodeActivity extends BaseActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Symbol.is_only_scan_center = true;
         Symbol.scanType = QrConfig.TYPE_ALL;
+        Symbol.doubleEngine =true;
 
 
         setContentView(R.layout.activity_scan_qrcode);
@@ -74,8 +76,6 @@ public class ScanQRCodeActivity extends BaseActivity {
 
     private void init() {
         mCallBack = super.getIntent().getStringExtra("callBack");
-
-        scanView.startScan();
 
 
         cbFlashLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -112,15 +112,15 @@ public class ScanQRCodeActivity extends BaseActivity {
             cpScan.setScanCallback(resultCallback);
             cpScan.start();
         }
-        scanView.onResume();
     }
 
 
     private ScanCallback resultCallback = new ScanCallback() {
         @Override
-        public void onScanResult(String result) {
-            scanResult(result);
+        public void onScanResult(ScanResult result) {
+            scanResult(result.getContent());
         }
+
     };
 
 
@@ -154,7 +154,6 @@ public class ScanQRCodeActivity extends BaseActivity {
         if (cpScan != null) {
             cpScan.stop();
         }
-        super.onPause();
     }
 
     @Override

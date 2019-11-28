@@ -53,6 +53,7 @@ import com.luck.picture.lib.tools.PictureFileUtils;
 import com.tencent.smtt.export.external.extension.interfaces.IX5WebViewExtension;
 import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
 import com.tencent.smtt.export.external.interfaces.JsResult;
+import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -190,6 +191,12 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         isRunning = true;
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        showFocusWindow();
+    }
 
     @Override
     protected void onPause() {
@@ -244,8 +251,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         webSetting.setUserAgentString(webSetting.getUserAgentString() + "-Android");  //设置用户代理
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webSetting.setSupportZoom(true);
-        webSetting.setBuiltInZoomControls(true);
+        webSetting.setSupportZoom(false);
+        webSetting.setBuiltInZoomControls(false);
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(true);
         webSetting.setLoadWithOverviewMode(true);
@@ -284,6 +291,9 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         if (mAnimationDrawable != null) {
                             mAnimationDrawable.stop();
                         }
+
+                        showFocusWindow();
+
                     }
                 }
             }
@@ -331,13 +341,44 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         startAnimation();
     }
 
+
+    /**
+     * 登录回调，隐藏关注栏
+     */
+    private void showFocusWindow(){
+        //卡片跳卡片，不弹出关注tip
+        LogUtils.log(mJumpType+","+CacheUnits.getInstance().singleCacheCard(mCardItem));
+        if (mJumpType != Request.StartActivityRspCode.CARD_CARDCONTENT_JUMP && !CacheUnits.getInstance().singleCacheCard(mCardItem)) {
+            mBinding.rlFocusCard.setVisibility(View.VISIBLE);
+            mBinding.ivCloseFocus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mBinding.rlFocusCard.setVisibility(View.GONE);
+                }
+            });
+            mBinding.tvFocusCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(UserUnits.getInstance().getToken())) {
+                        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, mCardItem);
+                    } else {
+                        mCardPrenInter.cardAttentionAdd(NetCode.Card.anonymousFocus, mCardItem);
+                    }
+                }
+            });
+        }else {
+            mBinding.rlFocusCard.setVisibility(View.GONE);
+        }
+
+    }
+
     @Override
     public void onBackPressed() {
         LogUtils.log("返回");
-        if (mWebView.canGoBack()){
+        if (mWebView.canGoBack()) {
             LogUtils.log("返回1");
             mWebView.goBack();
-        }else {
+        } else {
             super.onBackPressed();
         }
 
@@ -579,8 +620,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     public void onSuccessed(int what, Object object) {
         switch (what) {
             case NetCode.Card.anonymousCancel:
-                CacheUnits.getInstance().deleteMyCacheCardById(mCardItem.getCardID());
             case NetCode.Card.deleteCard:
+                CacheUnits.getInstance().deleteMyCacheCardById(mCardItem.getCardID());
                 ViewUnits.getInstance().missLoading();
                 ViewUnits.getInstance().showToast("取消成功");
                 mInstance = null;
@@ -633,6 +674,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         }
                         Intent intent = new Intent(CardContentActivity.this, CardContentActivity.class);
                         intent.putExtra("cardItem", cardItem);
+                        intent.putExtra("type", Request.StartActivityRspCode.CARD_CARDCONTENT_JUMP);
                         startActivity(intent);
                         mInstance = null;
                         finish();
@@ -660,6 +702,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         }
                         Intent intent = new Intent(CardContentActivity.this, CardContentActivity.class);
                         intent.putExtra("cardItem", cardItem);
+                        intent.putExtra("type", Request.StartActivityRspCode.CARD_CARDCONTENT_JUMP);
                         startActivity(intent);
                     }
                 });
@@ -696,6 +739,11 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         .setCallback(new MainUMShareListener())
                         .withMedia(umImage)
                         .open();
+                break;
+
+            case NetCode.Card.anonymousFocus:
+            case NetCode.Card.cardAttentionAdd:
+                mBinding.rlFocusCard.setVisibility(View.GONE);
                 break;
         }
     }
@@ -763,11 +811,11 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
      * 修改按钮样式
      */
     @Override
-    public void setBtnStyle(String btnColor, String solidColor, String strokeColor) {
+    public void setBtnStyle(String btnColor, String strokeColor) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //分享按钮
+                //分享按钮样式
                 GradientDrawable drawableLeft = new GradientDrawable();
                 drawableLeft.setShape(GradientDrawable.OVAL);
                 drawableLeft.setColor(Color.parseColor(btnColor));
@@ -808,7 +856,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 mBinding.ivShareCard.setImageDrawable(ld);
 
 
-                //关闭按钮
+                //关闭按钮样式
                 GradientDrawable drawableOut = new GradientDrawable();
                 drawableOut.setShape(GradientDrawable.OVAL);
                 drawableOut.setStroke(ViewUnits.getInstance().dp2px(CardContentActivity.this, 2), Color.parseColor(btnColor));
@@ -836,9 +884,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
                 //背景
                 GradientDrawable gd = new GradientDrawable();
-                gd.setColor(Color.parseColor(strokeColor));
-                gd.setCornerRadius(ViewUnits.getInstance().dp2px(CardContentActivity.this, 15));
-                gd.setStroke(ViewUnits.getInstance().dp2px(CardContentActivity.this, 1), Color.parseColor(solidColor));
+                gd.setCornerRadius(ViewUnits.getInstance().dp2px(CardContentActivity.this, 14.5f));
+                gd.setStroke(ViewUnits.getInstance().dp2px(CardContentActivity.this, 0.5f), Color.parseColor(strokeColor));
                 mBinding.btnDelete.setBackground(gd);
 
                 mBinding.viewLine.setBackgroundColor(Color.parseColor(strokeColor));
@@ -852,7 +899,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         isConnect = false;
 
-        if (countDownTimer !=null){
+        if (countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
         }
@@ -862,8 +909,9 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             LogUtils.log("开始断开蓝牙。。。。");
             disconnectOnclick = true;
             bleCommMethod.bleDisConnect();
-//            bleCommMethod.bleClose();
         }
+
+        onServiceProgressListener = null;
 
 
         mCardPrenInter = null;
@@ -967,7 +1015,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
             //图片压缩成功
             String img = PictureSelector.obtainMultipleResult(data).get(0).getCompressPath();
-            if (!TextUtils.isEmpty(img)) {
+            if (!TextUtils.isEmpty(img) && mListener != null) {
                 mListener.getImage(Base64Utils.encode(ImageUtils.getInstance().image2byte(img)));
             }
 
@@ -1104,7 +1152,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 //
 //        // 支持输入日志到文件
 //        String filePath = getExternalFilesDir(null) + "/LogUtils/logs/";
-//        com.apkfuns.logutils.LogUtils.getLog2FileConfig()
+//        com.apkfuns.logutils.LogUtils.getLog2FileConfig() onStartSuccess send message requirement success
 //                .configLog2FileEnable(true)  // 是否输出日志到文件
 //                .configLogFileEngine(new LogFileEngineFactory(this)) // 日志文件引擎实现
 //                .configLog2FilePath(filePath)  // 日志路径
@@ -1136,7 +1184,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             if (bleCommMethod.bleGetOperator() == BleCommStatus.OPER_TRAN) {
                 sendCallback(connectCallback, "200", "success", "连接成功");
             } else {
-//                bleCommMethod.bleClose();
+
                 isConnect = false;
                 disconnectOnclick = false;
                 LogUtils.log("扫描：" + this.blueToothName);
@@ -1145,8 +1193,10 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             }
         }
 
-    }
+        IntentFilter statusFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mStatusReceive, statusFilter);
 
+    }
 
 
     /**
@@ -1231,7 +1281,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             callBackResult(callback, "未知错误，联系管理员");
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -1243,9 +1292,30 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             LogUtils.log("手动断开");
             disconnectOnclick = true;
             bleCommMethod.bleDisConnect();
-//            bleCommMethod.bleClose();
         } else {
             sendCallback(disconnectCallback, "200", "success", "手动断开成功1");
+        }
+    }
+
+    private BroadcastReceiver mStatusReceive = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
+            if (blueState == BluetoothAdapter.STATE_ON) {
+                reOpenBluetooth();
+            }
+        }
+    };
+
+    /**
+     * 重新开启蓝牙，开始扫描
+     */
+    private void reOpenBluetooth() {
+        if (!disconnectOnclick && this.blueToothName != null) {
+            LogUtils.log("重新开启蓝牙");
+            isConnect = false;
+            bleCommMethod.bleRestart(this.blueToothName);
+            startTimer();
         }
     }
 
@@ -1265,16 +1335,16 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
     };
 
-
     OnBleCommProgressListener onServiceProgressListener = new OnBleCommProgressListener() {
         @Override
         public void onScanDevice(String device_addr, String device_name, byte adv_flag) {
-            Log.d(TAG, CardContentActivity.this+","+"onScanDevice " + device_addr + ' ' + device_name+","+isConnect+","+disconnectOnclick);
+            Log.d(TAG, device_addr + ' ' + device_name + "," + isConnect + "," + disconnectOnclick);
             if (blueToothAddress.toUpperCase().equals(device_addr.toUpperCase()) && blueToothName.equals(device_name)
-                    && !isConnect && !disconnectOnclick && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN) {
+                    && !isConnect && !disconnectOnclick && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN
+            && !CardContentActivity.this.isFinishing()) {
                 LogUtils.log("开始连接");
                 isConnect = true;
-                bleCommMethod.bleStartConnect(device_addr, new byte[]{1, 2, 3, 4, 5, 6}, 10000); /* 10000毫秒之後,连接超时*/
+                bleCommMethod.bleStartConnect(device_addr, new byte[]{1, 2, 3, 4, 5, 6}, 5000); /* 5000毫秒之後,连接超时*/
             }
         }
 
@@ -1288,7 +1358,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                     countDownTimer.cancel();
                     countDownTimer = null;
                 }
-            } else if (errorCode == BleCommStatus.BLE_ERROR_CONNECTION_TIMEOUT){
+            } else if (errorCode == BleCommStatus.BLE_ERROR_CONNECTION_TIMEOUT) {
                 LogUtils.log("超时重连");
                 isConnect = false;
                 disconnectOnclick = false;
@@ -1297,13 +1367,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         @Override
         public void onDisConnection(String device_address, int errorCode) {
-            LogUtils.log(CardContentActivity.this+",onDisConnection:" + errorCode);
+            LogUtils.log("onDisConnection:" + errorCode + "," + bleCommMethod.bleGetOperator());
 
             if (disconnectOnclick) {
                 sendCallback(disconnectCallback, "200", "success", "手动断开蓝牙2");
             } else {
                 isConnect = false;
-                if (connectCallback != null && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN) {
+                if (connectCallback != null) {
                     sendCallback(connectCallback, "500", "success", "蓝牙断开1");
                 }
             }
@@ -1412,6 +1482,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                     Log.w(TAG, "onStartFailure reserve operation  " + oper + ' ' + errorCode);
                     strErrorMsg = "onStartFailure reserve operation  " + oper + ' ' + errorCode;
                     break;
+            }
+        }
+
+        @Override
+        public void onStateChange(int i) {
+            if (i == BluetoothAdapter.STATE_ON) {
+                reOpenBluetooth();
             }
         }
 

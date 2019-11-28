@@ -57,7 +57,7 @@ public class PrivacyStatementActivity extends BaseActivity {
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         //启用地理定位
         webSettings.setGeolocationEnabled(true);
-        webSettings.setSupportZoom(true);
+        webSettings.setSupportZoom(false);
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         webSettings.setUseWideViewPort(true);
         webSettings.setMediaPlaybackRequiresUserGesture(true);

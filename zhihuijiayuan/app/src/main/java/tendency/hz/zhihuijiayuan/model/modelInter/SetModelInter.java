@@ -13,15 +13,34 @@ public interface SetModelInter {
      */
     void feedBack(int netCode, String title, String adviceContent, String imgList, String contact);
 
+
+    /**
+     * 身份证正面照片
+     *
+     * @param netCode
+     * @param img
+     */
+    void uploadFrontIDCard(int netCode, String img);
+
+
+
+    /**
+     * 身份证反面照片
+     *
+     * @param netCode
+     * @param img
+     */
+    void uploadBackIDCard(int netCode, String img);
     /**
      * 身份认证
      *
      * @param netCode
      * @param cardId
      * @param realName
-     * @param imgList
      */
-    void validate(int netCode, String cardId, String realName, String EditIDCardTime, String imgList);
+    void validate(int netCode, String cardId, String realName, String sex, String nation,
+                  String birthday, String address, String issue, String validate,
+                  String frontCardPic, String backCardPic, String editIDCardTime);
 
     /**
      * 解析二维码中的code

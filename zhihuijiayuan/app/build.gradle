@@ -213,7 +213,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 
     //扫码
-    implementation project(':zbar')
+//    implementation project(':zbar')
 
     //adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
@@ -252,4 +252,9 @@ dependencies {
 
 
     api 'com.tencent.tbs.tbssdk:sdk:43697'
+
+    //rv侧滑
+    implementation 'com.github.anzaizai:EasySwipeMenuLayout:1.1.4'
+    //zbar扫描
+    implementation 'cn.bertsir.zbarLibary:zbarlibary:1.4.1'
 }
