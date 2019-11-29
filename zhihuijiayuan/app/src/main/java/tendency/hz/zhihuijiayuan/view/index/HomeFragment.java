@@ -94,7 +94,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
     private LocationClient mLocationClient;
 
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -237,7 +236,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
                             !currentTime.equals(UserUnits.getInstance().getNotifyTime())
                             && !"中国移动".equals(UserUnits.getInstance().getSelectCity())) {
                         UserUnits.getInstance().setNotifyTime(currentTime);
-
+                        LogUtils.log("切换城市");
                         if (getActivity() == null || getActivity().isFinishing()) {
                             return;
                         }
@@ -250,9 +249,15 @@ public class HomeFragment extends Fragment implements AllViewInter {
 
                                     @Override
                                     public void rightBtnOnClick() {
-                                        mBinding.textCityName.setText(bdLocation.getCity());
-                                        UserUnits.getInstance().setSelectCity(bdLocation.getCity());
                                         ViewUnits.getInstance().missPopView();
+                                        UserUnits.getInstance().setSelectCity(bdLocation.getCity());
+                                        mBinding.textCityName.setText(bdLocation.getCity());
+                                        mCardPrenInter.getChoiceRecommendCard(NetCode.Card2.getChoiceRecommend);   //切换城市后，刷新数据
+                                        try {
+                                            mFragmentInteraction.process();
+                                        } catch (Exception ignored) {
+
+                                        }
                                     }
                                 });
                     }
@@ -260,7 +265,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
             }
         });
     }
-
 
 
     private class manyItemScrollListener extends RecyclerView.OnScrollListener {
@@ -413,7 +417,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         }
 
         if (requestCode == Request.Permissions.REQUEST_LOCATION_STATE && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-           initLocation();  //用户给了定位权限，进行定位
+            initLocation();  //用户给了定位权限，进行定位
         }
 
         if (requestCode == Request.Permissions.REQUEST_LOCATION_STATE && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
@@ -431,7 +435,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         if (mCardItems.size() == 0) {
             mBinding.layoutNoCard.setVisibility(View.VISIBLE);
             mBinding.recyclerCardMain.setVisibility(View.GONE);
-        }else {
+        } else {
             mBinding.layoutNoCard.setVisibility(View.GONE);
             mBinding.recyclerCardMain.setVisibility(View.VISIBLE);
         }
@@ -463,7 +467,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 break;
             case NetCode.Card.deleteCard:
             case NetCode.Card.anonymousCancel:
-                if (mPosition >= mCardItems.size()){
+                if (mPosition >= mCardItems.size()) {
                     return;
                 }
                 CacheUnits.getInstance().deleteMyCacheCardById(mCardItems.get(mPosition).getCardID());
@@ -475,7 +479,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 if (mCardItems.size() == 0) {
                     mBinding.layoutNoCard.setVisibility(View.VISIBLE);
                     mBinding.recyclerCardMain.setVisibility(View.GONE);
-                }else {
+                } else {
                     mBinding.layoutNoCard.setVisibility(View.GONE);
                     mBinding.recyclerCardMain.setVisibility(View.VISIBLE);
                 }
@@ -564,13 +568,14 @@ public class HomeFragment extends Fragment implements AllViewInter {
     @Override
     public void onDetach() {
         super.onDetach();
+        LogUtils.log("onDetach");
         mFragmentInteraction = null;
     }
 
 
     @Override
     public void onStop() {
-        if (mLocationClient !=null && mLocationClient.isStarted()){
+        if (mLocationClient != null && mLocationClient.isStarted()) {
             mLocationClient.stop();
             mLocationClient = null;
         }

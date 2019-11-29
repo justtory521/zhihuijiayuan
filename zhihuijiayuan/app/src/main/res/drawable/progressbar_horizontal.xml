@@ -5,7 +5,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="4dp" />
-            <solid android:color="@color/grayLine"/>
+            <solid android:color="@color/gray_b4"/>
         </shape>
     </item>
     <!-- 进度条 -->
@@ -13,7 +13,7 @@
         <clip>
             <shape>
                 <corners android:radius="4dp" />
-                <solid android:color="@color/blueText"/>
+                <solid android:color="@color/blue_597"/>
             </shape>
         </clip>
     </item>

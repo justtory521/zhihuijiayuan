@@ -425,8 +425,7 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
                 mAllPrenInter.onSuccess(what, cardItems2);
                 break;
             case NetCode.Card.cardAttentionAdd:
-                CacheUnits.getInstance().insertMyCacheCard(mCardItem);   //卡缓存至本地
-                mAllPrenInter.onSuccess(what, null);
+                mAllPrenInter.onSuccess(what, mCardItem);
                 break;
             case NetCode.Card.infoSync:
                 mAllPrenInter.onSuccess(what, null);
@@ -450,7 +449,7 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
                 mAllPrenInter.onSuccess(what, hisAndrPopCards);
                 break;
             case NetCode.Card.anonymousFocus:
-                CacheUnits.getInstance().insertMyCacheCard(mCardItem);   //匿名关注卡，需要把卡缓存至本地
+                mAllPrenInter.onSuccess(what, mCardItem);
             case NetCode.Card.anonymousCancel:
                 mAllPrenInter.onSuccess(what, null);
                 break;

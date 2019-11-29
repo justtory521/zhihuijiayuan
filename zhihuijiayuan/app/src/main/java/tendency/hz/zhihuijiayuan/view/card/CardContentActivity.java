@@ -402,10 +402,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
      * 初始化底部弹出框
      */
     private void showPopWindow() {
-        if (mDialogBottom != null) {
-            mDialogBottom.show();
-            return;
-        }
 
         mDialogBottom = new Dialog(this, R.style.ActionSheetDialogStyle);
 
@@ -416,6 +412,12 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         TextView mCancelForce = mBottomView.findViewById(R.id.btn_cancel_force);
         TextView mShare = mBottomView.findViewById(R.id.btn_share);
 
+
+        if (CacheUnits.getInstance().singleCacheCard(mCardItem)) {
+            mCancelForce.setVisibility(View.VISIBLE);
+        }else {
+            mCancelForce.setVisibility(View.GONE);
+        }
         //将布局设置给Dialog
         mDialogBottom.setContentView(mBottomView);
         //获取当前Activity所在的窗体
@@ -744,6 +746,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             case NetCode.Card.anonymousFocus:
             case NetCode.Card.cardAttentionAdd:
                 mBinding.rlFocusCard.setVisibility(View.GONE);
+                CacheUnits.getInstance().insertMyCacheCard(mCardItem);
                 break;
         }
     }

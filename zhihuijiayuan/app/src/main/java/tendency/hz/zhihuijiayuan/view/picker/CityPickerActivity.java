@@ -314,7 +314,7 @@ public class CityPickerActivity extends BaseActivity implements AllViewInter, Vi
             mBinding.includeSearch.ivSearchClear.setVisibility(View.GONE);
             mBinding.emptyView.setVisibility(View.GONE);
             mBinding.listviewSearchResult.setVisibility(View.GONE);
-        } else if (i == R.id.back) {
+        } else if (i == R.id.img_btn_back_comm) {
             finish();
         }
     }
