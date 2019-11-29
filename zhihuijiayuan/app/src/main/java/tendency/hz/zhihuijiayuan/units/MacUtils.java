@@ -108,10 +108,14 @@ public class MacUtils {
             MESSAGE.append(ex.getMessage() + "|");
             ex.printStackTrace();
         }
-        if (macSerial == null || "".equals(macSerial)) {
+        if ("".equals(macSerial)) {
             try {
-                return loadFileAsString("/sys/class/net/eth0/address")
-                        .toUpperCase().substring(0, 17);
+                String address = loadFileAsString("/sys/class/net/eth0/address");
+                if (!TextUtils.isEmpty(address) && address.length() >=17){
+                    return address.toUpperCase().substring(0, 17);
+                }else {
+                    macSerial = getAndroidVersion7MAC();
+                }
             } catch (Exception e) {
                 MESSAGE.append(e.getMessage() + "|");
                 e.printStackTrace();

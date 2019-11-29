@@ -31,6 +31,7 @@ import tendency.hz.zhihuijiayuan.presenter.prenInter.PersonalPrenInter;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.BluetoothUtils;
 import tendency.hz.zhihuijiayuan.units.CacheUnits;
+import tendency.hz.zhihuijiayuan.units.FragmentTabUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
@@ -48,18 +49,14 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
     //碎片list
     private List<Fragment> mListFragments = new ArrayList<>();
 
-    //碎片适配器
-    private MainFragmentPagerAdapter mAdapter = null;
 
     private boolean isQuit = false; //标记两次点击返回键退出APP
 
     private PersonalPrenInter mPersonalPreInter;
-    private HomeFragment mHomeFragment;
-    private ChoiceFragment mChoiceFragment;
-    private MessageFragment mMessageFragment;
-    private MeFragment mMeFragment;
     //微信订阅返回
     private boolean isWechatReap;
+    private ChoiceFragment mChoiceFragment;
+    private FragmentTabUtils mFragmentTabUtils;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,23 +65,14 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         EventBus.getDefault().register(this);
         mPersonalPreInter = new PersonalPrenImpl(this);
 
-        mHomeFragment = new HomeFragment();
-        mChoiceFragment = new ChoiceFragment();
-        mMessageFragment = new MessageFragment();
-        mMeFragment = new MeFragment();
-        mListFragments.add(mHomeFragment);
-        mListFragments.add(mChoiceFragment);
-        mListFragments.add(mMessageFragment);
-        mListFragments.add(mMeFragment);
         //初始化默认显示页面
-        initDefault();
+        initView();
 
-        //设置监听
-        setListener();
 
         new Handler().postDelayed(() -> BaseUnits.getInstance().checkOldPackage(MainActivity.this), 500);
         mBinding.bottomRbMessage.setBadgeOffX(-10);
         mBinding.bottomRbMessage.setBadgeOffY(10);
+
 
         if (getIntent().getIntExtra("type", 0) == Request.StartActivityRspCode.PUSH_TOMESSAGELIST_JUMP) {
             new Handler().postDelayed(() -> mBinding.bottomRbMessage.setChecked(true), 200);
@@ -133,39 +121,16 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+
+    private void initView() {
+        mChoiceFragment = new ChoiceFragment();
+        mListFragments.add(new HomeFragment());
+        mListFragments.add(mChoiceFragment);
+        mListFragments.add(new MessageFragment());
+        mListFragments.add(new MeFragment());
+        mFragmentTabUtils =  new FragmentTabUtils(getSupportFragmentManager(), mListFragments, R.id.fl_main, mBinding.bottomRgMenu);
     }
 
-    private void initDefault() {
-        mAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager(), mListFragments);
-        mBinding.viewpagerMain.setAdapter(mAdapter);
-        mBinding.viewpagerMain.setOffscreenPageLimit(5);
-    }
-
-    private void setListener() {
-        mBinding.bottomRgMenu.setOnCheckedChangeListener((radioGroup, i) -> {
-            switch (i) {
-                case R.id.bottom_rb_home:
-                    mBinding.viewpagerMain.setCurrentItem(0);
-                    break;
-                case R.id.bottom_rb_choice:
-                    mBinding.viewpagerMain.setCurrentItem(1);
-                    break;
-                case R.id.bottom_rb_message:
-                    mBinding.bottomRbMessage.setBadgeNumber(-1);  //去掉角标
-                    CacheUnits.getInstance().clearMessageNum();
-                    mBinding.viewpagerMain.setCurrentItem(2);
-                    break;
-                case R.id.bottom_rb_me:
-                    mBinding.viewpagerMain.setCurrentItem(3);
-                    break;
-            }
-
-            changeBtn(i);
-        });
-    }
 
     public void goAddCard(View view) {
         Intent intent = new Intent(this, SearchCardActivity.class);
@@ -174,37 +139,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
     }
 
     public void goMessageIndex(View view) {
-        changeBtn(R.id.bottom_rb_message);
-        mBinding.bottomRbMessage.setChecked(true);
-        mBinding.viewpagerMain.setCurrentItem(2);
-    }
-
-    /**
-     * 选择后改变按钮文本颜色
-     *
-     * @param checkedId
-     */
-    public void changeBtn(int checkedId) {
-        //重置所有字体颜色
-        mBinding.bottomRbHome.setTextColor(getResources().getColor(R.color.colorTextBlack));
-        mBinding.bottomRbChoice.setTextColor(getResources().getColor(R.color.colorTextBlack));
-        mBinding.bottomRbMessage.setTextColor(getResources().getColor(R.color.colorTextBlack));
-        mBinding.bottomRbMe.setTextColor(getResources().getColor(R.color.colorTextBlack));
-
-        switch (checkedId) {
-            case R.id.bottom_rb_home:
-                mBinding.bottomRbHome.setTextColor(getResources().getColor(R.color.colorAccent));
-                break;
-            case R.id.bottom_rb_choice:
-                mBinding.bottomRbChoice.setTextColor(getResources().getColor(R.color.colorAccent));
-                break;
-            case R.id.bottom_rb_message:
-                mBinding.bottomRbMessage.setTextColor(getResources().getColor(R.color.colorAccent));
-                break;
-            case R.id.bottom_rb_me:
-                mBinding.bottomRbMe.setTextColor(getResources().getColor(R.color.colorAccent));
-                break;
-        }
+        mFragmentTabUtils.setCurrentFragment(2);
     }
 
     /**

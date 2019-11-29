@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -15,7 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +24,11 @@ import android.view.animation.LayoutAnimationController;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.zhy.m.permission.MPermissions;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import cn.jpush.android.api.JPushInterface;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.adapter.MainCardRecyclerAdapter;
 import tendency.hz.zhihuijiayuan.adapter.holder.inter.HomeCardItemOnClickInter;
+import tendency.hz.zhihuijiayuan.application.MyApplication;
 import tendency.hz.zhihuijiayuan.bean.AppCardItem;
 import tendency.hz.zhihuijiayuan.bean.CardItem;
 import tendency.hz.zhihuijiayuan.bean.City;
@@ -56,7 +59,8 @@ import tendency.hz.zhihuijiayuan.units.CacheUnits;
 import tendency.hz.zhihuijiayuan.units.ConfigUnits;
 import tendency.hz.zhihuijiayuan.units.DateUtils;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
-import tendency.hz.zhihuijiayuan.units.LocationUntis;
+import tendency.hz.zhihuijiayuan.units.LocationUtils;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.UserUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.ScanQRCodeActivity;
@@ -65,7 +69,6 @@ import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
 import tendency.hz.zhihuijiayuan.view.picker.CityPickerActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.CradItemDecoration;
-import tendency.hz.zhihuijiayuan.widget.ItemTouchCallback;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -87,6 +90,11 @@ public class HomeFragment extends Fragment implements AllViewInter {
     private List<CardItem> mCardRecommend = new ArrayList<>();
     private List<String> mInfo = new ArrayList<>();
 
+    //声明LocationClient 对象
+    private LocationClient mLocationClient;
+
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,9 +113,9 @@ public class HomeFragment extends Fragment implements AllViewInter {
 //        helper.attachToRecyclerView( mBinding.recyclerCardMain);
 
 
-        setListener();
-
         checkLocationPermission();
+
+        setListener();
 
         return mBinding.getRoot();
     }
@@ -175,7 +183,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
         });
 
         mBinding.marqueeView.setOnItemClickListener((position, textView) -> {
-//            addCard(mCardRecommend.get(position));  //异步关注卡
             Intent intent = new Intent(getActivity(), CardContentActivity.class);
             intent.putExtra("cardItem", mCardRecommend.get(position));
             startActivity(intent);
@@ -185,60 +192,76 @@ public class HomeFragment extends Fragment implements AllViewInter {
 
         mBinding.btnGoTop.setOnClickListener(view -> mBinding.recyclerCardMain.smoothScrollToPosition(0));
 
-        LocationUntis.getInstance().setLocationListener(new BDAbstractLocationListener() {
+    }
+
+    /**
+     * 定位
+     */
+    private void initLocation() {
+        mLocationClient = new LocationClient(MyApplication.getInstance());
+
+        //声明AMapLocationClientOption对象
+        LocationClientOption mLocationOption = new LocationClientOption();
+        mLocationOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        mLocationOption.setCoorType("bd09ll");
+        mLocationOption.setIgnoreKillProcess(false);
+        mLocationOption.setScanSpan(0);
+        mLocationOption.setOpenGps(true);
+        mLocationOption.setIsNeedAddress(true);
+        mLocationClient.setLocOption(mLocationOption);
+        mLocationClient.start();
+
+        mLocationClient.registerLocationListener(new BDAbstractLocationListener() {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
+                if (bdLocation != null && !TextUtils.isEmpty(bdLocation.getCity())) {
+                    mLocationClient.stop();
+                    mLocationClient = null;
 
-                if (bdLocation == null) return;
+                    UserUnits.getInstance().setLocation(bdLocation.getCity());
 
-                if (FormatUtils.getInstance().isEmpty(bdLocation.getCity())) {
-                    return;
-                }
-
-
-                UserUnits.getInstance().setLocation(bdLocation.getCity());
-
-                if (FormatUtils.getInstance().isEmpty(UserUnits.getInstance().getSelectCity())) {
-                    UserUnits.getInstance().setSelectCity(bdLocation.getCity());
-                }
-
-                if (ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装
-                    ConfigUnits.getInstance().setFirstInstallStatus(false);
-                    mCardPrenInter.authFocusCard(NetCode.Card2.autoFocusCard);
-                }
-
-
-                mBinding.textCityName.setText(UserUnits.getInstance().getSelectCity());
-
-                LocationUntis.getInstance().stopLocation();
-
-                String currentTime = DateUtils.getDate(Field.DateType.year_month_day, System.currentTimeMillis());
-                if (!bdLocation.getCity().equals(UserUnits.getInstance().getSelectCity()) &&
-                        !currentTime.equals(UserUnits.getInstance().getNotifyTime())
-                        && !"中国移动".equals(UserUnits.getInstance().getSelectCity())) {
-                    UserUnits.getInstance().setNotifyTime(currentTime);
-
-                    if (getActivity() == null || getActivity().isFinishing()) {
-                        return;
+                    if (FormatUtils.getInstance().isEmpty(UserUnits.getInstance().getSelectCity())) {
+                        UserUnits.getInstance().setSelectCity(bdLocation.getCity());
                     }
-                    ViewUnits.getInstance().showPopWindow(getActivity(), getActivity().getWindow().peekDecorView()
-                            , "定位到您在" + bdLocation.getCity() + ",是否切换至该城市?", new PopWindowOnClickInter() {
-                                @Override
-                                public void leftBtnOnClick() {
-                                    ViewUnits.getInstance().missPopView();
-                                }
 
-                                @Override
-                                public void rightBtnOnClick() {
-                                    mBinding.textCityName.setText(bdLocation.getCity());
-                                    UserUnits.getInstance().setSelectCity(bdLocation.getCity());
-                                    ViewUnits.getInstance().missPopView();
-                                }
-                            });
+                    if (ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装
+                        ConfigUnits.getInstance().setFirstInstallStatus(false);
+                        mCardPrenInter.authFocusCard(NetCode.Card2.autoFocusCard);
+                    }
+
+
+                    mBinding.textCityName.setText(UserUnits.getInstance().getSelectCity());
+
+                    String currentTime = DateUtils.getDate(Field.DateType.year_month_day, System.currentTimeMillis());
+                    if (!bdLocation.getCity().equals(UserUnits.getInstance().getSelectCity()) &&
+                            !currentTime.equals(UserUnits.getInstance().getNotifyTime())
+                            && !"中国移动".equals(UserUnits.getInstance().getSelectCity())) {
+                        UserUnits.getInstance().setNotifyTime(currentTime);
+
+                        if (getActivity() == null || getActivity().isFinishing()) {
+                            return;
+                        }
+                        ViewUnits.getInstance().showPopWindow(getActivity(), getActivity().getWindow().peekDecorView()
+                                , "定位到您在" + bdLocation.getCity() + ",是否切换至该城市?", new PopWindowOnClickInter() {
+                                    @Override
+                                    public void leftBtnOnClick() {
+                                        ViewUnits.getInstance().missPopView();
+                                    }
+
+                                    @Override
+                                    public void rightBtnOnClick() {
+                                        mBinding.textCityName.setText(bdLocation.getCity());
+                                        UserUnits.getInstance().setSelectCity(bdLocation.getCity());
+                                        ViewUnits.getInstance().missPopView();
+                                    }
+                                });
+                    }
                 }
             }
         });
     }
+
+
 
     private class manyItemScrollListener extends RecyclerView.OnScrollListener {
         int mDistance = 0;
@@ -295,7 +318,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Request.Permissions.REQUEST_LOCATION_STATE);
             return false;
         } else { //有定位权限，进行定位
-            LocationUntis.getInstance().startLocation();
+            initLocation();
             return true;
         }
     }
@@ -344,9 +367,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
         }
     }
 
-//    private void addCard(CardItem cardItem) {
-//        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -393,7 +413,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         }
 
         if (requestCode == Request.Permissions.REQUEST_LOCATION_STATE && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            LocationUntis.getInstance().startLocation();  //用户给了定位权限，进行定位
+           initLocation();  //用户给了定位权限，进行定位
         }
 
         if (requestCode == Request.Permissions.REQUEST_LOCATION_STATE && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
@@ -513,8 +533,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
     public void onFailed(int what, Object object) {
         ViewUnits.getInstance().missLoading();
 
-//        if (what == NetCode.Card.anonymousFocus || what == NetCode.Card.cardAttentionAdd) return;
-
         if (what == NetCode.Card2.checkCanOperate) { //卡片不能使用
             if (object.equals("网络错误!!")) {
                 ViewUnits.getInstance().showToast(object.toString());
@@ -547,5 +565,15 @@ public class HomeFragment extends Fragment implements AllViewInter {
     public void onDetach() {
         super.onDetach();
         mFragmentInteraction = null;
+    }
+
+
+    @Override
+    public void onStop() {
+        if (mLocationClient !=null && mLocationClient.isStarted()){
+            mLocationClient.stop();
+            mLocationClient = null;
+        }
+        super.onStop();
     }
 }

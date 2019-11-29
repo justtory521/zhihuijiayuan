@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import tendency.hz.zhihuijiayuan.BuildConfig;
 import tendency.hz.zhihuijiayuan.MainActivity;
 import tendency.hz.zhihuijiayuan.R;
+import tendency.hz.zhihuijiayuan.application.MyApplication;
 import tendency.hz.zhihuijiayuan.bean.AppCardItem;
 import tendency.hz.zhihuijiayuan.bean.CardItem;
 import tendency.hz.zhihuijiayuan.bean.base.App;
@@ -71,9 +72,8 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
     private CardItem mCardItem;
 
     //声明LocationClient 对象
-    private LocationClient mLocationClient = null;
-    //声明AMapLocationClientOption对象
-    private LocationClientOption mLocationOption = null;
+    private LocationClient mLocationClient;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -199,7 +199,7 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
     }
 
     private void initLocation() {
-        mLocationClient = new LocationClient(this.getApplicationContext());
+        mLocationClient = new LocationClient(MyApplication.getInstance());
         mLocationClient.registerLocationListener(new BDAbstractLocationListener() {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
@@ -217,7 +217,7 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
 
             }
         });
-        mLocationOption = new LocationClientOption();
+        LocationClientOption mLocationOption = new LocationClientOption();
         mLocationOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
         mLocationOption.setCoorType("bd09ll");
         mLocationOption.setScanSpan(0);
@@ -394,6 +394,15 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (mLocationClient !=null && mLocationClient.isStarted()){
+            mLocationClient.stop();
+            mLocationClient = null;
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mSetPrenInter = null;
@@ -401,8 +410,6 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
         mBasePrenInter = null;
         mCode = null;
         mCardItem = null;
-        mLocationClient = null;
-        mLocationOption = null;
     }
 }
 

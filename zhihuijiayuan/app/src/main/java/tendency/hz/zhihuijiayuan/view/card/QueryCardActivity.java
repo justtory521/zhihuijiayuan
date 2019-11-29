@@ -326,7 +326,7 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
 
                             RotateXAnimation rotateXAnimation = new RotateXAnimation(v.getWidth()/2,v.getHeight()/2);
                             rotateXAnimation.setDuration(400);
-                            rotateXAnimation.setStartOffset(100*i);
+                            rotateXAnimation.setStartOffset(80*i);
                             v.setAnimation(rotateXAnimation);
 
                         }

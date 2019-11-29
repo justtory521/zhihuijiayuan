@@ -1,91 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <tendency.hz.zhihuijiayuan.widget.CustomViewPager
-            android:id="@+id/viewpager_main"
+        <FrameLayout
+            android:id="@+id/fl_main"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="10">
+            android:layout_weight="1">
+        </FrameLayout>
 
-        </tendency.hz.zhihuijiayuan.widget.CustomViewPager>
 
-        <android.support.v7.widget.CardView
+        <RadioGroup
+            android:id="@+id/bottom_rg_menu"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:cardElevation="5dp">
+            android:layout_height="50dp"
+            android:background="@color/colorWhite"
+            android:elevation="5dp"
+            android:orientation="horizontal">
 
-            <RadioGroup
-                android:id="@+id/bottom_rg_menu"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorWhite"
-                android:orientation="horizontal"
-                android:weightSum="4">
+            <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
+                android:id="@+id/bottom_rb_home"
+                style="@style/bottom_menu_rb"
+                android:drawableTop="@drawable/btn_home_selector"
+                android:text="首页">
 
-                <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
-                    android:id="@+id/bottom_rb_home"
-                    style="@style/bottom_menu_rb"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:drawableTop="@drawable/btn_home_selector"
-                    android:text="首页"
-                    android:gravity="center"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="12sp">
+            </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
 
-                </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
+            <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
+                android:id="@+id/bottom_rb_choice"
+                style="@style/bottom_menu_rb"
+                android:drawableTop="@drawable/btn_choice_selector"
+                android:text="精选">
 
-                <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
-                    android:id="@+id/bottom_rb_choice"
-                    style="@style/bottom_menu_rb"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/btn_choice_selector"
-                    android:text="精选"
-                    android:textColor="@color/colorTextBlack"
-                    android:textSize="12sp">
+            </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
 
-                </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
+            <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
+                android:id="@+id/bottom_rb_message"
+                style="@style/bottom_menu_rb"
+                android:drawableTop="@drawable/btn_message_selector"
+                android:text="消息">
 
-                <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
-                    android:id="@+id/bottom_rb_message"
-                    style="@style/bottom_menu_rb"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/btn_message_selector"
-                    android:text="消息"
-                    android:textColor="@color/colorTextBlack"
-                    android:textSize="12sp">
+            </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
 
-                </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
+            <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
+                android:id="@+id/bottom_rb_me"
+                style="@style/bottom_menu_rb"
+                android:drawableTop="@drawable/btn_me_selector"
+                android:text="我的">
 
-                <tendency.hz.zhihuijiayuan.widget.BadgeRadioButton
-                    android:id="@+id/bottom_rb_me"
-                    style="@style/bottom_menu_rb"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/btn_me_selector"
-                    android:text="我的"
-                    android:textColor="@color/colorTextBlack"
-                    android:textSize="12sp">
+            </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
 
-                </tendency.hz.zhihuijiayuan.widget.BadgeRadioButton>
-
-            </RadioGroup>
-        </android.support.v7.widget.CardView>
+        </RadioGroup>
 
     </LinearLayout>
-
 </layout>
+
+
+

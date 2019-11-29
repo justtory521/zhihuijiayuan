@@ -114,10 +114,10 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     private static final String TAG = "libin";
 
     //巡逻相关
-    private LocationClient mBaiduLocationClient;
+    public LocationClient mBaiduLocationClient;
 
     //定位相关
-    private LocationClient mBaiduLocationClient1;
+    public LocationClient mBaiduLocationClient1;
 
 
     private AndroidToJSCallBack mCallBack;
@@ -350,13 +350,12 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     public void getBaiduCoordinate(String callBack) {
         LogUtils.log(callBack);
 
-        mBaiduLocationClient1 = new LocationClient(CardContentActivity.getInstance());
+        mBaiduLocationClient1 = new LocationClient(MyApplication.getInstance());
 
         LocationClientOption mBaiduOption1 = new LocationClientOption();
 
         mBaiduOption1.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
         mBaiduOption1.setCoorType("bd09ll");
-
         mBaiduOption1.setIgnoreKillProcess(false);
         mBaiduOption1.setScanSpan(0);
 

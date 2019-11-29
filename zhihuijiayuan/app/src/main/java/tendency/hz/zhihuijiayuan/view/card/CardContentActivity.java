@@ -932,6 +932,16 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         androidtoJS.disconnectBluetooth();
         //结束加速器
         androidtoJS.stopAccelerate();
+
+        if (androidtoJS.mBaiduLocationClient !=null && androidtoJS.mBaiduLocationClient.isStarted()){
+            androidtoJS.mBaiduLocationClient.stop();
+            androidtoJS.mBaiduLocationClient = null;
+        }
+
+        if (androidtoJS.mBaiduLocationClient1 !=null && androidtoJS.mBaiduLocationClient1.isStarted()){
+            androidtoJS.mBaiduLocationClient1.stop();
+            androidtoJS.mBaiduLocationClient1 = null;
+        }
         //销毁webview
         destroyWebView();
         //清除图片选择器缓存
