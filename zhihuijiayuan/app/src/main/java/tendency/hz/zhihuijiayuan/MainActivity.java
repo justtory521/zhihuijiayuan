@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -115,7 +116,6 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
                             } else {
                                 ViewUnits.getInstance().showToast("当前手机未安装微信");
                             }
-
                         }
                     }).create().show();
         }
@@ -211,6 +211,16 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
             isWechatReap = true;
         }
     }
+
+    /**
+     * @param outState fragment重叠
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+    }
+
+
 
     @Override
     protected void onDestroy() {

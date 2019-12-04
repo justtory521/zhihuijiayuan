@@ -51,11 +51,9 @@ public class BaseActivity extends AppCompatActivity implements AllViewInter {
     }
 
 
-    
 
     /**
      * @return 字体大小固定
-     *
      */
     @Override
     public Resources getResources() {

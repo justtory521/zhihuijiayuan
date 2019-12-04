@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.bean.base.What;
 import tendency.hz.zhihuijiayuan.databinding.FragmentHomeBinding;
 import tendency.hz.zhihuijiayuan.inter.FragmentInteraction;
+import tendency.hz.zhihuijiayuan.inter.OnItemDragListener;
 import tendency.hz.zhihuijiayuan.inter.PopWindowOnClickInter;
 import tendency.hz.zhihuijiayuan.presenter.CardPrenImpl;
 import tendency.hz.zhihuijiayuan.presenter.SetPrenImpl;
@@ -69,13 +71,14 @@ import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
 import tendency.hz.zhihuijiayuan.view.picker.CityPickerActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.CradItemDecoration;
+import tendency.hz.zhihuijiayuan.widget.ItemTouchCallback;
 
 import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by JasonYao on 2018/11/14.
  */
-public class HomeFragment extends Fragment implements AllViewInter {
+public class HomeFragment extends Fragment implements AllViewInter, OnItemDragListener {
     private static final String TAG = "HomeFragment---";
     private FragmentHomeBinding mBinding;
     private CardPrenInter mCardPrenInter;
@@ -83,7 +86,6 @@ public class HomeFragment extends Fragment implements AllViewInter {
     private MainCardRecyclerAdapter mAdapter;
     private LinearLayoutManager mManager;
     private List<CardItem> mCardItems = new ArrayList<>();
-    private BaseItemDraggableAdapter<CardItem, BaseViewHolder> adapter;
     private int mPosition;  //操作条目
     private CardItem mCardItemOnClick;  //当前点击的卡片
     private FragmentInteraction mFragmentInteraction;
@@ -108,7 +110,7 @@ public class HomeFragment extends Fragment implements AllViewInter {
         mBinding.recyclerCardMain.addItemDecoration(new CradItemDecoration(ViewUnits.getInstance().dp2px(getActivity(), 6)));
         mBinding.recyclerCardMain.setLayoutManager(mManager);
         mBinding.recyclerCardMain.setAdapter(mAdapter);
-//        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter));
+//        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter,this));
 //        helper.attachToRecyclerView( mBinding.recyclerCardMain);
 
 
@@ -264,6 +266,11 @@ public class HomeFragment extends Fragment implements AllViewInter {
                 }
             }
         });
+    }
+
+    @Override
+    public void onDrag() {
+        LogUtils.log("onDrag");
     }
 
 

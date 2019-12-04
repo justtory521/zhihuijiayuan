@@ -57,8 +57,15 @@ public class SkipActivity extends BaseActivity implements AllViewInter {
         Uri uri = getIntent().getData();
         mCode = uri.getQueryParameter("code");
         mInvitationCode = uri.getQueryParameter("InvitationCode");
-        ViewUnits.getInstance().showLoading(this, "加载中");
-        mSetPrenInter.cardQrCode(NetCode.Set.cardQrCode, mCode);
+        if (!TextUtils.isEmpty(mCode)){
+            ViewUnits.getInstance().showLoading(this, "加载中");
+            mSetPrenInter.cardQrCode(NetCode.Set.cardQrCode, mCode);
+        }else {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
 
     /**
@@ -80,11 +87,6 @@ public class SkipActivity extends BaseActivity implements AllViewInter {
         }
     }
 
-//    private void addCard(CardItem cardItem) {
-//        ViewUnits.getInstance().showLoading(this, "加载中");
-//        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
-//    }
-
     @Override
     public void onSuccessed(int what, Object object) {
         ViewUnits.getInstance().missLoading();
@@ -98,11 +100,7 @@ public class SkipActivity extends BaseActivity implements AllViewInter {
                 }
 
                 jumpToCard(mCardItem);
-//                if ("1".equals(mCardItem.getFocusStatus())) {  //用户已经关注，直接跳转转卡详情页面
-//                    jumpToCard(mCardItem);
-//                } else {  //用户未关注，跳转至领卡页面
-//                    addCard(mCardItem);
-//                }
+
                 break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
@@ -118,10 +116,6 @@ public class SkipActivity extends BaseActivity implements AllViewInter {
                     BaseUnits.getInstance().loadApk(this, appCardItem.getAndroidDownUrl());
                 }
                 break;
-//            case NetCode.Card.anonymousFocus:
-//            case NetCode.Card.cardAttentionAdd:
-//                jumpToCard(mCardItem);
-//                break;
         }
     }
 
@@ -129,17 +123,6 @@ public class SkipActivity extends BaseActivity implements AllViewInter {
     public void onFailed(int what, Object object) {
         ViewUnits.getInstance().missLoading();
         ViewUnits.getInstance().showToast(object.toString());
-//        switch (what) {
-//            case NetCode.Card.anonymousFocus:
-//            case NetCode.Card.cardAttentionAdd:
-//                jumpToCard(mCardItem);
-//                break;
-//            default:
-//                Intent intent = new Intent(this, MainActivity.class);
-//                startActivity(intent);
-//                finish();
-//                break;
-//        }
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

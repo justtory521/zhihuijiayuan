@@ -5,9 +5,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
+
 import java.util.Collections;
 
 import tendency.hz.zhihuijiayuan.adapter.MainCardRecyclerAdapter;
+import tendency.hz.zhihuijiayuan.inter.OnItemDragListener;
 import tendency.hz.zhihuijiayuan.units.LogUtils;
 
 /**
@@ -17,11 +20,12 @@ import tendency.hz.zhihuijiayuan.units.LogUtils;
 public class ItemTouchCallback extends ItemTouchHelper.Callback {
 
 
-    MainCardRecyclerAdapter mAdapter;
+    private MainCardRecyclerAdapter mAdapter;
+    private OnItemDragListener mOnItemDragListener;
 
-    public ItemTouchCallback(MainCardRecyclerAdapter adapter) {
+    public ItemTouchCallback(MainCardRecyclerAdapter adapter,OnItemDragListener onItemDragListener) {
         mAdapter = adapter;
-
+        mOnItemDragListener = onItemDragListener;
     }
 
 
@@ -53,6 +57,7 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
             }
         }
         mAdapter.notifyItemMoved(fromPosition, toPosition);
+        LogUtils.log("onMove"+fromPosition+","+toPosition);
         return true;
     }
 
@@ -64,7 +69,8 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
     @Override
     public void onMoved(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, int fromPos, @NonNull RecyclerView.ViewHolder target, int toPos, int x, int y) {
         super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
-
+        LogUtils.log("onMoved"+fromPos+","+toPos);
+        mOnItemDragListener.onDrag();
     }
 
     @Override
