@@ -13,6 +13,15 @@ public class Message {
     public String CardName;
     public String CardLogoUrl;
     public boolean isChecked = false;
+    private int msgNum = 1;
+
+    public int getMsgNum() {
+        return msgNum;
+    }
+
+    public void setMsgNum(int msgNum) {
+        this.msgNum = msgNum;
+    }
 
     @Override
     public String toString() {

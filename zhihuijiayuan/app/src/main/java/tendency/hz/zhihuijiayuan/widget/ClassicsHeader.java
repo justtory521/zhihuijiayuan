@@ -69,7 +69,7 @@ public class ClassicsHeader extends LinearLayout implements RefreshHeader {
         switch (newState) {
             case None:
             case PullDownToRefresh:
-                mImageView.setImageResource(R.mipmap.layout_refresh_finish);
+                mImageView.setImageResource(R.mipmap.layout_refresh_begin);
                 break;
             case Refreshing:
                 mImageView.setImageResource(R.mipmap.layout_refresh_ing);

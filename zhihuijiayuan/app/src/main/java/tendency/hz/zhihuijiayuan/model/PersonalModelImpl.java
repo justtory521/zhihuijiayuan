@@ -1,5 +1,7 @@
 package tendency.hz.zhihuijiayuan.model;
 
+import android.content.ClipData;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -431,22 +433,37 @@ public class PersonalModelImpl extends AllModelInter implements PersonalModelInt
                 mAllPrenInter.onSuccess(what, null);
                 break;
             case NetCode.Personal.RefreshMessage:
-                JSONArray jsaMessageRef = ((JSONObject) object).getJSONArray("Data");
-                List<Message> messagesRef = mGson.fromJson(jsaMessageRef.toString(), new TypeToken<List<Message>>() {
-                }.getType());
-                if (messagesRef.size() == 0) ViewUnits.getInstance().showToast("暂无新消息");
-                Collections.reverse(messagesRef);
-                CacheUnits.getInstance().insertMessage(messagesRef);
-                mAllPrenInter.onSuccess(what, messagesRef);
+
+                try {
+                    JSONArray jsaMessageRef = ((JSONObject) object).getJSONArray("Data");
+                    List<Message> messagesRef = mGson.fromJson(jsaMessageRef.toString(), new TypeToken<List<Message>>() {
+                    }.getType());
+                    if (messagesRef.size() == 0) ViewUnits.getInstance().showToast("暂无新消息");
+                    Collections.reverse(messagesRef);
+                    CacheUnits.getInstance().insertMessage(messagesRef);
+                    mAllPrenInter.onSuccess(what, messagesRef.size());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ViewUnits.getInstance().showToast("暂无新消息");
+                    mAllPrenInter.onSuccess(what, 0);
+                }
+
                 break;
             case NetCode.Personal.getMessage:
                 if (object !=null){
-                    JSONArray jsaMessage = ((JSONObject) object).getJSONArray("Data");
-                    List<Message> messages = mGson.fromJson(jsaMessage.toString(), new TypeToken<List<Message>>() {
-                    }.getType());
-                    Collections.reverse(messages);
-                    CacheUnits.getInstance().insertMessage(messages);
-                    mAllPrenInter.onSuccess(what, messages);
+                    try {
+
+                        JSONArray jsaMessage = ((JSONObject) object).getJSONArray("Data");
+                        List<Message> messages = mGson.fromJson(jsaMessage.toString(), new TypeToken<List<Message>>() {
+                        }.getType());
+                        Collections.reverse(messages);
+                        CacheUnits.getInstance().insertMessage(messages);
+                        mAllPrenInter.onSuccess(what, messages.size());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        mAllPrenInter.onSuccess(what, 0);
+                    }
+
                 }
 
                 break;

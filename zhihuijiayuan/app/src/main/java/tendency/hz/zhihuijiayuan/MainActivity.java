@@ -40,6 +40,7 @@ import tendency.hz.zhihuijiayuan.view.index.ChoiceFragment;
 import tendency.hz.zhihuijiayuan.view.index.HomeFragment;
 import tendency.hz.zhihuijiayuan.view.index.MeFragment;
 import tendency.hz.zhihuijiayuan.view.index.MessageFragment;
+import tendency.hz.zhihuijiayuan.view.index.NewMessageFragment;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -173,8 +174,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
     public void onSuccessed(int what, Object object) {
         switch (what) {
             case NetCode.Personal.getMessage:
-                List<Message> list = (List<Message>) object;
-                CacheUnits.getInstance().setMessageNum(list.size());
+                CacheUnits.getInstance().setMessageNum((Integer) object);
                 mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getDisplayMessageNum());
                 break;
         }
