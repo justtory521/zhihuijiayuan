@@ -540,6 +540,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".view.user.PrivacyStatementActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".view.index.MessageDetailActivity"
+            android:screenOrientation="portrait"/>
 
 
         <!--蓝牙通讯-->

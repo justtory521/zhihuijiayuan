@@ -195,7 +195,6 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 if (!isLoading) {
                     mAdapter.setHasMore(true);
                     mAdapter.notifyDataSetChanged();
-                    enterAnimation();
                     isLoading = true;
                     mPage++;
                     new Handler().postDelayed(() -> mCardPrenInter.getChoiceSreach(NetCode.Card.findListLoad, mThemeVal, "", mPage + ""), 100);
@@ -243,7 +242,6 @@ public class SearchCardActivity extends BaseActivity implements AllViewInter {
                 }
 
                 mAdapter.notifyDataSetChanged();
-                enterAnimation();
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 break;
 //            case NetCode.Card.anonymousFocus:
