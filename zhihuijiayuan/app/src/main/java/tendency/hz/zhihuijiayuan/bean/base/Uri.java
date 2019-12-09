@@ -107,7 +107,7 @@ public class Uri {
         public static final String FINDCARDLIST = URL + "/api/CardManage/CardDiscover"; //发现页面卡片列表
         public static final String MYCARDLIST = URL + "/api/CardAttention/List"; //个人卡片列表
         public static final String MYCARDLISTANONYMOUS = URL + "/api/CardAttention/AnonymousList"; //个人卡列表匿名状态
-        public static final String CARD_SORT = URL + "/api/CardManage/CardSort";//卡片排序
+        public static final String CARD_SORT = URL + "/api/CardAttention/CardSort";//卡片排序
         public static final String CARDATTENTIONADD = URL + "/api/CardAttention/AddFocus"; //个人卡片添加
         public static final String INFOSYNC = URL + "/api/InfoSync"; //信息同步
         public static final String PREVIEWCARD = URL + "/api/CardManage/Preview"; //卡片预览接口/api/CardClickVolume/Add
