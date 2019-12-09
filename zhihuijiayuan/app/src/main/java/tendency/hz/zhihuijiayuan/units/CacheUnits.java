@@ -325,8 +325,9 @@ public class CacheUnits {
     public List<Message> getMessageByCardId(String cardId) {
         List<Message> messageList = new ArrayList<>();
         Cursor cursor = DataDbHelper.getInstance().get("select * from " + Field.Message.dbName + " where "
-                + Field.Message.message_CardID + "='" + cardId + "'", new String[]{});
+                + Field.Message.message_CardID + "='" + cardId + "' order by _id desc", new String[]{});
         if (cursor.getCount() <= 0) {
+            return messageList;
         } else {
             while (cursor.moveToNext()) {
                 Message message = new Message();

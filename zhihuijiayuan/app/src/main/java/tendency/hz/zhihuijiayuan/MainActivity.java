@@ -133,6 +133,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         mListFragments.add(new NewMessageFragment());
         mListFragments.add(new MeFragment());
         mFragmentTabUtils =  new FragmentTabUtils(getSupportFragmentManager(), mListFragments, R.id.fl_main, mBinding.bottomRgMenu);
+
     }
 
 
