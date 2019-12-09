@@ -103,6 +103,7 @@ public class NetCode {
         public static final int getRecommendCard = 0x30e; //获取推荐卡
         public static final int getAppCardInfo = 0x30f; //获取应用卡信息
         public static final int openOtherCard = 0x310; //卡片预览接口
+        public static final int sortCard = 0x311; //卡片排序接口
     }
 
     /**

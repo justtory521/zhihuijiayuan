@@ -271,6 +271,13 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
     @Override
     public void onDrag() {
         LogUtils.log("onDrag");
+
+        StringBuilder sb= new StringBuilder();
+        for (CardItem mCardItem : mCardItems) {
+            sb.append(mCardItem.getCardID()).append(",");
+        }
+
+        mCardPrenInter.sortCard(NetCode.Card.sortCard,sb.substring(0,sb.length()-1));
     }
 
 

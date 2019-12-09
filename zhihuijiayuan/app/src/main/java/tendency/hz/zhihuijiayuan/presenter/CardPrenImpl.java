@@ -47,6 +47,11 @@ public class CardPrenImpl implements CardPrenInter, AllPrenInter {
     }
 
     @Override
+    public void sortCard(int netCode, String cardIds) {
+        mCardModelInter.sortCard(NetCode.Card.sortCard, cardIds);
+    }
+
+    @Override
     public void cardAttentionAdd(int netCode, Object cardItem) {
         if (FormatUtils.getInstance().isEmpty(UserUnits.getInstance().getToken())) { //token为空，标识用户为匿名登录
             mCardModelInter.anonymousFocus(NetCode.Card.anonymousFocus, cardItem);  //匿名用户，则执行匿名用户关注卡

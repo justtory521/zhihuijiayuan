@@ -27,6 +27,14 @@ public interface CardPrenInter {
     void myCardList(int netCode, String serviceTypeID, String pageIndex);
 
     /**
+     * 卡片排序
+     *
+     * @param netCode
+     * @param cardIds
+     */
+    void sortCard(int netCode, String cardIds);
+
+    /**
      * 个人卡片添加
      *
      * @param netCode

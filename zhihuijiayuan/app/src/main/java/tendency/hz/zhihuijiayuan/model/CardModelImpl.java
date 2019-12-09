@@ -82,6 +82,19 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
     }
 
     @Override
+    public void sortCard(int netCode, String cardIds) {
+        if (netCode != NetCode.Card.sortCard) {
+            return;
+        }
+
+        List<NoHttpUtil.Param> params = new ArrayList<>();
+        params.add(new NoHttpUtil.Param("ClientID", BaseUnits.getInstance().getPhoneKey()));
+        params.add(new NoHttpUtil.Param("Order", cardIds));
+
+        NoHttpUtil.post(netCode, Uri.Card.CARD_SORT, onResponseListener, params);
+    }
+
+    @Override
     public void cardAttentionAdd(int netCode, Object object) {
         if (netCode != NetCode.Card.cardAttentionAdd) {
             return;
@@ -424,6 +437,8 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
                 CacheUnits.getInstance().deleteMyCacheCard();
                 CacheUnits.getInstance().insertMyCacheCards(cardItems2);
                 mAllPrenInter.onSuccess(what, cardItems2);
+                break;
+            case NetCode.Card.sortCard:
                 break;
             case NetCode.Card.cardAttentionAdd:
                 mAllPrenInter.onSuccess(what, mCardItem);
