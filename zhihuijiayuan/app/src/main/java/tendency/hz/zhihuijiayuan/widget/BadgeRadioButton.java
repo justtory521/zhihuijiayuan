@@ -16,6 +16,10 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
+
+import tendency.hz.zhihuijiayuan.units.LogUtils;
+
 /**
  * Created by JasonYao on 2018/11/21.
  */
@@ -201,15 +205,14 @@ public class BadgeRadioButton extends DrawableCenterRadioButton {
      * @param badgeNumber 标记数字
      */
     public BadgeRadioButton setBadgeNumber(int badgeNumber) {
+        LogUtils.log("消息："+badgeNumber);
         mBadgeNumber = badgeNumber;
-        if (mBadgeNumber < 0) {
+        if (mBadgeNumber <= 0) {
             mBadgeText = null;
         } else if (mBadgeNumber > 99) {
             mBadgeText = mBadgeExact ? String.valueOf(mBadgeNumber) : "99+";
-        } else if (mBadgeNumber > 0) {
-            mBadgeText = String.valueOf(mBadgeNumber);
         } else {
-            mBadgeText = "";
+            mBadgeText = String.valueOf(mBadgeNumber);
         }
         return invalidateLayout();
     }

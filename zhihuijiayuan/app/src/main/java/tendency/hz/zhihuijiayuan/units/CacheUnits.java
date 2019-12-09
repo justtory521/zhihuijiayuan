@@ -3,6 +3,8 @@ package tendency.hz.zhihuijiayuan.units;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -245,10 +247,10 @@ public class CacheUnits {
      */
     public void insertMessage(List<Message> messages) {
         for (Message message : messages) {
-            String sqlIns = "insert into " + Field.Message.dbName + " values(null,?,?,?,?,?,?,?)";
-            String[] arr = {
-                    message.getContent(), message.getDateTime(), message.getUrl(), message.getCardUrl(),
-                    message.getCardID(), message.getCardName(), message.getCardLogoUrl()
+            String sqlIns = "insert into " + Field.Message.dbName + " values(null,?,?,?,?,?,?,?,?)";
+            Object[] arr = {
+                    message.getContent(), message.getDateTime(), message.getUrl(), message.getCardID(),
+                    message.getCardName(), message.getCardLogoUrl(), message.getCardUrl(), 0
             };
 
             DataDbHelper.getInstance().insert(sqlIns, arr);
@@ -264,6 +266,7 @@ public class CacheUnits {
         List<Message> messageList = new ArrayList<>();
         Cursor cursor = DataDbHelper.getInstance().get("select * from " + Field.Message.dbName + " order by _id desc", new String[]{});
         if (cursor.getCount() <= 0) {
+            return messageList;
         } else {
             while (cursor.moveToNext()) {
                 Message message = new Message();
@@ -271,16 +274,110 @@ public class CacheUnits {
                 message.setContent(cursor.getString(1));
                 message.setDateTime(cursor.getString(2));
                 message.setUrl(cursor.getString(3));
-                message.setCardUrl(cursor.getString(4));
-                message.setCardID(cursor.getString(5));
-                message.setCardName(cursor.getString(6));
-                message.setCardLogoUrl(cursor.getString(7));
+                message.setCardID(cursor.getString(4));
+                message.setCardName(cursor.getString(5));
+                message.setCardLogoUrl(cursor.getString(6));
+                message.setCardUrl(cursor.getString(7));
+                message.setStatus(cursor.getInt(8));
                 messageList.add(message);
             }
         }
 
         return messageList;
     }
+
+    /**
+     * 按照cardId分组获取Message，取最新一条
+     *
+     * @return
+     */
+    public List<Message> getMessageGroupByCardId() {
+        List<Message> messageList = new ArrayList<>();
+        Cursor cursor = DataDbHelper.getInstance().get("select * from " + Field.Message.dbName
+                + " group by " + Field.Message.message_CardID + " order by " +
+                Field.Message.message_CardID + " = '0' desc , _id desc", new String[]{});
+        if (cursor.getCount() <= 0) {
+            return messageList;
+        } else {
+            while (cursor.moveToNext()) {
+                Message message = new Message();
+                message.setId(cursor.getString(0));
+                message.setContent(cursor.getString(1));
+                message.setDateTime(cursor.getString(2));
+                message.setUrl(cursor.getString(3));
+                message.setCardID(cursor.getString(4));
+                message.setCardName(cursor.getString(5));
+                message.setCardLogoUrl(cursor.getString(6));
+                message.setCardUrl(cursor.getString(7));
+                message.setStatus(cursor.getInt(8));
+                messageList.add(message);
+            }
+        }
+
+        return messageList;
+    }
+
+    /**
+     * 按照cardId分组获取Message
+     *
+     * @return
+     */
+    public List<Message> getMessageByCardId(String cardId) {
+        List<Message> messageList = new ArrayList<>();
+        Cursor cursor = DataDbHelper.getInstance().get("select * from " + Field.Message.dbName + " where "
+                + Field.Message.message_CardID + "='" + cardId + "'", new String[]{});
+        if (cursor.getCount() <= 0) {
+        } else {
+            while (cursor.moveToNext()) {
+                Message message = new Message();
+                message.setId(cursor.getString(0));
+                message.setContent(cursor.getString(1));
+                message.setDateTime(cursor.getString(2));
+                message.setUrl(cursor.getString(3));
+                message.setCardID(cursor.getString(4));
+                message.setCardName(cursor.getString(5));
+                message.setCardLogoUrl(cursor.getString(6));
+                message.setCardUrl(cursor.getString(7));
+                message.setStatus(cursor.getInt(8));
+                messageList.add(message);
+            }
+        }
+
+        return messageList;
+    }
+
+    /**
+     * @param cardId
+     * @return 获取分组未读取消息数量
+     */
+    public int getUnreadCountsByCardId(String cardId) {
+
+        int count = DataDbHelper.getInstance().get("select * from " + Field.Message.dbName + " where "
+                + Field.Message.message_CardID + "='" + cardId + "' and " + Field.Message.message_status + "='0'", new String[]{}).getCount();
+        LogUtils.log("分组未读消息数量：" + count);
+        return count;
+    }
+
+    /**
+     * @return 获取所有未读取消息数量
+     */
+    public int getUnreadCounts() {
+
+        int count = DataDbHelper.getInstance().get("select * from " + Field.Message.dbName +
+                " where " + Field.Message.message_status + "='0'", new String[]{}).getCount();
+        LogUtils.log("未读消息数量：" + count);
+        return count;
+    }
+
+    /**
+     * @return 批量标记消息已读
+     */
+    public void markAsRead(String cardId) {
+
+        DataDbHelper.getInstance().insert("update " + Field.Message.dbName +
+                " set " + Field.Message.message_status + "='1'" + " where " + Field.Message.message_CardID + "='" + cardId + "'", new String[]{});
+    }
+
 
     /**
      * 清除Message

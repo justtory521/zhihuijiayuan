@@ -110,8 +110,8 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
         mBinding.recyclerCardMain.addItemDecoration(new CradItemDecoration(ViewUnits.getInstance().dp2px(getActivity(), 6)));
         mBinding.recyclerCardMain.setLayoutManager(mManager);
         mBinding.recyclerCardMain.setAdapter(mAdapter);
-//        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter,this));
-//        helper.attachToRecyclerView( mBinding.recyclerCardMain);
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter,this));
+        helper.attachToRecyclerView( mBinding.recyclerCardMain);
 
 
         checkLocationPermission();

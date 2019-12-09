@@ -67,6 +67,10 @@ public class DataDbHelper extends SQLiteOpenHelper {
                 case 4:
                     sqLiteDatabase.execSQL(createDownload);
                     break;
+                case 5:
+                    String sql1 = "alter table " + Field.Message.dbName + " add column " + Field.Message.message_status + " integer";
+                    sqLiteDatabase.execSQL(sql1);
+                    break;
                 default:
                     break;
             }

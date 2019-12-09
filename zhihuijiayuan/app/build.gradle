@@ -188,9 +188,9 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.1'
 
     //zxing
-    implementation 'cn.bingoogolapple:bga-qrcode-zxing:1.3.6'
-    implementation 'cn.bingoogolapple:bga-baseadapter:1.2.9@aar'
-    implementation 'cn.bingoogolapple:bga-flowlayout:1.0.0@aar'
+//    implementation 'cn.bingoogolapple:bga-qrcode-zxing:1.3.6'
+//    implementation 'cn.bingoogolapple:bga-baseadapter:1.2.9@aar'
+//    implementation 'cn.bingoogolapple:bga-flowlayout:1.0.0@aar'
 
     //蓝牙通讯
 

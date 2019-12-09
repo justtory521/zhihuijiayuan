@@ -49,11 +49,9 @@ public class FragmentTabUtils implements RadioGroup.OnCheckedChangeListener {
             if (rBtn.getId() == checkedId) {
                 switchFragment(i);
             }
-            if (checkedId == R.id.bottom_rb_message){
-                rBtn.setBadgeNumber(-1);  //去掉角标
-                CacheUnits.getInstance().clearMessageNum();
-            }
         }
+
+
     }
 
     /**

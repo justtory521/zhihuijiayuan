@@ -114,6 +114,7 @@ public class Field {
         public static final String message_CardID = "CardID"; //消息CardID
         public static final String message_CardName = "CardName"; //消息CardName
         public static final String message_CardLogoUrl = "CardLogoUrl";  //消息LogoUrl
+        public static final String message_status = "status";  //消息状态
     }
 
     public static final class Address {

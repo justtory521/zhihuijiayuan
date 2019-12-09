@@ -40,7 +40,7 @@ public class App {
      */
     public static class DB {
         public static final int firstVersion = 1; //第一个数据库版本号
-        public static final int version = 5;  //数据库版本号
+        public static final int version = 6;  //数据库版本号
         public static final String dbName = "db_data.db";  //数据库名称
     }
 

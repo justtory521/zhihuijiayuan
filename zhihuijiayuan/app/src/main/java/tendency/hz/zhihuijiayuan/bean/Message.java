@@ -4,23 +4,23 @@ package tendency.hz.zhihuijiayuan.bean;
  * Created by JasonYao on 2018/11/19.
  */
 public class Message {
-    public String id;
-    public String Content;
-    public String DateTime;
-    public String Url;
-    public String CardUrl;
-    public String CardID;
-    public String CardName;
-    public String CardLogoUrl;
-    public boolean isChecked = false;
-    private int msgNum = 1;
+    private String id;
+    private String Content;
+    private String DateTime;
+    private String Url;
+    private String CardUrl;
+    private String CardID;
+    private String CardName;
+    private String CardLogoUrl;
+    private boolean isChecked = false;
+    private int status = 0;
 
-    public int getMsgNum() {
-        return msgNum;
+    public int getStatus() {
+        return status;
     }
 
-    public void setMsgNum(int msgNum) {
-        this.msgNum = msgNum;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override

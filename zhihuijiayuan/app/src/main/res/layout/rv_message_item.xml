@@ -70,7 +70,7 @@
             android:gravity="center"
             android:background="@drawable/circle_red"
             android:layout_marginLeft="12dp"
-            android:visibility="visible"/>
+            android:visibility="gone"/>
 
     </LinearLayout>
     

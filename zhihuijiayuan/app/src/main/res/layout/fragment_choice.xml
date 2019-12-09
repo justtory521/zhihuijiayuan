@@ -17,7 +17,7 @@
         <LinearLayout
             android:id="@+id/layout_top"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:background="@color/colorPrimary"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -46,8 +46,7 @@
                     android:layout_height="wrap_content"
                     android:text="精选"
                     android:textColor="@color/colorWhite"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textSize="17sp" />
 
             </LinearLayout>
 

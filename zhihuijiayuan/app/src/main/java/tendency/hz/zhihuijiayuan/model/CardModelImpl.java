@@ -76,6 +76,7 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
         params.add(new NoHttpUtil.Param("ServiceTypeID", serviceTypeID));
         params.add(new NoHttpUtil.Param("PageIndex", pageIndex));
         params.add(new NoHttpUtil.Param("PageSize", What.PAGE_SIZE));
+        params.add(new NoHttpUtil.Param("ClientID", BaseUnits.getInstance().getPhoneKey()));
 
         NoHttpUtil.get(netCode, Uri.Card.MYCARDLIST, onResponseListener, params);
     }

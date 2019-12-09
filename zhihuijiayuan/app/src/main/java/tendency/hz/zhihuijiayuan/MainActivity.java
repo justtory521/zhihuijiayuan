@@ -1,5 +1,6 @@
 package tendency.hz.zhihuijiayuan;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -120,6 +121,8 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
                         }
                     }).create().show();
         }
+
+        mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getUnreadCounts());
     }
 
 
@@ -127,7 +130,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         mChoiceFragment = new ChoiceFragment();
         mListFragments.add(new HomeFragment());
         mListFragments.add(mChoiceFragment);
-        mListFragments.add(new MessageFragment());
+        mListFragments.add(new NewMessageFragment());
         mListFragments.add(new MeFragment());
         mFragmentTabUtils =  new FragmentTabUtils(getSupportFragmentManager(), mListFragments, R.id.fl_main, mBinding.bottomRgMenu);
     }
@@ -175,7 +178,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         switch (what) {
             case NetCode.Personal.getMessage:
                 CacheUnits.getInstance().setMessageNum((Integer) object);
-                mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getDisplayMessageNum());
+                mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getUnreadCounts());
                 break;
         }
     }
@@ -184,7 +187,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
     public void onFailed(int what, Object object) {
         switch (what) {
             case NetCode.Personal.getMessage:
-                mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getDisplayMessageNum());
+                mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getUnreadCounts());
                 break;
         }
     }
@@ -196,7 +199,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
 
     @Override
     public void clearMessage() {
-        mBinding.bottomRbMessage.setBadgeNumber(-1);
+        mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getUnreadCounts());
     }
 
 
@@ -215,6 +218,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
     /**
      * @param outState fragment重叠
      */
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 //        super.onSaveInstanceState(outState);
