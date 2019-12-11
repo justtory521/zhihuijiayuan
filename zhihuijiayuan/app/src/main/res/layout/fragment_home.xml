@@ -77,26 +77,28 @@
                     <ImageView
                         android:id="@+id/btn_scan_main"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
-                        android:gravity="center"
-                        android:src="@mipmap/main_btn_scan" />
+                        android:src="@mipmap/main_btn_scan"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="5dp"
+                        android:scaleType="fitCenter"/>
 
                     <ImageView
                         android:id="@+id/btn_gochoice_main"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:gravity="center"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="5dp"
                         android:onClick="goAddCard"
-                        android:src="@mipmap/main_btn_add" />
+                        android:src="@mipmap/main_btn_add"
+                        android:scaleType="fitCenter"/>
                 </LinearLayout>
             </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_top2"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="45dp"
                 android:background="@color/colorPrimary"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -106,38 +108,44 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical">
 
                     <ImageView
                         android:id="@+id/btn_scan_top2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_scan_top2" />
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/ic_scan_top2"
+                        android:scaleType="fitCenter"/>
 
                     <ImageView
                         android:id="@+id/btn_location_top2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="29dp"
-                        android:src="@mipmap/ic_location_top2" />
+                        android:src="@mipmap/ic_location_top2"
+                        android:scaleType="fitCenter"/>
 
                     <ImageView
                         android:id="@+id/btn_message_top2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="29dp"
                         android:onClick="goMessageIndex"
-                        android:src="@mipmap/ic_message_top2" />
+                        android:src="@mipmap/ic_message_top2"
+                        android:scaleType="fitCenter"/>
                 </LinearLayout>
 
                 <ImageView
                     android:id="@+id/btn_sreach_top2s"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:onClick="goAddCard"
-                    android:src="@mipmap/ic_sreach_top2" />
+                    android:src="@mipmap/ic_sreach_top2"
+                    android:scaleType="fitCenter"/>
 
             </RelativeLayout>
         </FrameLayout>

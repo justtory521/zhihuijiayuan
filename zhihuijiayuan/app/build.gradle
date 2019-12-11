@@ -240,6 +240,8 @@ dependencies {
 
     //rv侧滑
     implementation 'com.github.anzaizai:EasySwipeMenuLayout:1.1.4'
+    implementation project(path: ':zbar')
     //zbar扫描
-    implementation 'cn.bertsir.zbarLibary:zbarlibary:1.4.1'
+//    implementation 'cn.bertsir.zbarLibary:zbarlibary:1.4.1'
+    implementation 'com.google.zxing:core:3.4.0'
 }

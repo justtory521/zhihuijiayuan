@@ -21,7 +21,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import cn.jpush.android.api.JPushInterface;
 import tendency.hz.zhihuijiayuan.adapter.MainFragmentPagerAdapter;
 import tendency.hz.zhihuijiayuan.bean.Message;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
@@ -123,6 +125,9 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         }
 
         mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getUnreadCounts());
+
+        //每次打开APP都重新设置一下推送别名
+        JPushInterface.setAlias(this, new Random().nextInt(900) + 100, BaseUnits.getInstance().getPhoneKey());
     }
 
 

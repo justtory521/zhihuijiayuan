@@ -183,7 +183,6 @@ public class NewMessageFragment extends BaseFragment implements AllViewInter {
     @Override
     public void onSuccessed(int what, Object object) {
         srfMsg.finishRefresh();
-        CacheUnits.getInstance().clearMessageNum();
         mFragmentInteraction.clearMessage();
         initData();
     }
@@ -191,7 +190,6 @@ public class NewMessageFragment extends BaseFragment implements AllViewInter {
     @Override
     public void onFailed(int what, Object object) {
        srfMsg.finishRefresh();
-        CacheUnits.getInstance().clearMessageNum();
         mFragmentInteraction.clearMessage();
         initData();
     }

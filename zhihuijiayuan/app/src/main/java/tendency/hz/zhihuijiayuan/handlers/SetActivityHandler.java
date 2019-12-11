@@ -46,7 +46,6 @@ public class SetActivityHandler {
     public void clearCache(View view) {
         CacheUnits.getInstance().clearMessage();
         ViewUnits.getInstance().showToast("清理完毕");
-        CacheUnits.getInstance().clearMessageNum();
     }
 
     /**

@@ -135,8 +135,7 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
     @Override
     public void onResume() {
         super.onResume();
-        //每次打开APP都重新设置一下推送别名
-        JPushInterface.setAlias(getActivity(), new Random().nextInt(900) + 100, BaseUnits.getInstance().getPhoneKey());
+
         if (!ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装,不需要获取卡片，自动绑定成功后，会执行安装
             getMyCard();
         }

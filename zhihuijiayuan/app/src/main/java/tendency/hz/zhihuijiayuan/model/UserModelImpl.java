@@ -9,7 +9,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import cn.jpush.android.api.JPushInterface;
+import tendency.hz.zhihuijiayuan.application.MyApplication;
 import tendency.hz.zhihuijiayuan.bean.User;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Uri;
@@ -306,6 +309,8 @@ public class UserModelImpl extends AllModelInter implements UserModelInter {
             case NetCode.User.logout:
                 UserUnits.getInstance().clearUserInfo(); //用户登出，清空缓存
                 ConfigUnits.getInstance().clearPhoneAnalogIMEI();
+                //重新设置推送别名
+                JPushInterface.setAlias(MyApplication.getInstance(), new Random().nextInt(900) + 100, BaseUnits.getInstance().getPhoneKey());
                 CacheUnits.getInstance().deleteMyCacheCard();
                 CacheUnits.getInstance().clearMessage();  //清除消息
                 Log.e(TAG, "缓存的卡片数据：" + CacheUnits.getInstance().getMyCacheCards(null));
@@ -318,6 +323,8 @@ public class UserModelImpl extends AllModelInter implements UserModelInter {
                 if (!result.equals("true")) {
                     UserUnits.getInstance().clearUserInfo(); //用户登出，清空缓存
                     ConfigUnits.getInstance().clearPhoneAnalogIMEI();
+                    //重新设置推送别名
+                    JPushInterface.setAlias(MyApplication.getInstance(), new Random().nextInt(900) + 100, BaseUnits.getInstance().getPhoneKey());
                     CacheUnits.getInstance().deleteMyCacheCard();
                 }
                 mAllPrenInter.onSuccess(what, result);

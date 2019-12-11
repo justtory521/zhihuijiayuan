@@ -1,2 +1,2 @@
 // GENERATED FILE - DO NOT EDIT
-include ":app", ':camera', ':bluetooth'
+include ":app", ':camera', ':bluetooth', ':zbar'
