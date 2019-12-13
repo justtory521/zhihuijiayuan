@@ -269,47 +269,6 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
 
 
     /**
-     * @return 反色
-     */
-    public void reverseColor() {
-        Log.d("libin", "reverseColor: " + data.length);
-        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-        int width = bmp.getWidth();
-        int height = bmp.getHeight();
-
-        Bitmap qrbmp = QRUtils.getInstance().toGrayscale(bmp);
-
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);//创建一个新的bitmap
-        int[] pixs = new int[width * height];
-        qrbmp.getPixels(pixs, 0, width, 0, 0, width, height);//把bitmap中的像素提取到pixs数组中去
-
-        for (int i = 0; i < pixs.length; i++) {
-            pixs[i] = pixs[i] ^ 0xffffffff;
-        }
-        bitmap.setPixels(pixs, 0, width, 0, 0, width, height);
-
-        try {
-            String resultStr = QRUtils.getInstance().decodeQRcode(bitmap);
-            if (!TextUtils.isEmpty(resultStr)) {
-                ScanResult scanResult = new ScanResult();
-                scanResult.setContent(resultStr);
-                scanResult.setType(ScanResult.CODE_QR);
-                Message message = mHandler.obtainMessage();
-                message.obj = scanResult;
-                message.sendToTarget();
-                lastResultTime = System.currentTimeMillis();
-                if (Symbol.looperScan) {
-                    allowAnalysis = true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
      * zxing解码
      *
      * @param data

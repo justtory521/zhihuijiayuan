@@ -21,10 +21,8 @@ public class VersionExplainActivity extends BaseActivity {
         setContentView(R.layout.activity_version_explain);
         ViewUnits.getInstance().setTitleHeight(findViewById(R.id.layout_title));
         String verName = BaseUnits.getInstance().getVerName(this);
-        if (Config.IS_BETA) {
-            verName += "-1";
-        }
-        ((TextView) findViewById(R.id.text_version)).setText("版本号：" + verName);
+
+        ((TextView) findViewById(R.id.text_version)).setText("版本号：" + verName+Config.version);
         findViewById(R.id.img_btn_back).setOnClickListener(view -> finish());
     }
 }
