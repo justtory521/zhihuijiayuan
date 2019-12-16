@@ -64,8 +64,9 @@ public class ScanQRCodeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        Symbol.scanType = QrConfig.TYPE_CUSTOM;
         Symbol.is_only_scan_center = true;
-        Symbol.scanType = QrConfig.TYPE_ALL;
         Symbol.doubleEngine =true;
 
 

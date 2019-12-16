@@ -9,15 +9,15 @@ public class Config {
     /**
      * 开发环境
      */
-    public static final String URL = "http://183.129.130.119:12012"; //杭州测试环境（外网地址）
-    public static final String PAY_URL = "http://183.129.130.119:34805";  //杭州支付测试接口
-    public static final String UPLOADIMG = "http://183.129.130.119:12015";  //上传头像
-
-    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
-    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly测试环境
-    public static String version = "-开发版"; //开发版
-    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
-    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
+//    public static final String URL = "http://183.129.130.119:12012"; //杭州测试环境（外网地址）
+//    public static final String PAY_URL = "http://183.129.130.119:34805";  //杭州支付测试接口
+//    public static final String UPLOADIMG = "http://183.129.130.119:12015";  //上传头像
+//
+//    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
+//    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly测试环境
+//    public static String version = "-开发版"; //开发版
+//    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
+//    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
 
 
     /**
@@ -35,6 +35,21 @@ public class Config {
 
 
     /**
+     * 测试环境
+     */
+    public static final String URL = "http://183.129.130.119:13104"; //杭州测试环境（外网地址）
+    public static final String PAY_URL = "http://183.129.130.119:13100";  //杭州支付测试接口
+    public static final String UPLOADIMG = "http://183.129.130.119:13107";  //上传头像
+
+    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
+    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly测试环境
+    public static String version = "-测试版"; //测试版
+    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
+    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
+
+
+
+    /**
      * 生产环境
      */
 //    public static final String URL = "http://www.yikahui.net:10495";  //生产环境
@@ -46,21 +61,6 @@ public class Config {
 //    public static String version = ""; //正式版
 //    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
 //    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
-
-
-    /**
-     * 测试环境
-     */
-//    public static final String URL = "http://183.129.130.119:13104"; //杭州测试环境（外网地址）
-//    public static final String PAY_URL = "http://183.129.130.119:13100";  //杭州支付测试接口
-//    public static final String UPLOADIMG = "http://183.129.130.119:13107";  //上传头像
-//
-//    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
-//    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly测试环境
-//    public static String version = "-测试版"; //测试版
-//    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
-//    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
-
 
     /**
      * 唤起百度地图
