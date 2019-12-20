@@ -194,7 +194,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     @Override
     protected void onRestart() {
         super.onRestart();
-
         showFocusWindow();
     }
 
@@ -1233,7 +1232,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         countDownTimer.cancel();
                         countDownTimer = null;
 
-                        sendCallback(connectCallback, "500", "success", "连接超时");
+                        sendCallback(connectCallback, "500", "fail", "连接超时");
                     }
                 }
             }.start();
@@ -1259,15 +1258,14 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                     byte[] bytes = FormatUtils.getInstance().hexStringToBytes(data);
                     bleCommMethod.bleSendMessage(bytes, (byte) bytes.length);
                 } else {
-
-                    sendCallback(sendCallback, "500", "success", "蓝牙未建立连接");
+                    sendCallback(sendCallback, "500", "fail", "蓝牙未建立连接");
                 }
             } else {
-                sendCallback(sendCallback, "500", "success", "蓝牙未建立连接");
+                sendCallback(sendCallback, "500", "fail", "蓝牙未建立连接");
             }
 
         } else {
-            sendCallback(sendCallback, "500", "success", "蓝牙未建立连接");
+            sendCallback(sendCallback, "500", "fail", "蓝牙未建立连接");
         }
 
     }
@@ -1387,7 +1385,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             } else {
                 isConnect = false;
                 if (connectCallback != null) {
-                    sendCallback(connectCallback, "500", "success", "蓝牙断开1");
+                    sendCallback(connectCallback, "500", "fail", "蓝牙断开1");
                 }
             }
         }

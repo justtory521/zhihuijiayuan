@@ -15,7 +15,7 @@ public class Config {
 //
 //    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
 //    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly测试环境
-//    public static String version = "-开发版"; //开发版
+//    public static String VERSION = "-开发版"; //开发版
 //    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
 //    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
 
@@ -29,7 +29,7 @@ public class Config {
 //
 //    public static final String UM_CHANNEL = "智慧环境";  //友盟渠道信息
 //    public static final String BUGLY_APPID = "e9950e84c6";  //bugly生产环境
-//    public static String version = ""; //正式版
+//    public static String VERSION = ""; //正式版
 //    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
 //    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
 
@@ -43,7 +43,7 @@ public class Config {
 
     public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
     public static final String BUGLY_APPID = "e73b57ee1b";  //bugly测试环境
-    public static String version = "-测试版"; //测试版
+    public static String VERSION = "-测试版"; //测试版
     public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
     public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
 
@@ -58,7 +58,7 @@ public class Config {
 //
 //    public static final String UM_CHANNEL = "智慧环境";  //友盟渠道信息
 //    public static final String BUGLY_APPID = "e9950e84c6";  //bugly生产环境
-//    public static String version = ""; //正式版
+//    public static String VERSION = ""; //正式版
 //    public static String USER_AGREEMENT = "http://www.yikahui.net/AppH5/agreement/user-potocol.html"; //用户协议
 //    public static String PRIVACY_STATEMENT = "http://www.yikahui.net/AppH5/agreement/privacy-statement.html"; //隐私声明
 

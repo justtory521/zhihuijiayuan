@@ -34,6 +34,14 @@ public interface CardModelInter {
     void sortCard(int netCode, String cardIds);
 
     /**
+     * 未登录卡片排序
+     *
+     * @param netCode
+     * @param cardIds
+     */
+    void anonymousCardSort(int netCode, String cardIds);
+
+    /**
      * 个人卡片添加
      *
      * @param netCode

@@ -95,6 +95,20 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
     }
 
     @Override
+    public void anonymousCardSort(int netCode, String cardIds) {
+        if (netCode != NetCode.Card.anonymousCardSort) {
+            return;
+        }
+
+        List<NoHttpUtil.Param> params = new ArrayList<>();
+        params.add(new NoHttpUtil.Param("ClientID", BaseUnits.getInstance().getPhoneKey()));
+        params.add(new NoHttpUtil.Param("Order", cardIds));
+
+        NoHttpUtil.post(netCode, Uri.Card.ANONYMOUS_CARD_SORT, onResponseListener, params);
+    }
+
+
+    @Override
     public void cardAttentionAdd(int netCode, Object object) {
         if (netCode != NetCode.Card.cardAttentionAdd) {
             return;

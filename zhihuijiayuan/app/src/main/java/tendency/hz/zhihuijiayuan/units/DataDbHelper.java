@@ -155,10 +155,6 @@ public class DataDbHelper extends SQLiteOpenHelper {
     public Cursor get(String sql, String[] arr) {
         dbHelper = getInstance();
 
-        Cursor cursorGet = dbHelper.getReadableDatabase().rawQuery(sql, arr);
-
-        return cursorGet;
+        return dbHelper.getReadableDatabase().rawQuery(sql, arr);
     }
-
-
 }

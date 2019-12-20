@@ -3,6 +3,7 @@ package tendency.hz.zhihuijiayuan;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -12,8 +13,16 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+import com.tencent.bugly.beta.ui.UILifecycleListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -26,6 +35,7 @@ import java.util.Random;
 import cn.jpush.android.api.JPushInterface;
 import tendency.hz.zhihuijiayuan.adapter.MainFragmentPagerAdapter;
 import tendency.hz.zhihuijiayuan.bean.Message;
+import tendency.hz.zhihuijiayuan.bean.base.Config;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.databinding.ActivityMain2Binding;
@@ -36,6 +46,7 @@ import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.BluetoothUtils;
 import tendency.hz.zhihuijiayuan.units.CacheUnits;
 import tendency.hz.zhihuijiayuan.units.FragmentTabUtils;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
@@ -85,6 +96,78 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
 
         //绑定蓝牙服务
         BluetoothUtils.getInstance().startSerVice(this);
+
+
+        checkUpdate();
+
+
+    }
+
+    /**
+     * 检测更新
+     */
+    private void checkUpdate() {
+        Beta.upgradeDialogLayoutId = R.layout.layout_update_popup;
+        Beta.tipsDialogLayoutId = R.layout.dialog_tips;
+        Beta.strNetworkTipsCancelBtn = "";
+        Beta.strUpgradeDialogCancelBtn = "     ";
+        Beta.initDelay = 2 * 1000;
+        Beta.canShowUpgradeActs.add(MainActivity.class);
+
+        Beta.upgradeDialogLifecycleListener = new UILifecycleListener<UpgradeInfo>() {
+            @Override
+            public void onCreate(Context context, View view, UpgradeInfo upgradeInfo) {
+                Log.d("libin", "onResume111"+upgradeInfo.upgradeType);
+                // 注：可通过这个回调方式获取布局的控件，如果设置了id，可通过findViewById方式获取，如果设置了tag，可以通过findViewWithTag，具体参考下面例子:
+
+                // 通过id方式获取控件
+
+                ImageView ivCancel = (ImageView) view.findViewById(R.id.iv_cancel_update);
+
+                // 更多的操作：比如设置控件的点击事件
+                ivCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (upgradeInfo.upgradeType == 2){
+                            LogUtils.log("退出应用");
+                            finish();
+                            System.exit(0);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onStart(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+            @Override
+            public void onResume(Context context, View view, UpgradeInfo upgradeInfo) {
+
+
+
+            }
+
+            @Override
+            public void onPause(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+            @Override
+            public void onStop(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+            @Override
+            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+        };
+
+        Bugly.init(getApplicationContext(), Config.BUGLY_APPID, false);
     }
 
     @Override
@@ -207,6 +290,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
     public void clearMessage() {
         mBinding.bottomRbMessage.setBadgeNumber(CacheUnits.getInstance().getUnreadCounts());
     }
+
 
 
     /**

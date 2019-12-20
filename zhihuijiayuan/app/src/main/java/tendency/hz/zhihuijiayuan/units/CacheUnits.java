@@ -174,7 +174,6 @@ public class CacheUnits {
                 stringBuffer.append(cursor.getString(0) + ",");
             }
 
-            Log.e(TAG, stringBuffer.toString());
 
             return stringBuffer.substring(0, stringBuffer.length() - 1);
         }

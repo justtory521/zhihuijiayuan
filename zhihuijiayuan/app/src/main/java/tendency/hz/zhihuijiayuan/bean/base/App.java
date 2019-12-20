@@ -54,4 +54,3 @@ public class App {
         public static final String dbName = "address.db"; //数据库名称
     }
 }
-

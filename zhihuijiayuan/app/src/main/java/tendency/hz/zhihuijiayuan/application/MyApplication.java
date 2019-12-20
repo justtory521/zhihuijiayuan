@@ -6,6 +6,10 @@ import android.content.Context;
 import android.os.Build;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -22,6 +26,8 @@ import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 //import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+import com.tencent.bugly.beta.ui.UILifecycleListener;
 import com.tencent.smtt.sdk.QbSdk;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
@@ -79,14 +85,6 @@ public class MyApplication extends Application {
         Stetho.initializeWithDefaults(this);  //初始化Chrome查看Sqlite插件
         Fresco.initialize(this);  //网络图片异步加载
 
-        Beta.upgradeDialogLayoutId = R.layout.layout_update_popup;
-        Beta.tipsDialogLayoutId = R.layout.dialog_tips;
-        Beta.strNetworkTipsCancelBtn = "";
-        Beta.strUpgradeDialogCancelBtn = "     ";
-        Beta.initDelay = 5 * 1000;
-        Beta.canShowUpgradeActs.add(MainActivity.class);
-        Beta.canShowUpgradeActs.add(ChoiceCardActivity.class);
-        Bugly.init(getApplicationContext(), Config.BUGLY_APPID, false);
 
         //极光推送
         JPushInterface.setDebugMode(true);

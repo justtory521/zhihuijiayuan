@@ -1,5 +1,9 @@
 package tendency.hz.zhihuijiayuan.presenter;
 
+import android.text.TextUtils;
+
+import java.util.concurrent.TimeoutException;
+
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.model.CardModelImpl;
 import tendency.hz.zhihuijiayuan.model.modelInter.CardModelInter;
@@ -48,6 +52,10 @@ public class CardPrenImpl implements CardPrenInter, AllPrenInter {
 
     @Override
     public void sortCard(int netCode, String cardIds) {
+        if (TextUtils.isEmpty(UserUnits.getInstance().getToken())) {  //用户匿名登录
+            mCardModelInter.anonymousCardSort(NetCode.Card.anonymousCardSort, cardIds);
+            return;
+        }
         mCardModelInter.sortCard(NetCode.Card.sortCard, cardIds);
     }
 

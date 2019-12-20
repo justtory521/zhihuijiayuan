@@ -22,7 +22,7 @@ public class VersionExplainActivity extends BaseActivity {
         ViewUnits.getInstance().setTitleHeight(findViewById(R.id.layout_title));
         String verName = BaseUnits.getInstance().getVerName(this);
 
-        ((TextView) findViewById(R.id.text_version)).setText("版本号：" + verName+Config.version);
+        ((TextView) findViewById(R.id.text_version)).setText("版本号：" + verName+Config.VERSION);
         findViewById(R.id.img_btn_back).setOnClickListener(view -> finish());
     }
 }

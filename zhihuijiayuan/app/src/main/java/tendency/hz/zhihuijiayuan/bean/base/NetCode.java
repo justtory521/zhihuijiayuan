@@ -104,6 +104,7 @@ public class NetCode {
         public static final int getAppCardInfo = 0x30f; //获取应用卡信息
         public static final int openOtherCard = 0x310; //卡片预览接口
         public static final int sortCard = 0x311; //卡片排序接口
+        public static final int anonymousCardSort = 0x312; //未登录卡片排序接口
     }
 
     /**
