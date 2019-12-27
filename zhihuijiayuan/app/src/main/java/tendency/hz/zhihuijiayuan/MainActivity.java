@@ -2,6 +2,8 @@ package tendency.hz.zhihuijiayuan;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,14 +12,12 @@ import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Random;
 
 import cn.jpush.android.api.JPushInterface;
-import tendency.hz.zhihuijiayuan.adapter.MainFragmentPagerAdapter;
-import tendency.hz.zhihuijiayuan.bean.Message;
 import tendency.hz.zhihuijiayuan.bean.base.Config;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
@@ -53,7 +51,6 @@ import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
 import tendency.hz.zhihuijiayuan.view.index.ChoiceFragment;
 import tendency.hz.zhihuijiayuan.view.index.HomeFragment;
 import tendency.hz.zhihuijiayuan.view.index.MeFragment;
-import tendency.hz.zhihuijiayuan.view.index.MessageFragment;
 import tendency.hz.zhihuijiayuan.view.index.NewMessageFragment;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 
@@ -84,7 +81,6 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         //初始化默认显示页面
         initView();
 
-
         new Handler().postDelayed(() -> BaseUnits.getInstance().checkOldPackage(MainActivity.this), 500);
         mBinding.bottomRbMessage.setBadgeOffX(-10);
         mBinding.bottomRbMessage.setBadgeOffY(10);
@@ -100,8 +96,8 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
 
         checkUpdate();
 
-
     }
+
 
     /**
      * 检测更新

@@ -23,7 +23,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
                 android:scaleType="fitEnd"
-                android:src="@mipmap/btn_upate_close"/>
+                android:src="@mipmap/btn_update_close"/>
 
             <TextView
                 android:id="@+id/tv_cancel_update"

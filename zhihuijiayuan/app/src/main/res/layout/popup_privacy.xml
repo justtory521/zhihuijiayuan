@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tv_privacy_title"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="用户协议及隐私声明"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/gray_22"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/tv_privacy_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_privacy_title"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="12sp"
+        android:textColor="@color/gray_33"
+        android:lineSpacingMultiplier="1.2"/>
+    <View
+        android:id="@+id/view_1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_ee"
+        android:layout_below="@+id/tv_privacy_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/view_1">
+
+
+        <TextView
+            android:id="@+id/tv_privacy_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="不同意并退出"
+            android:textColor="@color/gray_aa"
+            android:gravity="center"
+            android:textSize="14sp"/>
+
+        <View
+            android:id="@+id/view_2"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/gray_ee"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/view_1"/>
+
+        <TextView
+            android:id="@+id/tv_privacy_agree"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="同意"
+            android:textColor="@color/colorTextBlue"
+            android:gravity="center"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

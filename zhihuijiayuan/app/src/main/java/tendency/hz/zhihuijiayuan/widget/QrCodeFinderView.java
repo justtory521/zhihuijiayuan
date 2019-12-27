@@ -85,7 +85,7 @@ public final class QrCodeFinderView extends RelativeLayout {
         FrameLayout frameLayout = (FrameLayout) relativeLayout.findViewById(R.id.qr_code_fl_scanner);
         mFrameRect = new Rect();
         LayoutParams layoutParams = (LayoutParams) frameLayout.getLayoutParams();
-        mFrameRect.left = (ScreenUtils.getScreenWidth(context) - layoutParams.width) / 2;
+        mFrameRect.left = (ScreenUtils.getScreenWidth() - layoutParams.width) / 2;
         mFrameRect.top = layoutParams.topMargin;
         mFrameRect.right = mFrameRect.left + layoutParams.width;
         mFrameRect.bottom = mFrameRect.top + layoutParams.height;
@@ -180,7 +180,7 @@ public final class QrCodeFinderView extends RelativeLayout {
         float fontTotalHeight = fontMetrics.bottom - fontMetrics.top;
         float offY = fontTotalHeight / 2 - fontMetrics.bottom;
         float newY = rect.bottom + margin + offY;
-        float left = (ScreenUtils.getScreenWidth(mContext) - mPaint.getTextSize() * text.length()) / 2;
+        float left = (ScreenUtils.getScreenWidth() - mPaint.getTextSize() * text.length()) / 2;
         canvas.drawText(text, left, newY, mPaint);
     }
 

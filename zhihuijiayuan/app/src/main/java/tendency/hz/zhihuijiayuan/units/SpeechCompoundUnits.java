@@ -59,7 +59,7 @@ public class SpeechCompoundUnits {
 
     public static SpeechCompoundUnits getInstance() {
         if (mInstances == null) {
-            synchronized (SpeechUnits.class) {
+            synchronized (SpeechCompoundUnits.class) {
                 if (mInstances == null) {
                     mInstances = new SpeechCompoundUnits();
                 }

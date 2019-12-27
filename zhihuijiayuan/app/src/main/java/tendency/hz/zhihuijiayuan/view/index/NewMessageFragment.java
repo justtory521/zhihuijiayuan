@@ -93,14 +93,7 @@ public class NewMessageFragment extends BaseFragment implements AllViewInter {
         super.onResume();
         initData();
     }
-//
-//    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if (isVisibleToUser) {
-//            initData();
-//        }
-//    }
+
 
     private void initData() {
         msgList.clear();

@@ -4,8 +4,11 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.Sensor;
@@ -19,12 +22,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -68,6 +73,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import exocr.exocrengine.CaptureActivity;
+import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.application.MyApplication;
 import tendency.hz.zhihuijiayuan.bean.AddressBookBean;
 import tendency.hz.zhihuijiayuan.bean.Bt;
@@ -101,6 +107,7 @@ import tendency.hz.zhihuijiayuan.view.user.LoginSmsActivity;
 import tendency.hz.zhihuijiayuan.view.user.RegisterSetPwdActivity;
 import tendency.hz.zhihuijiayuan.view.user.RegisterSmsActivity;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 import static com.inuker.bluetooth.library.Code.REQUEST_SUCCESS;
 import static tendency.hz.zhihuijiayuan.bean.base.Request.Permissions.REQUEST_CAMERA;
@@ -281,7 +288,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
 
     @JavascriptInterface
     public void getStatusBarHeight(String callBack) {
-        sendCallBack(callBack, "200", "success", ViewUnits.getInstance().px2dip(BaseUnits.getInstance().getStatusBarHeight()) + "");
+        sendCallBack(callBack, "200", "success", BaseUnits.getInstance().getStatusBarHeight() + "");
     }
 
     @JavascriptInterface
@@ -473,13 +480,13 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      * @param value 1:浅色 2：深色
      */
     @JavascriptInterface
-    public void setToolbar(String  value) {
+    public void setToolbar(String value) {
         LogUtils.log("按钮：" + value);
         try {
             JSONObject jsonObject = new JSONObject(value);
             int toolbarColor = jsonObject.getInt("colorType");
             if (toolbarColor != 2) {
-                mCallBack.setBtnStyle("#000000","#EAEAEA");
+                mCallBack.setBtnStyle("#000000", "#EAEAEA");
             } else {
                 mCallBack.setBtnStyle("#FFFFFF", "#80FFFFFF");
             }
@@ -2197,6 +2204,173 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
 
 
     }
+
+
+    /**
+     * 获取系统信息
+     *
+     * @param callback
+     */
+    @JavascriptInterface
+    public void getPhoneSystemInfo(String callback) {
+        LogUtils.log(callback);
+        String phoneModel = Build.MODEL;
+        String systemName = Build.VERSION.RELEASE;
+        String phoneWidth = String.valueOf(ScreenUtils.getScreenWidth());
+        String phoneHeight = String.valueOf(ScreenUtils.getScreenHeight());
+
+        LogUtils.log(phoneModel + "," + systemName + "," + phoneWidth + "," + phoneHeight);
+
+        JSONObject jsonObject = new JSONObject();
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("phoneModel", phoneModel);
+            data.put("systemName", systemName);
+            data.put("phoneWidth", phoneWidth);
+            data.put("phoneHeight", phoneHeight);
+            jsonObject.put("status", "200");
+            jsonObject.put("msg", "success");
+            jsonObject.put("data", data);
+            mCallBack.callBackResult(callback, jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 获取电量
+     *
+     * @param callback
+     */
+    @JavascriptInterface
+    public void getPhonePower(String callback) {
+        LogUtils.log(callback);
+        int level;
+        Intent batteryInfoIntent = MyApplication.getInstance().registerReceiver(null,
+                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        level = batteryInfoIntent.getIntExtra("level",0);
+        int batterySum = batteryInfoIntent.getIntExtra("scale", 100);
+        int percentBattery= 100 *  level / batterySum;
+
+        sendCallBack(callback,"200","success",String.valueOf(percentBattery));
+
+    }
+
+    /**
+     * 获取电量
+     *
+     * @param callback
+     */
+    @JavascriptInterface
+    public void getAppName(String callback) {
+        LogUtils.log(callback);
+
+        sendCallBack(callback,"200","success",MyApplication.getInstance().getString(R.string.app_name));
+
+    }
+
+
+    /**
+     * 复制内容到剪切板
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void setClipboard(String value) {
+        LogUtils.log(value);
+        int timeout;
+        String callback = null;
+        String data;
+        try {
+            JSONObject jsonObject = new JSONObject(value);
+            callback = jsonObject.getString("callback");
+            data = jsonObject.getString("value");
+            //获取剪贴板管理器
+            ClipboardManager cm = (ClipboardManager) MyApplication.getInstance().getSystemService(CLIPBOARD_SERVICE);
+            // 创建普通字符型ClipData
+            ClipData mClipData = ClipData.newPlainText(null, data
+
+            );
+            // 将ClipData内容放到系统剪贴板里。
+            cm.setPrimaryClip(mClipData);
+            sendCallBack(callback,"200","success",data);
+            timeout = jsonObject.getInt("timeout");
+
+            new CountDownTimer(timeout,1000){
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    LogUtils.log("清除剪切板");
+                    clearClipboard();
+                }
+            }.start();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            LogUtils.log("无定时清剪切板");
+            sendCallBack(callback,"200","success","");
+        }
+    }
+
+
+    /**
+     * 清除剪切板
+     */
+    private void clearClipboard() {
+        try {
+            //获取剪贴板管理器
+            ClipboardManager cm = (ClipboardManager) MyApplication.getInstance().getSystemService(CLIPBOARD_SERVICE);
+            cm.setPrimaryClip(ClipData.newPlainText(null, ""));  //清除剪切板数据
+            cm.setText(null);
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * 获取剪切板
+     *
+     * @param callback
+     */
+    @JavascriptInterface
+    public void getClipboard(String callback) {
+        LogUtils.log(callback);
+        ClipboardManager cm = (ClipboardManager) MyApplication.getInstance().getSystemService(CLIPBOARD_SERVICE);
+        ClipData data = cm.getPrimaryClip();
+        try {
+            ClipData.Item item = data.getItemAt(0);
+            String content = item.getText().toString();
+            sendCallBack(callback,"200","success",content);
+
+        } catch (Exception e) {
+            sendCallBack(callback,"500","fail","剪切板为空");
+        }
+    }
+
+    /**
+     * 清除剪切板
+     *
+     * @param callback
+     */
+    @JavascriptInterface
+    public void clearClipboard(String callback) {
+        LogUtils.log(callback);
+        try {
+            //获取剪贴板管理器
+            ClipboardManager cm = (ClipboardManager) MyApplication.getInstance().getSystemService(CLIPBOARD_SERVICE);
+            cm.setPrimaryClip(ClipData.newPlainText(null, ""));  //清除剪切板数据
+            cm.setText(null);
+            sendCallBack(callback,"200","success","清除成功");
+        } catch (Exception e) {
+            sendCallBack(callback,"200","success","清除成功");
+        }
+    }
+
 
 
     public void shareText(String callBack, String title, String content) {

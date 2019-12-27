@@ -38,7 +38,7 @@
             android:textColor="@color/gray_88"
             android:textSize="12sp"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
     <LinearLayout

@@ -239,7 +239,7 @@ public class ConfigUnits {
      *
      * @return
      */
-    public boolean getFristInstallStatus() {
+    public boolean getFirstInstallStatus() {
         return (boolean) SPUtils.getInstance().get(SPUtils.FILE_CONFIG, SPUtils.isFirstInstall, true);
     }
 

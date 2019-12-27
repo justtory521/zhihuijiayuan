@@ -20,23 +20,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.chad.library.adapter.base.BaseItemDraggableAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.cjt2325.cameralibrary.util.LogUtil;
 import com.zhy.m.permission.MPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import cn.jpush.android.api.JPushInterface;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.adapter.MainCardRecyclerAdapter;
 import tendency.hz.zhihuijiayuan.adapter.holder.inter.HomeCardItemOnClickInter;
@@ -61,7 +54,6 @@ import tendency.hz.zhihuijiayuan.units.CacheUnits;
 import tendency.hz.zhihuijiayuan.units.ConfigUnits;
 import tendency.hz.zhihuijiayuan.units.DateUtils;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
-import tendency.hz.zhihuijiayuan.units.LocationUtils;
 import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.UserUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
@@ -113,7 +105,6 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchCallback(mAdapter,this));
         helper.attachToRecyclerView( mBinding.recyclerCardMain);
 
-
         checkLocationPermission();
 
         setListener();
@@ -136,7 +127,7 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
     public void onResume() {
         super.onResume();
 
-        if (!ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装,不需要获取卡片，自动绑定成功后，会执行安装
+        if (!ConfigUnits.getInstance().getFirstInstallStatus()) {  //第一次安装,不需要获取卡片，自动绑定成功后，会执行安装
             getMyCard();
         }
     }
@@ -224,7 +215,7 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
                         UserUnits.getInstance().setSelectCity(bdLocation.getCity());
                     }
 
-                    if (ConfigUnits.getInstance().getFristInstallStatus()) {  //第一次安装
+                    if (ConfigUnits.getInstance().getFirstInstallStatus()) {  //第一次安装
                         ConfigUnits.getInstance().setFirstInstallStatus(false);
                         mCardPrenInter.authFocusCard(NetCode.Card2.autoFocusCard);
                     }

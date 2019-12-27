@@ -247,7 +247,12 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
      * 隐藏键盘
      */
     private void hideInput() {
-        mImm.hideSoftInputFromWindow(mView.getWindowToken(), 0);
+        try{
+            mImm.hideSoftInputFromWindow(mView.getWindowToken(), 0);
+        }catch (Exception e){
+
+        }
+
     }
 
     private void query() {
@@ -418,15 +423,6 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         ViewUnits.getInstance().missLoading();
         ViewUnits.getInstance().showToast(object.toString());
         hideInput();
-//        switch (what) {
-//            case NetCode.Card.anonymousFocus:
-//            case NetCode.Card.cardAttentionAdd:
-//                jumpToCard(mCardItem);
-//                break;
-//            default:
-//                ViewUnits.getInstance().showToast(object.toString());
-//                break;
-//        }
     }
 
     @Override

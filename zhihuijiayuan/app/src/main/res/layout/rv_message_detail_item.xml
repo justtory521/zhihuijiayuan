@@ -52,6 +52,8 @@
         android:layout_height="match_parent"
         android:textColor="@color/gray_66"
         android:textSize="14sp"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:layout_marginRight="16dp"
         android:layout_marginTop="62.5dp"
         android:layout_marginLeft="16dp"

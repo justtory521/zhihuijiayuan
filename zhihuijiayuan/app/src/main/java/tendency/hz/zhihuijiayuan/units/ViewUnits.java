@@ -173,7 +173,7 @@ public class ViewUnits {
      * px转换dp
      */
     public int px2dip(int px) {
-        final float scale = MyApplication.getInstance().getResources().getDisplayMetrics().density;
+        float scale = MyApplication.getInstance().getResources().getDisplayMetrics().density;
         Log.e(TAG, "密实系数：" + scale);
         return (int) (px / scale + 0.5f);
     }

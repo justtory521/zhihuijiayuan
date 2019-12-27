@@ -6,15 +6,27 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.baidu.location.BDAbstractLocationListener;
@@ -43,7 +55,6 @@ import tendency.hz.zhihuijiayuan.presenter.prenInter.CardPrenInter;
 import tendency.hz.zhihuijiayuan.presenter.prenInter.SetPrenInter;
 import tendency.hz.zhihuijiayuan.units.AddressDbHelper;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
-import tendency.hz.zhihuijiayuan.units.BluetoothUtils;
 import tendency.hz.zhihuijiayuan.units.ConfigUnits;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
 import tendency.hz.zhihuijiayuan.units.SPUtils;
@@ -51,6 +62,8 @@ import tendency.hz.zhihuijiayuan.units.UserUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.card.CardContentActivity;
 import tendency.hz.zhihuijiayuan.view.index.GuideActivity;
+import tendency.hz.zhihuijiayuan.view.user.AgreementActivity;
+import tendency.hz.zhihuijiayuan.view.user.PrivacyStatementActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 
 import static tendency.hz.zhihuijiayuan.bean.base.Request.Permissions.REQUEST_ALL_PERMISSIONS;
@@ -86,14 +99,100 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
 
         mSetPrenInter.startPage(NetCode.Set.startPage);  //异步校验、下载广告相关内容
 
-        getAllPermission();
+        showPrivacyDialog();
+
 
         if (!checkDBState()) {
             ViewUnits.getInstance().showToast("配置失败，请重新打开APP!");
+        }
+
+    }
+
+    /**
+     * 首次安装隐私声明弹窗
+     */
+    private void showPrivacyDialog() {
+        if (!ConfigUnits.getInstance().getFirstInstallStatus()){
+            getAllPermission();
             return;
         }
 
-        ((TextView) findViewById(R.id.text_version)).setText(BuildConfig.VERSION_NAME);
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
+        dialog.show();
+        //对话框弹出后点击或按返回键不消失;
+        dialog.setCancelable(false);
+
+         Window window = dialog.getWindow();
+        if (window != null) {
+            window.setContentView(R.layout.popup_privacy);
+            window.setGravity(Gravity.CENTER);
+            TextView textView = window.findViewById(R.id.tv_privacy_content);
+            TextView tvCancel= window.findViewById(R.id.tv_privacy_cancel);
+            TextView tvAgree= window.findViewById(R.id.tv_privacy_agree);
+            tvCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SplashActivity.this.finish();
+                }
+            });
+            tvAgree.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    getAllPermission();
+                }
+            });
+            String str = "\t\t\t\t感谢您选择智慧家园APP!我们非常重视您的个人信息和隐私保护。" +
+                    "为了更好地保障您的个人权益，在您使用我们的产品前，" +
+                    "请务必审阅《用户协议》和《隐私政策》内的所有条款，" +
+                    "您点击“同意”的行为即表示您已阅读并同意以上协议的全部内容。" +
+                    "如您同意以上协议内容，请点击“同意”，开始使用我们的产品和服务!";
+            textView.setText(str);
+
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            ssb.append(str);
+            final int start = str.indexOf("《");//第一个出现的位置
+            ssb.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    startActivity(new Intent(SplashActivity.this, AgreementActivity.class));
+
+                }
+
+                @Override
+
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setColor(ContextCompat.getColor(SplashActivity.this,R.color.colorTextBlue));       //设置文件颜色
+                    // 去掉下划线
+                    ds.setUnderlineText(false);
+                }
+
+            }, start, start + 6, 0);
+
+            final int end = str.lastIndexOf("《");//最后一个出现的位置
+
+            ssb.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    startActivity(new Intent(SplashActivity.this, PrivacyStatementActivity.class));
+                }
+
+                @Override
+
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setColor((ContextCompat.getColor(SplashActivity.this,R.color.colorTextBlue)));       //设置文件颜色
+                    // 去掉下划线
+
+                    ds.setUnderlineText(false);
+                }
+
+            }, end, end + 6, 0);
+
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+            textView.setText(ssb, TextView.BufferType.SPANNABLE);
+        }
 
     }
 
@@ -137,7 +236,7 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
 
 
     private void initData() {
-        if (ConfigUnits.getInstance().getFristInstallStatus()) {
+        if (ConfigUnits.getInstance().getFirstInstallStatus()) {
             startActivity(new Intent(this, GuideActivity.class));
             finish();
             return;
@@ -187,10 +286,6 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
         }
     }
 
-//    private void addCard(CardItem cardItem) {
-//        mCardPrenInter.cardAttentionAdd(NetCode.Card.cardAttentionAdd, cardItem);
-//    }
-
     /**
      * Android6.0动态获取所有权限
      */
@@ -206,8 +301,11 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
 
                 if (bdLocation != null && !TextUtils.isEmpty(bdLocation.getCity())) {
                     UserUnits.getInstance().setLocation(bdLocation.getCity());
-                    mLocationClient.stop();
-                    mLocationClient = null;
+                    if (mLocationClient !=null){
+                        mLocationClient.stop();
+                        mLocationClient = null;
+                    }
+
                     if (TextUtils.isEmpty(UserUnits.getInstance().getSelectCity())) {
                         UserUnits.getInstance().setSelectCity(bdLocation.getCity());
                     }
@@ -335,11 +433,6 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
 
 
                 jumpToCard(mCardItem);
-//                if ("1".equals(mCardItem.getFocusStatus())) {  //用户已经关注，直接跳转转卡详情页面
-//                    jumpToCard(mCardItem);
-//                } else {  //用户未关注，先执行领卡
-//                    addCard(mCardItem);
-//                }
                 break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
@@ -355,27 +448,12 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
                     BaseUnits.getInstance().loadApk(this, appCardItem.getAndroidDownUrl());
                 }
                 break;
-//            case NetCode.Card.anonymousFocus:
-//            case NetCode.Card.cardAttentionAdd:
-//                jumpToCard(mCardItem);
-//                break;
         }
 
     }
 
     @Override
     public void onFailed(int what, Object object) {
-//        switch (what) {
-//            case NetCode.Card.anonymousFocus:
-//            case NetCode.Card.cardAttentionAdd:
-//                jumpToCard(mCardItem);
-//                break;
-//            default:
-//                Intent intent = new Intent(this, MainActivity.class);
-//                startActivity(intent);
-//                finish();
-//                break;
-//        }
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -393,23 +471,22 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mLocationClient !=null && mLocationClient.isStarted()){
-            mLocationClient.stop();
-            mLocationClient = null;
-        }
-    }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         mSetPrenInter = null;
         mCardPrenInter = null;
         mBasePrenInter = null;
         mCode = null;
         mCardItem = null;
+
+        if (mLocationClient !=null && mLocationClient.isStarted()){
+            mLocationClient.stop();
+            mLocationClient = null;
+        }
+
+        super.onDestroy();
     }
 }
 

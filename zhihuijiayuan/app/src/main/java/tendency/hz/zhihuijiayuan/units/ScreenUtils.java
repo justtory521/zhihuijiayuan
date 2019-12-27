@@ -3,6 +3,8 @@ package tendency.hz.zhihuijiayuan.units;
 import android.content.Context;
 import android.util.DisplayMetrics;
 
+import tendency.hz.zhihuijiayuan.application.MyApplication;
+
 /**
  * 屏幕相关工具类
  *
@@ -19,9 +21,9 @@ public class ScreenUtils {
      *
      * @return
      */
-    public static int getScreenWidth(Context context) {
+    public static int getScreenWidth() {
 
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        DisplayMetrics dm = MyApplication.getInstance().getResources().getDisplayMetrics();
         return dm.widthPixels;
     }
 
@@ -30,9 +32,8 @@ public class ScreenUtils {
      *
      * @return
      */
-    public static int getScreenHeight(Context context) {
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        int screenHeight = dm.heightPixels;
-        return screenHeight;
+    public static int getScreenHeight() {
+        DisplayMetrics dm = MyApplication.getInstance().getResources().getDisplayMetrics();
+        return dm.heightPixels;
     }
 }

@@ -52,6 +52,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.tencent.smtt.export.external.extension.interfaces.IX5WebViewExtension;
 import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
+import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 import com.tencent.smtt.sdk.WebChromeClient;
@@ -297,10 +298,20 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 }
             }
 
-            @Override
-            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                return super.onJsAlert(view, url, message, result);
-            }
+//            @Override
+//            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onJsConfirm(WebView webView, String s, String s1, JsResult jsResult) {
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onJsPrompt(WebView webView, String s, String s1, String s2, JsPromptResult jsPromptResult) {
+//                return true;
+//            }
         });
 
         mWebView.setWebViewClient(new com.tencent.smtt.sdk.WebViewClient() {
