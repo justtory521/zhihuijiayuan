@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Random;
 
 import cn.jpush.android.api.JPushInterface;
+import tendency.hz.zhihuijiayuan.application.MyApplication;
 import tendency.hz.zhihuijiayuan.bean.base.Config;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
@@ -81,7 +82,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
         //初始化默认显示页面
         initView();
 
-        new Handler().postDelayed(() -> BaseUnits.getInstance().checkOldPackage(MainActivity.this), 500);
+//        new Handler().postDelayed(() -> BaseUnits.getInstance().checkOldPackage(MainActivity.this), 500);
         mBinding.bottomRbMessage.setBadgeOffX(-10);
         mBinding.bottomRbMessage.setBadgeOffY(10);
 
@@ -92,7 +93,6 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
 
         //绑定蓝牙服务
         BluetoothUtils.getInstance().startSerVice(this);
-
 
         checkUpdate();
 
@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity implements AllViewInter, Fragment
 
         };
 
-        Bugly.init(getApplicationContext(), Config.BUGLY_APPID, false);
+        Bugly.init(MyApplication.getInstance(), Config.BUGLY_APPID, false);
     }
 
     @Override

@@ -36,6 +36,7 @@ import tendency.hz.zhihuijiayuan.MainActivity;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.adapter.MainFragmentPagerAdapter;
 import tendency.hz.zhihuijiayuan.bean.CardItem;
+import tendency.hz.zhihuijiayuan.bean.LoginResultBean;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.databinding.ActivityLoginBinding;
@@ -70,14 +71,16 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
     private LoginBySmsFragment mFragmentBySms;
     private LoginByPwdFragment mFragmentByPwd;
 
-    public static int mFlag;
     private UMShareAPI umShareAPI;
 
     private UserPrenInter mUserPrenInter;
     private CardPrenInter mCardPrenInter;
     private PersonalPrenInter mPersonalPrenInter;
-    public static LoginResultListener mListener;
-    private static String mCallBack;
+
+    //卡片跳转登录
+    public int mFlag;
+    public String mCallback;
+
     //三方登录
     private int type;
     private String uid;
@@ -96,7 +99,7 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
 
         mListFragments.add(mFragmentByPwd);
         mListFragments.add(mFragmentBySms);
-        mFlag = getIntent().getIntExtra("flag", 0);
+
 
         //初始化默认显示页面
         initDefault();
@@ -106,6 +109,14 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
     }
 
     private void initDefault() {
+
+        Intent intent = getIntent();
+        mFlag = intent.getIntExtra("flag",0);
+        if (mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN){
+            mCallback = intent.getStringExtra("callback");
+        }
+
+
         mAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager(), mListFragments);
         mBinding.viewpager.setAdapter(mAdapter);
         mBinding.viewpager.setOffscreenPageLimit(5);
@@ -176,10 +187,6 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
 
     }
 
-    public static void setLoginResultListener(String callBack, LoginResultListener listener) {
-        mListener = listener;
-        mCallBack = callBack;
-    }
 
 
     /**
@@ -271,10 +278,9 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
                 break;
             case NetCode.Personal.getPersonalInfo:
                 ViewUnits.getInstance().missLoading();
-                if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //该标识表示从卡片页面跳转过来
-                    if (mListener !=null){
-                        mListener.getLoginResultListener(mCallBack, "1");
-                    }
+
+                if (mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //该标识表示从卡片页面跳转过来
+                    EventBus.getDefault().post(new LoginResultBean(mCallback));
                     finish();
                 } else {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);  //跳转至首页
@@ -320,14 +326,21 @@ public class LoginActivity extends BaseActivity implements AllViewInter {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void loginSuccess(String msg) {
         if (msg.equals("login_success")) {
-            finish();
+            if (mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //该标识表示从卡片页面跳转过来
+                EventBus.getDefault().post(new LoginResultBean(mCallback));
+                finish();
+            } else {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);  //跳转至首页
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mFlag = 0;
         mListFragments = null;
         mAdapter = null;
         EventBus.getDefault().unregister(this);

@@ -222,6 +222,9 @@ public class FormatUtils {
      * @return 根据资源文件名获取id
      */
     public int getResource(String defType, String resourceName) {
+        if (TextUtils.isEmpty(resourceName)){
+            return 0;
+        }
         String resource = resourceName;
         if (resourceName.contains(".")) {
             resource = resourceName.split("\\.")[0];

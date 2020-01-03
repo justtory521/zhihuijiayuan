@@ -50,6 +50,7 @@ public class SPUtils {
 
     //卡号
     public static final String cardNo = "cardNO";
+    public static final String cardID = "cardID";
     //智慧家园邀请码
     public static final String invitationCode = "invitationCode";
 

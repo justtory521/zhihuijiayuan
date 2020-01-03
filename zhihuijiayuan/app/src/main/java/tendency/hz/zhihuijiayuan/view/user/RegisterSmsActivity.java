@@ -49,8 +49,6 @@ public class RegisterSmsActivity extends BaseActivity implements AllViewInter {
     private CardPrenInter mCardPrenInter;
     private PersonalPrenInter mPersonalPrenInter;
 
-    private static LoginResultListener mListener;
-    private static String mCallBack;
 
     /**
      * 记时对象
@@ -133,11 +131,6 @@ public class RegisterSmsActivity extends BaseActivity implements AllViewInter {
         });
     }
 
-    public static void setLoginResultListener(String callBack, LoginResultListener listener) {
-        mListener = listener;
-        mCallBack = callBack;
-    }
-
 
     @Override
     public void onSuccessed(int what, Object object) {
@@ -190,17 +183,7 @@ public class RegisterSmsActivity extends BaseActivity implements AllViewInter {
             case NetCode.Personal.getPersonalInfo:
                 ViewUnits.getInstance().missLoading();
                 EventBus.getDefault().post("login_success");
-                if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //改标识表示从卡片页面跳转过来
-                    if (mListener !=null){
-                        mListener.getLoginResultListener(mCallBack, "1");
-                    }
-                    finish();
-                } else {
-                    Intent intent1 = new Intent(RegisterSmsActivity.this, MainActivity.class);  //跳转至首页
-                    intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent1);
-                    finish();
-                }
+                finish();
                 break;
         }
     }

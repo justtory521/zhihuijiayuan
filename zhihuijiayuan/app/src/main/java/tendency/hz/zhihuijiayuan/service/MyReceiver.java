@@ -18,9 +18,12 @@ import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.bean.Card;
 import tendency.hz.zhihuijiayuan.bean.CardItem;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
+import tendency.hz.zhihuijiayuan.bean.base.Uri;
+import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
 import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.MediaUtils;
+import tendency.hz.zhihuijiayuan.units.SPUtils;
 import tendency.hz.zhihuijiayuan.view.card.CardContentActivity;
 
 /**
@@ -37,73 +40,70 @@ public class MyReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Bundle bundle = intent.getExtras();
-//            Log.e(TAG, "[MyReceiver] onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
 
+        if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
 
-        if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
-            String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
-            Log.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
-            //send the Registration Id to your server...
-
-        } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-            Log.d(TAG, "onReceive: " + bundle.getString(JPushInterface.EXTRA_MESSAGE));
-            if (CardContentActivity.getInstance() != null) {
-                String msg = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+            if (BaseUnits.getInstance().isActivityRunning("tendency.hz.zhihuijiayuan.view.card.CardContentActivity")) {
+                String msg = null;
+                if (bundle != null) {
+                    msg = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+                }
+                LogUtils.log("透传："+msg);
                 String functionName = null;
                 try {
                     JSONObject jsonObject = new JSONObject(msg);
                     functionName = jsonObject.getString("FinalFuncName");
                     int cardId = jsonObject.getInt("CardId");
-                    if (cardId == 0 || cardId == Integer.valueOf(CardContentActivity.getInstance().getCardId())) {
-                        CardContentActivity.getInstance().callBackResult(functionName, msg);
+                    //当前页面卡片id
+                    String currentCardID = (String) SPUtils.getInstance().get(SPUtils.FILE_CARD, SPUtils.cardID, "");
+                    if (cardId == 0 || String.valueOf(cardId).equals(currentCardID)) {
+                        Intent i = new Intent();
+                        i.setAction(Request.Broadcast.JG_PUSH);
+                        i.putExtra("functionName", functionName);
+                        i.putExtra("msg", msg);
+                        context.sendBroadcast(i);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (functionName != null) {
-                        CardContentActivity.getInstance().callBackResult(functionName, msg);
+                        Intent i = new Intent();
+                        i.setAction(Request.Broadcast.JG_PUSH);
+                        i.putExtra("functionName", functionName);
+                        i.putExtra("msg", msg);
+                        context.sendBroadcast(i);
                     }
 
                 }
-
             }
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
-            int notificationId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
-            Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notificationId);
-            Log.d(TAG, "[MyReceiver] 用户点击打开了通知" + bundle.getString(JPushInterface.EXTRA_EXTRA));
-
-
             try {
-                JSONObject jsonObject = new JSONObject(bundle.getString(JPushInterface.EXTRA_EXTRA));
-                String sound = jsonObject.getString("Sound");
-                if (!TextUtils.isEmpty(sound)) {
-                    int raw = FormatUtils.getInstance().getResource("raw", sound);
-                    if (raw != 0) {
-                        MediaUtils.getInstance().playAudio(raw);
+                if (bundle != null) {
+                    JSONObject jsonObject = new JSONObject(bundle.getString(JPushInterface.EXTRA_EXTRA));
+                    String sound = jsonObject.getString("Sound");
+                    if (!TextUtils.isEmpty(sound)) {
+                        int raw = FormatUtils.getInstance().getResource("raw", sound);
+                        if (raw != 0) {
+                            MediaUtils.getInstance().playAudio(raw);
+                        } else {
+                            MediaUtils.getInstance().playAudio(R.raw.sound1);
+                        }
+
                     } else {
                         MediaUtils.getInstance().playAudio(R.raw.sound1);
                     }
-
-                } else {
-                    MediaUtils.getInstance().playAudio(R.raw.sound1);
                 }
+
             } catch (JSONException e) {
                 MediaUtils.getInstance().playAudio(R.raw.sound1);
             }
 
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
-            Log.d(TAG, "[MyReceiver] 用户点击接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
+
 
             MediaUtils.getInstance().stopAudio();
-            jump(context, bundle.getString(JPushInterface.EXTRA_EXTRA));
-        } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
-            Log.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
-            //在这里根据 JPushInterface.EXTRA_EXTRA 的内容处理代码，比如打开新的Activity， 打开一个网页等..
-
-        } else if (JPushInterface.ACTION_CONNECTION_CHANGE.equals(intent.getAction())) {
-            boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
-            Log.w(TAG, "[MyReceiver]" + intent.getAction() + " connected state change to " + connected);
-        } else {
-            Log.d(TAG, "[MyReceiver] Unhandled intent - " + intent.getAction());
+            if (bundle != null) {
+                jump(context, bundle.getString(JPushInterface.EXTRA_EXTRA));
+            }
         }
 
     }
@@ -131,7 +131,7 @@ public class MyReceiver extends BroadcastReceiver {
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(i);
                 } else {
-                    if (CardContentActivity.isRunning) {
+                    if (BaseUnits.getInstance().isActivityRunning("tendency.hz.zhihuijiayuan.view.card.CardContentActivity")) {
                         i.setAction(Request.Broadcast.RELOADURL);
                         i.putExtra("id", jsonObject.getString("CardID"));
                         i.putExtra("url", jsonObject.getString("Url"));

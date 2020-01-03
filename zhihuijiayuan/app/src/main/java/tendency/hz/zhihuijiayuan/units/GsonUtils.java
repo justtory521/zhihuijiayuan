@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author：Libin on 2019/5/7 11:44
- * Email：1993911441@qq.com
- * Describe：Gson工具类
+ * Author：Li Bin on 2019/7/26 17:38
+ * Description：
  */
 public class GsonUtils {
+
     private static Gson gson;
 
     static {
@@ -35,6 +35,21 @@ public class GsonUtils {
         String gsonString = null;
         if (gson != null) {
             gsonString = gson.toJson(object);
+        }
+        return gsonString;
+    }
+
+
+    /**
+     * 转成json
+     *
+     * @param list
+     * @return
+     */
+    public static<T> String listToString(List<T> list) {
+        String gsonString = null;
+        if (gson != null) {
+            gsonString = gson.toJson(list);
         }
         return gsonString;
     }
@@ -74,7 +89,4 @@ public class GsonUtils {
         }
         return list;
     }
-
 }
-
-

@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -24,7 +23,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -42,9 +44,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.apkfuns.log2file.LogFileEngineFactory;
-import com.apkfuns.logutils.LogLevel;
-import com.apkfuns.logutils.file.LogFileFilter;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
@@ -52,9 +51,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.tencent.smtt.export.external.extension.interfaces.IX5WebViewExtension;
 import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
-import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
-import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -65,14 +62,25 @@ import com.wearlink.blecomm.BleCommMethod;
 import com.wearlink.blecomm.BleService;
 import com.wearlink.blecomm.OnBleCommProgressListener;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.ref.WeakReference;
 
 import tendency.hz.zhihuijiayuan.MainActivity;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.bean.AppCardItem;
 import tendency.hz.zhihuijiayuan.bean.CardItem;
 import tendency.hz.zhihuijiayuan.bean.IDCardBean;
+import tendency.hz.zhihuijiayuan.bean.LoginResultBean;
+import tendency.hz.zhihuijiayuan.bean.PayResult;
+import tendency.hz.zhihuijiayuan.bean.PayResultBean;
+import tendency.hz.zhihuijiayuan.bean.ScanResultBean;
+import tendency.hz.zhihuijiayuan.bean.SelectCityBean;
+import tendency.hz.zhihuijiayuan.bean.VideoRecorderBean;
 import tendency.hz.zhihuijiayuan.bean.base.App;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
@@ -94,10 +102,12 @@ import tendency.hz.zhihuijiayuan.units.ImageUtils;
 import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.PermissionUtils;
 import tendency.hz.zhihuijiayuan.units.QrCodeUnits;
+import tendency.hz.zhihuijiayuan.units.SPUtils;
 import tendency.hz.zhihuijiayuan.units.UserUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.SplashActivity;
+import tendency.hz.zhihuijiayuan.view.VideoRecorderActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.AndroidBug5497Workaround;
 
@@ -110,8 +120,7 @@ import static tendency.hz.zhihuijiayuan.bean.base.Request.Permissions.REQUEST_RE
  */
 
 public class CardContentActivity extends BaseActivity implements AllViewInter, AndroidToJSCallBack {
-    private static final String TAG = "libin";
-    public static CardContentActivity mInstance;
+
     private ActivityCardContentBinding mBinding;
     private WebView mWebView;
 
@@ -128,7 +137,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
     private boolean isFirstLoaded = true;  //标记是否为第一次加载
     private IntentFilter mFilter = new IntentFilter();
-    public static boolean isRunning = false;
+
     private AnimationDrawable mAnimationDrawable;
     private String mJumpUrl;  //跳转的Url,用于推送消息和消息列表里面页面跳转
     private AndroidtoJS androidtoJS;
@@ -166,6 +175,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         mWebView.setHorizontalScrollBarEnabled(false);
         mWebView.setVerticalScrollBarEnabled(false);
 
+
         IX5WebViewExtension ix5 = mWebView.getX5WebViewExtension();
         if (null != ix5) {
             ix5.setScrollBarFadingEnabled(false);
@@ -175,7 +185,10 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         AndroidBug5497Workaround.assistActivity(mBinding.getRoot());  //解决在沉浸式菜单栏中，软键盘不能顶起页面的bug
 
         mFilter.addAction(Request.Broadcast.RELOADURL);
+        mFilter.addAction(Request.Broadcast.JG_PUSH);
         this.registerReceiver(mBroadcastReceiver, mFilter);
+
+        EventBus.getDefault().register(this);
 
         initView();
 
@@ -185,12 +198,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mInstance = this;
-        isRunning = true;
-    }
 
     @Override
     protected void onRestart() {
@@ -198,11 +205,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         showFocusWindow();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        isRunning = false;
-    }
+
 
     /**
      * 刷新
@@ -215,10 +218,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         return mCardItem.getCardID();
     }
 
-
-    public static CardContentActivity getInstance() {
-        return mInstance;
-    }
 
     private void initData() {
         mCardPrenInter = new CardPrenImpl(this);
@@ -283,7 +282,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
                 if (isFirstLoaded) {
                     mBinding.layoutLoading.setVisibility(View.VISIBLE);
-                    Log.e(TAG, newProgress + "");
+                    LogUtils.log(newProgress + "");
                     if (newProgress >= 100) {
                         isFirstLoaded = false;
                         mBinding.layoutLoading.startAnimation(AnimationUtils.loadAnimation(CardContentActivity.this, R.anim.layout_card_loading_close));
@@ -298,20 +297,10 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 }
             }
 
-//            @Override
-//            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onJsConfirm(WebView webView, String s, String s1, JsResult jsResult) {
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onJsPrompt(WebView webView, String s, String s1, String s2, JsPromptResult jsPromptResult) {
-//                return true;
-//            }
+            @Override
+            public boolean onJsAlert(WebView webView, String s, String s1, JsResult jsResult) {
+                return super.onJsAlert(webView, s, s1, jsResult);
+            }
         });
 
         mWebView.setWebViewClient(new com.tencent.smtt.sdk.WebViewClient() {
@@ -338,7 +327,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         });
 
-        androidtoJS = new AndroidtoJS(this);
+        androidtoJS = new AndroidtoJS(this,this);
         mWebView.addJavascriptInterface(androidtoJS, "NativeForJSUnits");
         mBinding.layoutTitle.setPadding(0, BaseUnits.getInstance().getStatusBarHeight(), 0, 0);
         mBinding.btnTitle.setPadding(0, BaseUnits.getInstance().getStatusBarHeight(), 0, 0);
@@ -400,7 +389,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             if (mWebView.canGoBack()) {
                 mWebView.goBack();
             } else {
-                mInstance = null;
                 finish();
             }
         });
@@ -465,7 +453,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         if (mWebView.canGoBack()) {
             mWebView.goBack();
         } else {
-            mInstance = null;
             finish();
         }
     }
@@ -636,7 +623,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 CacheUnits.getInstance().deleteMyCacheCardById(mCardItem.getCardID());
                 ViewUnits.getInstance().missLoading();
                 ViewUnits.getInstance().showToast("取消成功");
-                mInstance = null;
                 finish();
                 break;
             case NetCode.Card2.checkCanOperate:
@@ -659,6 +645,9 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         mWebView.loadUrl(mCardItem.getCardUrl());
                     }
 
+
+                    //存储当前页面卡片id
+                    SPUtils.getInstance().put(SPUtils.FILE_CARD, SPUtils.cardID, mCardItem.getCardID());
                 });
                 break;
             case NetCode.Card.previewCard:
@@ -688,7 +677,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                         intent.putExtra("cardItem", cardItem);
                         intent.putExtra("type", Request.StartActivityRspCode.CARD_CARDCONTENT_JUMP);
                         startActivity(intent);
-                        mInstance = null;
                         finish();
                     }
                 });
@@ -777,7 +765,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         runOnUiThread(() -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                mWebView.post(() -> mWebView.evaluateJavascript("javascript:" + callBack + "('" + value + "')", s -> Log.e("libin", s)));
+                mWebView.post(() -> mWebView.evaluateJavascript("javascript:" + callBack + "('" + value + "')", s -> LogUtils.log( s)));
             } else {
                 mWebView.post(() -> mWebView.loadUrl("javascript:" + callBack + "('" + value + "')"));
             }
@@ -960,6 +948,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         //清除图片选择器缓存
         PictureFileUtils.deleteCacheDirFile(this);
 
+        EventBus.getDefault().unregister(this);
+
         super.onDestroy();
 
     }
@@ -979,17 +969,128 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             mWebView.clearHistory();
             mWebView.removeAllViews();
             mWebView.destroy();
+            mWebView = null;
         }
+    }
 
+
+    /**
+     * 二维码扫描回调
+     *
+     * @param scanResultBean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void scanResult(ScanResultBean scanResultBean) {
+        LogUtils.log("扫描结果");
+        sendCallback(scanResultBean.getCallback(),"200","success",scanResultBean.getScanResult());
+    }
+
+
+    /**
+     * 登录回调
+     *
+     * @param loginResultBean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void loginResult(LoginResultBean loginResultBean) {
+        LogUtils.log("登录结果");
+        sendCallback(loginResultBean.getCallback(),"200","success","1");
+    }
+
+    /**
+     * 选择城市回调
+     *
+     * @param selectCityBean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void selectCityResult(SelectCityBean selectCityBean) {
+        LogUtils.log("选择城市结果");
+
+        try { JSONObject jsonObject = new JSONObject();
+            JSONObject data = new JSONObject();
+            data.put("cityCode", selectCityBean.getCityCode());
+            data.put("cityName", selectCityBean.getCityName());
+            jsonObject.put("status", "200");
+            jsonObject.put("msg", "success");
+            jsonObject.put("data", data);
+            callBackResult(selectCityBean.getCallback(), jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 录视频回调
+     *
+     * @param videoRecorderBean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void recorderResult(VideoRecorderBean videoRecorderBean) {
+        MyHandler myHandler = new MyHandler(CardContentActivity.this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String data = Base64Utils.fileToBase64(videoRecorderBean.getUrl());
+                Message message = new Message();
+                Bundle b = new Bundle();
+                b.putString("callback", videoRecorderBean.getCallback());
+                b.putString("value", data);
+                message.setData(b);
+                myHandler.sendMessage(message);
+            }
+        }).start();
 
     }
+
+
+    static class MyHandler extends Handler {
+        WeakReference<CardContentActivity > mActivityReference;
+        MyHandler(CardContentActivity activity) {
+            mActivityReference= new WeakReference<CardContentActivity>(activity);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            final CardContentActivity activity = mActivityReference.get();
+            if (activity != null) {
+                Bundle bundle = msg.getData();
+                String callback = bundle.getString("callback");
+                String value = bundle.getString("value");
+                activity.sendCallback(callback,"200","success",value);
+            }
+        }
+    }
+    /**
+     * 支付回调
+     *
+     * @param payResultBean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void payResult(PayResultBean payResultBean) {
+
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("type", payResultBean.getType());
+            jsonObject.put("result", payResultBean.getResultCode());
+            jsonObject.put("source", payResultBean.getSource());
+        } catch (JSONException e) {
+            LogUtils.log( e.toString());
+            e.printStackTrace();
+        }
+
+       callBackResult(payResultBean.getCallback(), jsonObject.toString());
+    }
+
+
+
+
 
     /**
      * 关闭卡片
      */
     public void closeCard() {
         if (mJumpType == Request.StartActivityRspCode.NORMAL_CARDCONTENT_JUMP) {
-            mInstance = null;
             finish();
             return;
         }
@@ -997,18 +1098,15 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         if (mJumpType == Request.StartActivityRspCode.SLPASH_CARDCONTENT_JUMP) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-            mInstance = null;
             finish();
             return;
         }
 
         if (BaseUnits.getInstance().isForeground("tendency.hz.zhihuijiayuan.MainActivity", this)) {
-            mInstance = null;
             finish();
         } else {
             Intent intent = new Intent(this, SplashActivity.class);
             startActivity(intent);
-            mInstance = null;
             finish();
         }
     }
@@ -1017,9 +1115,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Request.Broadcast.RELOADURL)) {
+            if (Request.Broadcast.RELOADURL.equals(action)) {
                 String url = intent.getStringExtra("url");
                 mWebView.loadUrl(url);
+            }else if (Request.Broadcast.JG_PUSH.equals(action)){
+                String functionName = intent.getStringExtra("functionName");
+                String msg = intent.getStringExtra("msg");
+                callBackResult(functionName,msg);
             }
         }
     };
@@ -1068,7 +1170,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 }
 
             } catch (JSONException e) {
-                Log.e(TAG, e.toString());
+                LogUtils.log(e.toString());
                 e.printStackTrace();
             }
         } else {
@@ -1260,7 +1362,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         if (defaultAdapter.isEnabled()) {
             if (bleCommMethod != null) {
                 byte ble_oper = bleCommMethod.bleGetOperator();
-                Log.i(TAG, "bleGetOperator :" + ble_oper);
+                LogUtils.log( "bleGetOperator :" + ble_oper);
                 if (ble_oper == BleCommStatus.OPER_TRAN) {
                     if (data.length() > 32) {
                         ViewUnits.getInstance().showToast("不得超过32个字符");
@@ -1299,7 +1401,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             LogUtils.log(jsonObject.toString());
             callBackResult(callback, jsonObject.toString());
         } catch (JSONException e) {
-            Log.e(TAG, e.toString());
+            LogUtils.log( e.toString());
             callBackResult(callback, "未知错误，联系管理员");
             e.printStackTrace();
         }
@@ -1345,14 +1447,14 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.i(TAG, "onBindService");
+            LogUtils.log("onBindService");
             bleService = ((BleService.MyBinder) service).getService();
             bleService.setOnBleCommProgressListener(onServiceProgressListener);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.e(TAG, "service disconnected.");
+            LogUtils.log("service disconnected.");
         }
 
     };
@@ -1360,7 +1462,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     OnBleCommProgressListener onServiceProgressListener = new OnBleCommProgressListener() {
         @Override
         public void onScanDevice(String device_addr, String device_name, byte adv_flag) {
-            Log.d(TAG, device_addr + ' ' + device_name + "," + isConnect + "," + disconnectOnclick);
+            LogUtils.log(device_addr + ' ' + device_name + "," + isConnect + "," + disconnectOnclick);
             if (blueToothAddress.toUpperCase().equals(device_addr.toUpperCase()) && blueToothName.equals(device_name)
                     && !isConnect && !disconnectOnclick && bleCommMethod.bleGetOperator() != BleCommStatus.OPER_TRAN
             && !CardContentActivity.this.isFinishing()) {
@@ -1414,13 +1516,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
         @Override
         public void onSendSta(int code) {
-            Log.i(TAG, "onSendSta index= " + code);
+            LogUtils.log( "onSendSta index= " + code);
             sendCallback(sendCallback, "200", "success", "写入成功");
         }
 
         @Override
         public void onServiceOpen() {
-            Log.i(TAG, "onServiceOpen");
+            LogUtils.log("onServiceOpen");
             bleCommMethod = bleService.getBleCommMethod();
             bleCommMethod.bleOpen(blueToothName);
         }
@@ -1430,29 +1532,29 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
             switch (oper) {
                 case BleCommStatus.OPER_ADV:
-                    Log.i(TAG, "onStartSuccess bleStartAdvertisementSimulate success");
+                    LogUtils.log("onStartSuccess bleStartAdvertisementSimulate success");
                     break;
                 case BleCommStatus.OPER_CON_REQ:
-                    Log.i(TAG, "onStartSuccess bleStartConnect success");
+                    LogUtils.log("onStartSuccess bleStartConnect success");
                     break;
                 case BleCommStatus.OPER_DISCON_REQ:
-                    Log.i(TAG, "onStartSuccess bleDisConnect success");
+                    LogUtils.log("onStartSuccess bleDisConnect success");
                     break;
 
                 case BleCommStatus.OPER_TRAN:
-                    Log.i(TAG, "onStartSuccess send message requirement success");
+                    LogUtils.log("onStartSuccess send message requirement success");
                     break;
 
                 case BleCommStatus.OPER_OPEN:
-                    Log.i(TAG, "onStartSuccess ble communication session open success");
+                    LogUtils.log("onStartSuccess ble communication session open success");
                     break;
 
                 case BleCommStatus.OPER_CLOSE:
-                    Log.i(TAG, "onStartSuccess ble communication session close success");
+                    LogUtils.log("onStartSuccess ble communication session close success");
                     break;
 
                 default:
-                    Log.i(TAG, "onStartSuccess reserve operation  " + oper);
+                    LogUtils.log("onStartSuccess reserve operation  " + oper);
                     break;
             }
         }
@@ -1463,28 +1565,28 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             switch (oper) {
                 case BleCommStatus.OPER_ADV:
                     if (errorCode == BleCommStatus.BLE_ERROR_INVALID_PARAMETER) { // 1
-                        Log.w(TAG, "onStartFailure bleStartAdvertisementSimulate parameter fail");
+                        LogUtils.log("onStartFailure bleStartAdvertisementSimulate parameter fail");
                         strErrorMsg = "onStartFailure bleStartAdvertisementSimulate parameter fail";
                     } else if (errorCode == BleCommStatus.BLE_ERROR_INVALID_OPERATION) {
-                        Log.w(TAG, "onStartFailure bleStartAdvertisementSimulate operation error");
+                        LogUtils.log( "onStartFailure bleStartAdvertisementSimulate operation error");
                     }
                     strErrorMsg = "onStartFailure bleStartAdvertisementSimulate operation error";
                     break;
                 case BleCommStatus.OPER_CON_REQ:
                     if (errorCode == BleCommStatus.BLE_ERROR_INVALID_PARAMETER) { // 1
-                        Log.w(TAG, "onStartFailure bleStartConnect parameter incorrect");
+                        LogUtils.log( "onStartFailure bleStartConnect parameter incorrect");
                         strErrorMsg = "onStartFailure bleStartConnect parameter incorrect";
                     } else if (errorCode == BleCommStatus.BLE_ERROR_INVALID_OPERATION) {
-                        Log.w(TAG, "onStartFailure bleStartConnect operation error");
+                        LogUtils.log("onStartFailure bleStartConnect operation error");
                         strErrorMsg = "onStartFailure bleStartConnect operation error";
                     }
                     break;
                 case BleCommStatus.OPER_DISCON_REQ:
                     if (errorCode == BleCommStatus.BLE_ERROR_INVALID_PARAMETER) { // 1
-                        Log.w(TAG, "onStartFailure bleDisConnect parameter incorrect");
+                        LogUtils.log( "onStartFailure bleDisConnect parameter incorrect");
                         strErrorMsg = "onStartFailure bleDisConnect parameter incorrect";
                     } else if (errorCode == BleCommStatus.BLE_ERROR_INVALID_OPERATION) {
-                        Log.w(TAG, "onStartFailure bleDisConnect operation error");
+                        LogUtils.log("onStartFailure bleDisConnect operation error");
                         strErrorMsg = "onStartFailure bleDisConnect operation error";
                     }
 
@@ -1492,16 +1594,16 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
                 case BleCommStatus.OPER_TRAN:
                     if (errorCode == BleCommStatus.BLE_ERROR_INVALID_PARAMETER) { // 1
-                        Log.w(TAG, "onStartFailure bleSendMessage parameter incorrect");
+                        LogUtils.log("onStartFailure bleSendMessage parameter incorrect");
                         strErrorMsg = "onStartFailure bleSendMessage parameter incorrect";
                     } else if (errorCode == BleCommStatus.BLE_ERROR_INVALID_OPERATION) {
-                        Log.w(TAG, "onStartFailure ble connection interval operation error");
+                        LogUtils.log("onStartFailure ble connection interval operation error");
                         strErrorMsg = "onStartFailure ble connection interval operation error";
                     }
                     break;
 
                 default:
-                    Log.w(TAG, "onStartFailure reserve operation  " + oper + ' ' + errorCode);
+                    LogUtils.log("onStartFailure reserve operation  " + oper + ' ' + errorCode);
                     strErrorMsg = "onStartFailure reserve operation  " + oper + ' ' + errorCode;
                     break;
             }

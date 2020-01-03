@@ -20,6 +20,8 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 
+import tendency.hz.zhihuijiayuan.application.MyApplication;
+
 /**
  * author : HLQ
  * e-mail : 925954424@qq.com
@@ -46,7 +48,7 @@ public class MacUtils {
      */
     private static WifiManager getInstant(Context context) {
         if (mWifiManager == null) {
-            mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         }
         return mWifiManager;
     }
@@ -67,12 +69,11 @@ public class MacUtils {
      * MAC地址：物理地址、硬件地址，用来定义网络设备的位置
      * modify by heliquan at 2018年1月17日
      *
-     * @param context
      * @return
      */
-    public static String getMobileMAC(Context context) {
+    public static String getMobileMAC() {
         MESSAGE.setLength(0);
-        mWifiManager = getInstant(context);
+        mWifiManager = getInstant(MyApplication.getInstance());
         // 如果当前设备系统大于等于6.0 使用下面的方法
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return getAndroidHighVersionMac();

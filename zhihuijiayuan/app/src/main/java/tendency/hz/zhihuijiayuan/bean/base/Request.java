@@ -38,6 +38,7 @@ public class Request {
 
     public static final class Broadcast {
         public static final String RELOADURL = "reloadUrl"; //刷新页面
+        public static final String JG_PUSH = "push"; //极光透传
         public static final String SENDBAIDU = "sendBaidu"; //发送百度定位点
     }
 

@@ -52,7 +52,7 @@ public class NoHttpUtil {
 
         Request<String> request = NoHttp.createStringRequest(Url, RequestMethod.POST);
         request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         if (paramList != null) {
             for (Param param : paramList) {
@@ -71,7 +71,7 @@ public class NoHttpUtil {
         Request<String> request = NoHttp.createStringRequest(url, RequestMethod.GET);
         request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         if (paramList != null) {
             for (Param param : paramList) {
@@ -88,7 +88,7 @@ public class NoHttpUtil {
     public static void postImage(int what, String url, OnResponseListener listener, List<Param> paramList) {
         Request<byte[]> request = NoHttp.createByteArrayRequest(url, RequestMethod.POST);
         request.setCacheMode(CacheMode.ONLY_REQUEST_NETWORK);
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         if (paramList != null) {
             for (Param param : paramList) {
                 if (param.getKey().equals("pic")) {

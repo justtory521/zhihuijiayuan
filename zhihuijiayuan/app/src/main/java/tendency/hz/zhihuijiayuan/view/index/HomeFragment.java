@@ -255,6 +255,16 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
                     }
                 }
             }
+
+            @Override
+            public void onLocDiagnosticMessage(int i, int i1, String s) {
+                LogUtils.log("定位失败：" + i1 + "," + s);
+
+                if (ConfigUnits.getInstance().getFirstInstallStatus()) {  //第一次安装
+                    ConfigUnits.getInstance().setFirstInstallStatus(false);
+                    getMyCard();
+                }
+            }
         });
     }
 

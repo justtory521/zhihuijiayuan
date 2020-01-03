@@ -22,6 +22,8 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.tools.PictureFileUtils;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -33,6 +35,7 @@ import cn.bertsir.zbar.ScanCallback;
 import cn.bertsir.zbar.utils.QRUtils;
 import cn.bertsir.zbar.view.ScanView;
 import tendency.hz.zhihuijiayuan.R;
+import tendency.hz.zhihuijiayuan.bean.ScanResultBean;
 import tendency.hz.zhihuijiayuan.bean.base.Uri;
 import tendency.hz.zhihuijiayuan.inter.QrCodeScanInter;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
@@ -54,8 +57,6 @@ public class ScanQRCodeActivity extends BaseActivity {
     @BindView(R.id.cb_flash_light)
     CheckBox cbFlashLight;
 
-
-    public static QrCodeScanInter mQrCodeScanInter;  //在AndroidForJSUnits中使用
     private String mCallBack;
     private String scanResult;
 
@@ -125,15 +126,6 @@ public class ScanQRCodeActivity extends BaseActivity {
     };
 
 
-    /**
-     * 在AndroidForJSUnits中动态设置扫描结果监听类
-     *
-     * @param qrCodeScanInter
-     */
-    public static void setQrCodeScanInter(QrCodeScanInter qrCodeScanInter) {
-        mQrCodeScanInter = qrCodeScanInter;
-    }
-
 
     private void scanResult(String result) {
         vibrate();
@@ -141,9 +133,8 @@ public class ScanQRCodeActivity extends BaseActivity {
         intent.putExtra("result", result);
         this.setResult(RESULT_OK, intent);
         //如果QrCodeScan不为空，这执行相关回调，同时销毁对象，防止内存堆积
-        if (mQrCodeScanInter != null && !TextUtils.isEmpty(result)) {
-            mQrCodeScanInter.getQrCodeScanResult(mCallBack, result);
-            mQrCodeScanInter = null;
+        if (!TextUtils.isEmpty(result)) {
+            EventBus.getDefault().post(new ScanResultBean(mCallBack,result));
         }
         finish();
     }

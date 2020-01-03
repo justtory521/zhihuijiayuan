@@ -16,6 +16,7 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.bean.CardOrder;
 import tendency.hz.zhihuijiayuan.bean.Order;
+import tendency.hz.zhihuijiayuan.bean.PayResultBean;
 import tendency.hz.zhihuijiayuan.bean.base.App;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
@@ -48,13 +50,12 @@ public class CheckstandActivity extends BaseActivity implements AllViewInter, Vi
 
     private PayPrenInter mPayPrenInter;
 
-    public static PayResultInter mPayResultInter;
 
     private final IWXAPI api = WXAPIFactory.createWXAPI(this, App.Pay.WX_APP_ID);
 
     private Order mOrder;
     private String aliOrder;
-    private static String mCallBack;
+    private  String mCallBack;
     private String cardId;
 
     private JSONObject mSource = new JSONObject();
@@ -75,7 +76,8 @@ public class CheckstandActivity extends BaseActivity implements AllViewInter, Vi
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                runOnUiThread(() -> mPayResultInter.getPayResult("1", "500", mSource, mCallBack));
+                runOnUiThread(() -> EventBus.getDefault().post(new PayResultBean(mCallBack,"1","500",mSource)));
+               close();
                 return;
             }
             Map<String, String> resultObj = (Map<String, String>) msg.obj;
@@ -97,7 +99,8 @@ public class CheckstandActivity extends BaseActivity implements AllViewInter, Vi
                 order.setResultStatus(resultObj.get("resultStatus"));
                 mPayPrenInter.alipayResultNotify(NetCode.Pay.AlipayResultNotify, order);
             } else {
-                runOnUiThread(() -> mPayResultInter.getPayResult("1", "500", mSource, mCallBack));
+                runOnUiThread(() -> EventBus.getDefault().post(new PayResultBean(mCallBack,"1","500",mSource)));
+                close();
             }
         }
     };
@@ -241,12 +244,11 @@ public class CheckstandActivity extends BaseActivity implements AllViewInter, Vi
                 ViewUnits.getInstance().missLoading();
                 aliOrder = (String) object;
                 aliPay();
-
-
                 break;
             case NetCode.Pay.AlipayResultNotify:
                 Log.e(TAG, mSource.toString());
-                runOnUiThread(() -> mPayResultInter.getPayResult("1", "200", mSource, mCallBack));
+                runOnUiThread(() -> EventBus.getDefault().post(new PayResultBean(mCallBack,"1","200",mSource)));
+                close();
                 break;
             case NetCode.Pay.createWeixinPayOrder:
                 mOrder = (Order) object;
@@ -298,12 +300,6 @@ public class CheckstandActivity extends BaseActivity implements AllViewInter, Vi
         }
     }
 
-    /**
-     * 在AndroidForJSUnits中动态获取支付结果监听类
-     */
-    public static void setPayResultInter(PayResultInter payResultInter) {
-        mPayResultInter = payResultInter;
-    }
 
     /**
      * 在WXPayEntryActivity中动态设置支付结果
@@ -320,26 +316,21 @@ public class CheckstandActivity extends BaseActivity implements AllViewInter, Vi
         }
 
         if (result) {
-            runOnUiThread(() -> mPayResultInter.getPayResult("2", "200", mSource, mCallBack));
+            runOnUiThread(() -> EventBus.getDefault().post(new PayResultBean(mCallBack,"2","200",mSource)));
         } else {
-            runOnUiThread(() -> mPayResultInter.getPayResult("2", "500", mSource, mCallBack));
+            runOnUiThread(() -> EventBus.getDefault().post(new PayResultBean(mCallBack,"2","500",mSource)));
         }
+
+        close();
 
     }
 
     public void close(){
         mInstance = null;
-        mPayResultInter = null;
         finish();
-
-
     }
 
-    @Override
-    protected void onDestroy() {
 
-        super.onDestroy();
-    }
 }
 
 

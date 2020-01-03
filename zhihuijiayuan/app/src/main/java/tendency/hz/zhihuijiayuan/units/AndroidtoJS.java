@@ -2,6 +2,8 @@ package tendency.hz.zhihuijiayuan.units;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.content.ClipData;
@@ -11,6 +13,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -31,16 +36,27 @@ import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.google.gson.Gson;
 import com.inuker.bluetooth.library.Constants;
@@ -79,6 +95,9 @@ import tendency.hz.zhihuijiayuan.bean.AddressBookBean;
 import tendency.hz.zhihuijiayuan.bean.Bt;
 import tendency.hz.zhihuijiayuan.bean.CardOrder;
 import tendency.hz.zhihuijiayuan.bean.City;
+import tendency.hz.zhihuijiayuan.bean.DialogBean;
+import tendency.hz.zhihuijiayuan.bean.MenuBean;
+import tendency.hz.zhihuijiayuan.bean.ToastBean;
 import tendency.hz.zhihuijiayuan.bean.base.Config;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.bean.base.What;
@@ -106,6 +125,8 @@ import tendency.hz.zhihuijiayuan.view.user.LoginByPwdFragment;
 import tendency.hz.zhihuijiayuan.view.user.LoginSmsActivity;
 import tendency.hz.zhihuijiayuan.view.user.RegisterSetPwdActivity;
 import tendency.hz.zhihuijiayuan.view.user.RegisterSmsActivity;
+import tendency.hz.zhihuijiayuan.view.user.UserCreditActivity;
+import tendency.hz.zhihuijiayuan.view.user.UserInfoActivity;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
@@ -117,7 +138,7 @@ import static tendency.hz.zhihuijiayuan.bean.base.Request.Permissions.REQUEST_RE
 /**
  * Created by JasonYao on 2018/9/3.
  */
-public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResultInter, LoginResultListener, CityPickerResultListener, OnVideoRecorderListener {
+public class AndroidtoJS implements ShareResultInter {
     private static final String TAG = "libin";
 
     //巡逻相关
@@ -145,8 +166,11 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     //卡片参数
     public String cardUrlParams;
 
+    private CardContentActivity mContext;
 
-    public AndroidtoJS(AndroidToJSCallBack callBack) {
+
+    public AndroidtoJS(Context context, AndroidToJSCallBack callBack) {
+        mContext = (CardContentActivity) context;
         this.mCallBack = callBack;
     }
 
@@ -177,7 +201,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         JSONObject jsonObject = new JSONObject();
         JSONObject data = new JSONObject();
         try {
-            data.put("mac", MacUtils.getMobileMAC(MyApplication.getInstance()));
+            data.put("mac", MacUtils.getMobileMAC());
             data.put("imei", BaseUnits.getInstance().getIMEI());
             data.put("imsi", BaseUnits.getInstance().getIMSI());
             data.put("phone", BaseUnits.getInstance().getTel());
@@ -257,14 +281,13 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void qrScan(String callBack) {
 
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.CAMERA)) {
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(MyApplication.getInstance().getBaseContext(), ScanQRCodeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("callBack", callBack);
-            ScanQRCodeActivity.setQrCodeScanInter(AndroidtoJS.this);
-            MyApplication.getInstance().getBaseContext().startActivity(intent);
+            mContext.startActivity(intent);
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
         }
 
@@ -288,7 +311,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
 
     @JavascriptInterface
     public void getStatusBarHeight(String callBack) {
-        sendCallBack(callBack, "200", "success", BaseUnits.getInstance().getStatusBarHeight() + "");
+        sendCallBack(callBack, "200", "success", ViewUnits.getInstance().px2dip(BaseUnits.getInstance().getStatusBarHeight()) + "");
     }
 
     @JavascriptInterface
@@ -326,12 +349,12 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void call(String number) {
 
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.CALL_PHONE)) {
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CALL_PHONE)) {
             Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + number));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             MyApplication.getInstance().startActivity(intent);
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.CALL_PHONE}, Request.Permissions.REQUEST_CALL_PHONE);
         }
 
@@ -343,8 +366,8 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void finish() {
-        if (CardContentActivity.getInstance() != null) {
-            CardContentActivity.getInstance().closeCard();
+        if (mContext != null) {
+            mContext.closeCard();
         }
     }
 
@@ -405,13 +428,12 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             CardOrder cardOrder = mGson.fromJson(jsonObject.toString(), CardOrder.class);
 
             if (cardOrder != null) {
-                Intent intent = new Intent(CardContentActivity.getInstance(), CheckstandActivity.class);
+                Intent intent = new Intent(mContext, CheckstandActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("CardOrder", cardOrder);
                 intent.putExtra("CallBack", cardOrder.getCallback());
-                intent.putExtra("cardId", CardContentActivity.getInstance().getCardId());
-                CheckstandActivity.setPayResultInter(this);
-                CardContentActivity.getInstance().startActivity(intent);
+                intent.putExtra("cardId", mContext.getCardId());
+                mContext.startActivity(intent);
             }
 
         } catch (JSONException e) {
@@ -556,7 +578,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void getPhoto(String callBack) {
-        CardContentActivity.getInstance().takePhoto(imageData -> {
+        mContext.takePhoto(imageData -> {
             Log.e(TAG, imageData);
             sendCallBack(callBack, "200", "success", "data:image/jpeg;base64," + imageData);
         });
@@ -580,7 +602,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             int height = Integer.parseInt(split[1]);
 
 
-            CardContentActivity.getInstance().takePhoto(imageData -> {
+            mContext.takePhoto(imageData -> {
                 Log.e(TAG, imageData);
                 sendCallBack(callback, "200", "success", "data:image/jpeg;base64," + imageData);
             }, width, height);
@@ -596,7 +618,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void OpenGallery(String callBack) {
-        CardContentActivity.getInstance().openGallery(imageData -> {
+        mContext.openGallery(imageData -> {
             Log.e(TAG, imageData);
             sendCallBack(callBack, "200", "success", "data:image/jpeg;base64," + imageData);
         });
@@ -621,7 +643,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             int height = Integer.parseInt(split[1]);
 
 
-            CardContentActivity.getInstance().openGallery(imageData -> {
+            mContext.openGallery(imageData -> {
                 Log.e(TAG, imageData);
                 sendCallBack(callback, "200", "success", "data:image/jpeg;base64," + imageData);
             }, width, height);
@@ -639,7 +661,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void OpenTheCamera(String callBack) {
-        CardContentActivity.getInstance().openTheCamera(imageData -> {
+        mContext.openTheCamera(imageData -> {
             Log.e(TAG, imageData);
             sendCallBack(callBack, "200", "success", "data:image/jpeg;base64," + imageData);
         });
@@ -663,7 +685,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             int width = Integer.parseInt(split[0]);
             int height = Integer.parseInt(split[1]);
 
-            CardContentActivity.getInstance().openTheCamera(imageData -> {
+            mContext.openTheCamera(imageData -> {
                 Log.e(TAG, imageData);
                 sendCallBack(callback, "200", "success", "data:image/jpeg;base64," + imageData);
             }, width, height);
@@ -757,7 +779,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         if (BaseUnits.getInstance().isApkInstalled(MyApplication.getInstance(), Config.BAIDU_PKG)) {
             Intent intent = new Intent();
             intent.setData(Uri.parse(getWakeUpBMapUrl(data)));
-            CardContentActivity.getInstance().startActivity(intent);
+            mContext.startActivity(intent);
         } else {
             ViewUnits.getInstance().showToast("未安装百度地图");
         }
@@ -775,7 +797,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             Intent intent = new Intent();
             intent.setPackage(Config.AMAP_PKG);
             intent.setData(Uri.parse(getWakeUpAMapUrl(data)));
-            CardContentActivity.getInstance().startActivity(intent);
+            mContext.startActivity(intent);
         } else {
             ViewUnits.getInstance().showToast("未安装高德地图");
         }
@@ -784,19 +806,15 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     /**
      * 跳转至登录
      *
-     * @param data
+     * @param callback
      */
     @JavascriptInterface
-    public void toLogin(String data) {
-        Log.d(TAG, "toLogin: " + data);
-        LoginActivity.setLoginResultListener(data, this);
-        LoginSmsActivity.setLoginResultListener(data, this);
-        LoginByPwdFragment.setLoginResultListener(data, this);
-        RegisterSmsActivity.setLoginResultListener(data, this);
-        RegisterSetPwdActivity.setLoginResultListener(data, this);
-        Intent intent = new Intent(CardContentActivity.getInstance(), LoginActivity.class);
+    public void toLogin(String callback) {
+        Log.d(TAG, "toLogin: " + callback);
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        intent.putExtra("callback", callback);
         intent.putExtra("flag", Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN);
-        CardContentActivity.getInstance().startActivity(intent);
+        mContext.startActivity(intent);
     }
 
     /**
@@ -808,22 +826,23 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     public void choiceCity(String data) {
         Log.e(TAG, data);
         City city = new City();
-        String callBack = null;
+        String callback = null;
         try {
             JSONObject jsonObject = new JSONObject(data);
             city.setID(jsonObject.getString("cityCode"));
             city.setName(jsonObject.getString("cityName"));
-            callBack = jsonObject.getString("callback");
+            callback = jsonObject.getString("callback");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        CityPickerActivity.setCityPickerResultListener(callBack, this);
-        Intent intent = new Intent(CardContentActivity.getInstance(), CityPickerActivity.class);
+
+        Intent intent = new Intent(mContext, CityPickerActivity.class);
         intent.putExtra("flag", Request.StartActivityRspCode.CARD_JUMP_TO_CITYPICKER);
+        intent.putExtra("callback", callback);
         if (!city.getID().equals("0")) {
             intent.putExtra("city", city);
         }
-        CardContentActivity.getInstance().startActivity(intent);
+        mContext.startActivity(intent);
     }
 
 
@@ -834,7 +853,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void loadingNewCard(String url) {
-        CardContentActivity.getInstance().loadingNewCard(url);
+        mContext.loadingNewCard(url);
     }
 
     /**
@@ -865,12 +884,12 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                     cardUrlParams = null;
                 }
 
-                CardContentActivity.getInstance().openNewCard(cardId);
+                mContext.openNewCard(cardId);
 
 
             } catch (JSONException e) {
                 cardUrlParams = null;
-                CardContentActivity.getInstance().openNewCard(cardId);
+                mContext.openNewCard(cardId);
             }
 
 
@@ -878,7 +897,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             e.printStackTrace();
 
             cardUrlParams = null;
-            CardContentActivity.getInstance().openNewCard(value);
+            mContext.openNewCard(value);
         }
 
 
@@ -898,15 +917,15 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             return;
         }
 
-        if (ClientManager.getClient(CardContentActivity.getInstance()).isBluetoothOpened()) {
+        if (ClientManager.getClient(mContext).isBluetoothOpened()) {
             scanBluetooth(callBack);
         } else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            CardContentActivity.getInstance().startActivityForResult(enableBtIntent, Request.Bluetooth.bluetoothEnable);
+            mContext.startActivityForResult(enableBtIntent, Request.Bluetooth.bluetoothEnable);
         }
 
 
-        ClientManager.getClient(CardContentActivity.getInstance()).registerBluetoothStateListener(new BluetoothStateListener() {
+        ClientManager.getClient(mContext).registerBluetoothStateListener(new BluetoothStateListener() {
             @Override
             public void onBluetoothStateChanged(boolean openOrClosed) {
                 if (openOrClosed) {
@@ -940,7 +959,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         Log.e(TAG, "扫描蓝牙");
         Map<String, String> map = new HashMap<>();
 
-        ClientManager.getClient(CardContentActivity.getInstance()).search(ClientManager.getRequest(), new SearchResponse() {
+        ClientManager.getClient(mContext).search(ClientManager.getRequest(), new SearchResponse() {
             @Override
             public void onSearchStarted() {
             }
@@ -996,13 +1015,13 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             return;
         }
 
-        if (ClientManager.getClient(CardContentActivity.getInstance()).isBluetoothOpened()) {
+        if (ClientManager.getClient(mContext).isBluetoothOpened()) {
             connect(value);
         } else {
-            ClientManager.getClient(CardContentActivity.getInstance()).openBluetooth();
+            ClientManager.getClient(mContext).openBluetooth();
         }
 
-        ClientManager.getClient(CardContentActivity.getInstance()).registerBluetoothStateListener(new BluetoothStateListener() {
+        ClientManager.getClient(mContext).registerBluetoothStateListener(new BluetoothStateListener() {
             @Override
             public void onBluetoothStateChanged(boolean openOrClosed) {
                 Log.d(TAG, "onBluetoothStateChanged: " + "蓝牙已打开");
@@ -1027,7 +1046,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         LogUtils.log(value);
         Map<String, String> map = new HashMap<>();
 
-        ClientManager.getClient(CardContentActivity.getInstance()).search(ClientManager.getRequest(), new SearchResponse() {
+        ClientManager.getClient(mContext).search(ClientManager.getRequest(), new SearchResponse() {
             @Override
             public void onSearchStarted() {
             }
@@ -1042,6 +1061,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
 
             @Override
             public void onSearchStopped() {
+                LogUtils.log("蓝牙扫描结束");
                 String name, writerServerId, writerCharactId, readServerId, readCharactId, notifyServerId, notifyCharacId, callBack, notifyCallback;
                 try {
                     JSONObject jsonObject = new JSONObject(value);
@@ -1059,7 +1079,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                     if (map.size() > 0 && map.containsValue(name)) {
                         for (Map.Entry<String, String> entry : map.entrySet()) {
                             if (entry.getValue().equals(name)) {
-                                if (ClientManager.getClient(CardContentActivity.getInstance()).getConnectStatus(entry.getKey()) == Constants.STATUS_DEVICE_CONNECTED) {
+                                if (ClientManager.getClient(mContext).getConnectStatus(entry.getKey()) == Constants.STATUS_DEVICE_CONNECTED) {
                                     mConnectBt.setName(entry.getValue());
                                     mConnectBt.setAddress(entry.getKey());
                                     mConnectBt.setWriteSUUID(UUID.fromString(writerServerId));
@@ -1070,13 +1090,13 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                                     mConnectBt.setNotifyCUUID(UUID.fromString(notifyCharacId));
                                     sendCallBack(callBack, "200", "success", "连接成功");
                                 } else {
-                                    ClientManager.getClient(CardContentActivity.getInstance()).connect(entry.getKey(), ClientManager.getOption(), (code, data) -> {
+                                    ClientManager.getClient(mContext).connect(entry.getKey(), ClientManager.getOption(), (code, data) -> {
                                         if (code == REQUEST_SUCCESS) {
                                             LogUtils.log("连接成功");
                                             sendCallBack(callBack, "200", "success", "连接成功");
 
 
-                                            ClientManager.getClient(CardContentActivity.getInstance()).registerConnectStatusListener(entry.getKey(), new BleConnectStatusListener() {
+                                            ClientManager.getClient(mContext).registerConnectStatusListener(entry.getKey(), new BleConnectStatusListener() {
                                                 @Override
                                                 public void onConnectStatusChanged(String mac, int status) {
                                                     if (status == Constants.STATUS_DISCONNECTED) {
@@ -1137,6 +1157,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                         }
 
                     } else {
+                        LogUtils.log("未查找到相应蓝牙");
                         sendCallBack(callBack, "500", "fail", "未查找到相应蓝牙");
                     }
 
@@ -1169,11 +1190,11 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             String callBack = jsonObject.getString("callback");
 
             if (mConnectBt.getAddress() == null ||
-                    ClientManager.getClient(CardContentActivity.getInstance()).getConnectStatus(mConnectBt.getAddress()) != Constants.STATUS_DEVICE_CONNECTED) {
+                    ClientManager.getClient(mContext).getConnectStatus(mConnectBt.getAddress()) != Constants.STATUS_DEVICE_CONNECTED) {
                 sendCallBack(callBack, "500", "fail", "请先连接蓝牙设备");
                 return;
             }
-            ClientManager.getClient(CardContentActivity.getInstance()).write(mConnectBt.getAddress(),
+            ClientManager.getClient(mContext).write(mConnectBt.getAddress(),
                     mConnectBt.getWriteSUUID(), mConnectBt.getWriteCUUID(), FormatUtils.getInstance().hexStringToBytes(value), code -> {
                         if (code == REQUEST_SUCCESS) {
                             sendCallBack(callBack, "200", "success", value);
@@ -1198,15 +1219,15 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void bluetooth_read(String value) {
         Log.e(TAG, mConnectBt.getAddress());
-        Log.e(TAG, ClientManager.getClient(CardContentActivity.getInstance()).getConnectStatus(mConnectBt.getAddress()) + "");
+        Log.e(TAG, ClientManager.getClient(mContext).getConnectStatus(mConnectBt.getAddress()) + "");
 
         if (mConnectBt.getAddress() == null ||
-                ClientManager.getClient(CardContentActivity.getInstance()).getConnectStatus(mConnectBt.getAddress()) != Constants.STATUS_DEVICE_CONNECTED) {
+                ClientManager.getClient(mContext).getConnectStatus(mConnectBt.getAddress()) != Constants.STATUS_DEVICE_CONNECTED) {
             sendCallBack(value, "500", "fail", "请先连接蓝牙设备");
             return;
         }
 
-        ClientManager.getClient(CardContentActivity.getInstance()).read(mConnectBt.getAddress(), mConnectBt.getReadSUUID(), mConnectBt.getReadCUUID(),
+        ClientManager.getClient(mContext).read(mConnectBt.getAddress(), mConnectBt.getReadSUUID(), mConnectBt.getReadCUUID(),
                 (code, data) -> {
                     if (code == REQUEST_SUCCESS) {
                         sendCallBack(value, "200", "success", FormatUtils.getInstance().byteToString(data));
@@ -1227,7 +1248,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         Log.e(TAG, callback);
 //
 //        if (mConnectBt.getAddress() == null ||
-//                ClientManager.getClient(CardContentActivity.getInstance()).getConnectStatus(mConnectBt.getAddress()) != Constants.STATUS_DEVICE_CONNECTED) {
+//                ClientManager.getClient(mContext).getConnectStatus(mConnectBt.getAddress()) != Constants.STATUS_DEVICE_CONNECTED) {
 //            sendCallBack(callback, "500", "fail", "请先连接蓝牙设备");
 //            isOpenNotify = false;
 //            return;
@@ -1299,9 +1320,9 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void bluetooth_disconnect(String value) {
         Log.d("libin", "bluetooth_disconnect: " + value);
-        if (mConnectBt.getAddress() != null && ClientManager.getClient(CardContentActivity.getInstance())
+        if (mConnectBt.getAddress() != null && ClientManager.getClient(mContext)
                 .getConnectStatus(mConnectBt.getAddress()) == Constants.STATUS_DEVICE_CONNECTED) {
-            ClientManager.getClient(CardContentActivity.getInstance()).disconnect(mConnectBt.getAddress());
+            ClientManager.getClient(mContext).disconnect(mConnectBt.getAddress());
         }
 
         sendCallBack(value, "200", "success", "断开成功");
@@ -1312,9 +1333,9 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      * 断开连接
      */
     public void disconnectBluetooth() {
-        if (mConnectBt.getAddress() != null && ClientManager.getClient(CardContentActivity.getInstance())
+        if (mConnectBt.getAddress() != null && ClientManager.getClient(mContext)
                 .getConnectStatus(mConnectBt.getAddress()) == Constants.STATUS_DEVICE_CONNECTED) {
-            ClientManager.getClient(CardContentActivity.getInstance()).disconnect(mConnectBt.getAddress());
+            ClientManager.getClient(mContext).disconnect(mConnectBt.getAddress());
         }
     }
 
@@ -1351,7 +1372,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                     @Override
                     public void onTick(long millisUntilFinished) {
                         if (defaultAdapter.isEnabled()) {
-                            CardContentActivity.getInstance().connectBlueTooth(callBack, notifyCallback, name, address);
+                            mContext.connectBlueTooth(callBack, notifyCallback, name, address);
                             cancel();
                         }
                     }
@@ -1362,7 +1383,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                     }
                 }.start();
             } else {
-                CardContentActivity.getInstance().connectBlueTooth(callBack, notifyCallback, name, address);
+                mContext.connectBlueTooth(callBack, notifyCallback, name, address);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1382,7 +1403,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             String value = jsonObject.getString("key");
             String callBack = jsonObject.getString("callback");
 
-            CardContentActivity.getInstance().sendData(callBack, value);
+            mContext.sendData(callBack, value);
         } catch (JSONException e) {
             e.printStackTrace();
             ViewUnits.getInstance().showToast(e.toString());
@@ -1409,7 +1430,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void Bluetooth_break(String value) {
         Log.e(TAG, value);
-        CardContentActivity.getInstance().disConnectBluetooth(value);
+        mContext.disConnectBluetooth(value);
 
     }
 
@@ -1433,7 +1454,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void fingerPrint_unlocking(String value) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            FingerprintManagerCompat fingerprintManagerCompat = FingerprintManagerCompat.from(CardContentActivity.getInstance());
+            FingerprintManagerCompat fingerprintManagerCompat = FingerprintManagerCompat.from(mContext);
 
             if (fingerprintManagerCompat.isHardwareDetected()) {
                 if (fingerprintManagerCompat.hasEnrolledFingerprints()) {
@@ -1477,7 +1498,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             FingerPrintFragment fragment = new FingerPrintFragment();
             fragment.setCipher(cipher);
             fragment.setCallback(callback);
-            fragment.show(CardContentActivity.getInstance().getFragmentManager(), "fingerprint");
+            fragment.show(mContext.getFragmentManager(), "fingerprint");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1516,8 +1537,8 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void getAddressBook(String value) {
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.READ_CONTACTS)) {
-            Cursor cursor = CardContentActivity.getInstance().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.READ_CONTACTS)) {
+            Cursor cursor = mContext.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME},
                     null, null, null);
             AddressBookBean bookBean = new AddressBookBean();
@@ -1539,7 +1560,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             bookBean.setData(dataList);
             mCallBack.callBackResult(value, GsonUtils.jsonString(bookBean));
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACTS_PERMISSIONS);
         }
 
@@ -1595,11 +1616,11 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             time = jsonObject.getInt("time");
             callBack = jsonObject.getString("callback");
 
-            if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.RECORD_AUDIO)) {
+            if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.RECORD_AUDIO)) {
                 RecordAudioFragment recordAudioFragment = RecordAudioFragment.newInstance(callBack, time > 60 ? 60 : time);
-                recordAudioFragment.show(CardContentActivity.getInstance().getFragmentManager(), "record_audio");
+                recordAudioFragment.show(mContext.getFragmentManager(), "record_audio");
             } else {
-                ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+                ActivityCompat.requestPermissions(mContext,
                         new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_PERMISSIONS);
             }
         } catch (JSONException e) {
@@ -1624,11 +1645,11 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             audio = jsonObject.getString("value");
             byte[] decode = Base64Utils.decode(audio);
             String audioPath = FileUtils.getInstance().saveAudioToFile(decode);
-            CardContentActivity.getInstance().runOnUiThread(new Runnable() {
+            mContext.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     PlayAudioFragment playAudioFragment = PlayAudioFragment.newInstance(audioPath);
-                    playAudioFragment.show(CardContentActivity.getInstance().getFragmentManager(), "audio");
+                    playAudioFragment.show(mContext.getFragmentManager(), "audio");
                 }
             });
 
@@ -1651,7 +1672,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             gyTime = jsonObject.getDouble("time");
             gyCallback = jsonObject.getString("callback");
 
-            mSensorManager = (SensorManager) CardContentActivity.getInstance().getSystemService(Context.SENSOR_SERVICE);
+            mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
             mSensorManager.registerListener(sensorEventListener, mSensorManager.getDefaultSensor(
                     Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_GAME);
 
@@ -1783,7 +1804,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             acTime = jsonObject.getDouble("time");
             acCallback = jsonObject.getString("callback");
 
-            mSensorManager = (SensorManager) CardContentActivity.getInstance().getSystemService(Context.SENSOR_SERVICE);
+            mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
             mSensorManager.registerListener(sensorEventListener, mSensorManager.getDefaultSensor(
                     Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         } catch (JSONException e) {
@@ -1831,7 +1852,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     public void networkStatus(String value) {
         Log.d(TAG, "networkStatus: " + value);
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) CardContentActivity.getInstance()
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
@@ -1844,8 +1865,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                 sendCallBack(value, "2", "success", "wifi网络");
             } else if (nType == ConnectivityManager.TYPE_MOBILE) {
                 int nSubType = networkInfo.getSubtype();
-                TelephonyManager telephonyManager = (TelephonyManager) CardContentActivity
-                        .getInstance().getSystemService(Context.TELEPHONY_SERVICE);
+                TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
                 //3G   联通的3G为UMTS或HSDPA 电信的3G为EVDO
                 if (nSubType == TelephonyManager.NETWORK_TYPE_LTE
                         && !telephonyManager.isNetworkRoaming()) {
@@ -1889,7 +1909,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             callback = jsonObject.getString("callback");
 
             if ("001".equals(typeId)) {
-                Intent intent = new Intent(CardContentActivity.getInstance(), ValidateActivity.class);
+                Intent intent = new Intent(mContext, ValidateActivity.class);
                 intent.putExtra("type", 1);
                 ValidateActivity.setValidateListener(new ValidateListener() {
                     @Override
@@ -1898,7 +1918,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
                         ValidateActivity.mValidateListener = null;
                     }
                 });
-                CardContentActivity.getInstance().startActivity(intent);
+                mContext.startActivity(intent);
             }
 
         } catch (JSONException e) {
@@ -1920,7 +1940,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         Log.d("libin", value);
         String invitationCard = (String) SPUtils.getInstance().get(SPUtils.FILE_CARD, SPUtils.cardNo, "");
         String invitationCode = (String) SPUtils.getInstance().get(SPUtils.FILE_CARD, SPUtils.invitationCode, "");
-        String cardId = CardContentActivity.getInstance().getCardId();
+        String cardId = mContext.getCardId();
         Log.d("libin", invitationCard + "," + invitationCode + "," + cardId);
 
         if (!TextUtils.isEmpty(invitationCode) && invitationCard.equals(cardId)) {
@@ -1985,10 +2005,10 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     private void openOrRefresh(String value) {
 
-        if (CardContentActivity.getInstance().getCardId().equals(value)) {
-            CardContentActivity.getInstance().refreshCard();
+        if (mContext.getCardId().equals(value)) {
+            mContext.refreshCard();
         } else {
-            CardContentActivity.getInstance().openOtherCard(value);
+            mContext.openOtherCard(value);
         }
 
     }
@@ -2000,7 +2020,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
      */
     @JavascriptInterface
     public void locationServicesEnabled(String value) {
-        if (ActivityCompat.checkSelfPermission(CardContentActivity.getInstance(),
+        if (ActivityCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             try {
                 JSONObject jsonObject = new JSONObject();
@@ -2018,7 +2038,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         }
 
 
-        LocationManager locationManager = (LocationManager) CardContentActivity.getInstance().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             try {
                 JSONObject jsonObject = new JSONObject();
@@ -2050,7 +2070,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void vibrate(String value) {
         LogUtils.log(value);
-        Vibrator vibrator = (Vibrator) CardContentActivity.getInstance().getSystemService(VIBRATOR_SERVICE);
+        Vibrator vibrator = (Vibrator) mContext.getSystemService(VIBRATOR_SERVICE);
         vibrator.vibrate(700);
     }
 
@@ -2091,15 +2111,14 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             time = jsonObject.getInt("time");
             callback = jsonObject.getString("callback");
 
-            if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA})) {
+            if (BaseUnits.getInstance().checkPermission(mContext, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA})) {
 
-                Intent intent = new Intent(CardContentActivity.getInstance(), VideoRecorderActivity.class);
+                Intent intent = new Intent(mContext, VideoRecorderActivity.class);
                 intent.putExtra("callback", callback);
                 intent.putExtra("time", time > 60 ? 60 : time);
-                VideoRecorderActivity.setOnVideoRecorderListener(AndroidtoJS.this);
-                CardContentActivity.getInstance().startActivity(intent);
+                mContext.startActivity(intent);
             } else {
-                ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+                ActivityCompat.requestPermissions(mContext,
                         new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA}, REQUEST_RECORD_PERMISSIONS);
             }
         } catch (JSONException e) {
@@ -2126,7 +2145,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             FileUtils.getInstance().clearDirectory(tendency.hz.zhihuijiayuan.bean.base.Uri.videoPath);
             String path = FileUtils.getInstance().saveVideoFile(Base64Utils.decode(data));
 
-            OpenFileUtils.getInstance().openFile(CardContentActivity.getInstance(), path, "video/*");
+            OpenFileUtils.getInstance().openFile(mContext, path, "video/*");
 
 
         } catch (JSONException e) {
@@ -2149,8 +2168,8 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             String callback = jsonObject.getString("callback");
             String url = jsonObject.getString("url");
             DownLoadFragment downLoadFragment = DownLoadFragment.newInstance(callback,
-                    url, CardContentActivity.getInstance().getCardId());
-            downLoadFragment.show(CardContentActivity.getInstance().getFragmentManager(), "download");
+                    url, mContext.getCardId());
+            downLoadFragment.show(mContext.getFragmentManager(), "download");
 
 
         } catch (JSONException e) {
@@ -2169,14 +2188,14 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void IDCard_front(String value) {
         LogUtils.log(value);
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(CardContentActivity.getInstance(), CaptureActivity.class);
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(mContext, CaptureActivity.class);
 
             intent.putExtra("is_front", true);
             intent.putExtra("callback", value);
-            CardContentActivity.getInstance().startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
+            mContext.startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
         }
 
@@ -2192,13 +2211,13 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     @JavascriptInterface
     public void IDCard_reverseSide(String value) {
         LogUtils.log(value);
-        if (BaseUnits.getInstance().checkPermission(CardContentActivity.getInstance(), Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(CardContentActivity.getInstance(), CaptureActivity.class);
+        if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(mContext, CaptureActivity.class);
             intent.putExtra("is_front", false);
             intent.putExtra("callback", value);
-            CardContentActivity.getInstance().startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
+            mContext.startActivityForResult(intent, Request.StartActivityRspCode.SCAN_ID_CARD);
         } else {
-            ActivityCompat.requestPermissions(CardContentActivity.getInstance(),
+            ActivityCompat.requestPermissions(mContext,
                     new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
         }
 
@@ -2229,6 +2248,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             data.put("systemName", systemName);
             data.put("phoneWidth", phoneWidth);
             data.put("phoneHeight", phoneHeight);
+            data.put("phoneStatusBarHeight", String.valueOf(BaseUnits.getInstance().getStatusBarHeight()));
             jsonObject.put("status", "200");
             jsonObject.put("msg", "success");
             jsonObject.put("data", data);
@@ -2250,11 +2270,11 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         int level;
         Intent batteryInfoIntent = MyApplication.getInstance().registerReceiver(null,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        level = batteryInfoIntent.getIntExtra("level",0);
+        level = batteryInfoIntent.getIntExtra("level", 0);
         int batterySum = batteryInfoIntent.getIntExtra("scale", 100);
-        int percentBattery= 100 *  level / batterySum;
+        int percentBattery = 100 * level / batterySum;
 
-        sendCallBack(callback,"200","success",String.valueOf(percentBattery));
+        sendCallBack(callback, "200", "success", String.valueOf(percentBattery));
 
     }
 
@@ -2267,7 +2287,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
     public void getAppName(String callback) {
         LogUtils.log(callback);
 
-        sendCallBack(callback,"200","success",MyApplication.getInstance().getString(R.string.app_name));
+        sendCallBack(callback, "200", "success", MyApplication.getInstance().getString(R.string.app_name));
 
     }
 
@@ -2295,10 +2315,10 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             );
             // 将ClipData内容放到系统剪贴板里。
             cm.setPrimaryClip(mClipData);
-            sendCallBack(callback,"200","success",data);
+            sendCallBack(callback, "200", "success", data);
             timeout = jsonObject.getInt("timeout");
 
-            new CountDownTimer(timeout,1000){
+            new CountDownTimer(timeout, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
 
@@ -2314,7 +2334,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         } catch (JSONException e) {
             e.printStackTrace();
             LogUtils.log("无定时清剪切板");
-            sendCallBack(callback,"200","success","");
+            sendCallBack(callback, "200", "success", "");
         }
     }
 
@@ -2345,10 +2365,10 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         try {
             ClipData.Item item = data.getItemAt(0);
             String content = item.getText().toString();
-            sendCallBack(callback,"200","success",content);
+            sendCallBack(callback, "200", "success", content);
 
         } catch (Exception e) {
-            sendCallBack(callback,"500","fail","剪切板为空");
+            sendCallBack(callback, "500", "fail", "剪切板为空");
         }
     }
 
@@ -2365,23 +2385,329 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
             ClipboardManager cm = (ClipboardManager) MyApplication.getInstance().getSystemService(CLIPBOARD_SERVICE);
             cm.setPrimaryClip(ClipData.newPlainText(null, ""));  //清除剪切板数据
             cm.setText(null);
-            sendCallBack(callback,"200","success","清除成功");
+            sendCallBack(callback, "200", "success", "清除成功");
         } catch (Exception e) {
-            sendCallBack(callback,"200","success","清除成功");
+            sendCallBack(callback, "200", "success", "清除成功");
         }
     }
 
 
+    /**
+     * toast
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void toast(String value) {
+        LogUtils.log(value);
+        ToastBean toastBean = GsonUtils.jsonToBean(value, ToastBean.class);
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LoadingUtils.getInstance().showToast(mContext, toastBean);
+            }
+        });
+
+    }
+
+
+    /**
+     * loading
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void loading(String value) {
+        LogUtils.log(value);
+        ToastBean toastBean = GsonUtils.jsonToBean(value, ToastBean.class);
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LoadingUtils.getInstance().showLoading(mContext, toastBean);
+            }
+        });
+    }
+
+    /**
+     * 隐藏loading
+     */
+    @JavascriptInterface
+    public void hideLoading(String value) {
+        LogUtils.log("隐藏");
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LoadingUtils.getInstance().dismiss();
+            }
+        });
+
+    }
+
+    /**
+     * dialog
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void dialog(String value) {
+        LogUtils.log(value);
+        DialogBean dialogBean = GsonUtils.jsonToBean(value, DialogBean.class);
+
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if ("normal".equals(dialogBean.getType())) {
+                    if (dialogBean.getButton() != null && dialogBean.getButton().size() <= 2) {
+                        View contentView = LayoutInflater.from(mContext).inflate(R.layout.layout_popup_dialog, null);
+                        PopupWindow popupWindow = new PopupWindow(contentView,  ScreenUtils.getScreenWidth() - ViewUnits.getInstance().dp2px(mContext,120),
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                        popupWindow.setContentView(contentView);
+                        popupWindow.setTouchable(true);
+                        popupWindow.setFocusable(true);
+                        popupWindow.setOutsideTouchable(false);
+                        popupWindow.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), (Bitmap) null));
+                        if (!popupWindow.isShowing()) {
+                            popupWindow.showAtLocation(mContext.getWindow().peekDecorView(), Gravity.CENTER, 0, 0);
+                        } else {
+                            ///如果正在显示等待框，，，则结束掉等待框然后重新显示
+                            popupWindow.dismiss();
+                            popupWindow.showAtLocation(mContext.getWindow().peekDecorView(), Gravity.CENTER, 0, 0);
+                        }
+
+                        WindowManager.LayoutParams layoutParams = mContext.getWindow().getAttributes();
+                        layoutParams.alpha = 0.7f;
+                        mContext.getWindow().setAttributes(layoutParams);
+
+
+                        TextView tvTitle = contentView.findViewById(R.id.tv_dialog_title);
+                        TextView tvContent = contentView.findViewById(R.id.tv_dialog_content);
+                        TextView tvFirstItem = contentView.findViewById(R.id.tv_first_item);
+                        TextView tvSecondItem = contentView.findViewById(R.id.tv_second_item);
+                        View viewDivider = contentView.findViewById(R.id.view_divider);
+
+                        if (!TextUtils.isEmpty(dialogBean.getTitle())){
+                            tvTitle.setVisibility(View.VISIBLE);
+                            tvTitle.setText(dialogBean.getTitle());
+                        }else {
+                            tvTitle.setVisibility(View.GONE);
+                        }
+
+                        if (!TextUtils.isEmpty(dialogBean.getContent())){
+                            tvContent.setVisibility(View.VISIBLE);
+                            tvContent.setText(dialogBean.getContent());
+                        }else {
+                            tvContent.setVisibility(View.GONE);
+                        }
+
+                        tvFirstItem.setText(dialogBean.getButton().get(0).getText());
+                        tvFirstItem.setTextColor(Color.parseColor(FormatUtils.getInstance().colorTo6Color(dialogBean.getButton().get(0).getTextColor())));
+                        if (dialogBean.getButton().size() ==2){
+                            viewDivider.setVisibility(View.VISIBLE);
+                            tvSecondItem.setVisibility(View.VISIBLE);
+                            tvSecondItem.setText(dialogBean.getButton().get(1).getText());
+                            tvSecondItem.setTextColor(Color.parseColor(FormatUtils.getInstance().colorTo6Color(dialogBean.getButton().get(1).getTextColor())));
+                        }
+
+                        tvFirstItem.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                popupWindow.dismiss();
+                                sendCallBack(dialogBean.getCallback(),"200","success",dialogBean.getButton().get(0).getText());
+                            }
+                        });
+
+                        tvSecondItem.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                popupWindow.dismiss();
+                                sendCallBack(dialogBean.getCallback(),"200","success",dialogBean.getButton().get(1).getText());
+                            }
+                        });
+
+
+                        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                            @Override
+                            public void onDismiss() {
+                                layoutParams.alpha = 1.0f;
+                                mContext.getWindow().setAttributes(layoutParams);
+                            }
+                        });
+                    }else{
+
+                        View contentView = LayoutInflater.from(mContext).inflate(R.layout.layout_popup_dialog_more, null);
+                        PopupWindow popupWindow = new PopupWindow(contentView, ScreenUtils.getScreenWidth() - ViewUnits.getInstance().dp2px(mContext,120),
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                        popupWindow.setContentView(contentView);
+                        popupWindow.setTouchable(true);
+                        popupWindow.setFocusable(true);
+                        popupWindow.setOutsideTouchable(false);
+                        popupWindow.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), (Bitmap) null));
+                        if (!popupWindow.isShowing()) {
+                            popupWindow.showAtLocation(mContext.getWindow().peekDecorView(), Gravity.CENTER, 0, 0);
+                        } else {
+                            ///如果正在显示等待框，，，则结束掉等待框然后重新显示
+                            popupWindow.dismiss();
+                            popupWindow.showAtLocation(mContext.getWindow().peekDecorView(), Gravity.CENTER, 0, 0);
+                        }
+
+                        WindowManager.LayoutParams layoutParams = mContext.getWindow().getAttributes();
+                        layoutParams.alpha = 0.7f;
+                        mContext.getWindow().setAttributes(layoutParams);
+
+
+                        TextView tvTitle = contentView.findViewById(R.id.tv_title_dialog);
+                        TextView tvContent = contentView.findViewById(R.id.tv_content_dialog);
+                        RecyclerView rvDialog = contentView.findViewById(R.id.rv_dialog);
+
+
+                        if (!TextUtils.isEmpty(dialogBean.getTitle())){
+                            tvTitle.setVisibility(View.VISIBLE);
+                            tvTitle.setText(dialogBean.getTitle());
+                        }else {
+                            tvTitle.setVisibility(View.GONE);
+                        }
+
+                        if (!TextUtils.isEmpty(dialogBean.getContent())){
+                            tvContent.setVisibility(View.VISIBLE);
+                            tvContent.setText(dialogBean.getContent());
+                        }else {
+                            tvContent.setVisibility(View.GONE);
+                        }
+
+                        rvDialog.setLayoutManager(new LinearLayoutManager(mContext));
+                        BaseQuickAdapter<DialogBean.ButtonBean, BaseViewHolder> adapter =
+                                new BaseQuickAdapter<DialogBean.ButtonBean, BaseViewHolder>(R.layout.layout_item_dialog,dialogBean.getButton()) {
+                                    @Override
+                                    protected void convert(BaseViewHolder helper, DialogBean.ButtonBean item) {
+                                        TextView textView = helper.getView(R.id.tv_dialog_item);
+                                        textView.setText(item.getText());
+                                        textView.setTextColor(Color.parseColor(FormatUtils.getInstance().colorTo6Color(item.getTextColor())));
+                                    }
+                                };
+                        rvDialog.setAdapter(adapter);
+                        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                                sendCallBack(dialogBean.getCallback(),"200","success",dialogBean.getButton().get(position).getText());
+                                popupWindow.dismiss();
+                            }
+                        });
+
+
+                        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                            @Override
+                            public void onDismiss() {
+                                layoutParams.alpha = 1.0f;
+                                mContext.getWindow().setAttributes(layoutParams);
+                            }
+                        });
+                    }
+
+                }
+            }
+        });
+    }
+
+    /**
+     * menu
+     *
+     * @param value
+     */
+    @JavascriptInterface
+    public void menu(String value) {
+        LogUtils.log(value);
+        MenuBean menuBean = GsonUtils.jsonToBean(value,MenuBean.class);
+        if (menuBean.getMenuList().size()>8){
+            ViewUnits.getInstance().showToast("不得超过8个item");
+            return;
+        }
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View contentView = LayoutInflater.from(mContext).inflate(R.layout.layout_popup_menu, null);
+                PopupWindow popupWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                popupWindow.setContentView(contentView);
+                popupWindow.setTouchable(true);
+                popupWindow.setFocusable(true);
+                popupWindow.setOutsideTouchable(false);
+                        popupWindow.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), (Bitmap) null));
+                if (!popupWindow.isShowing()) {
+                    popupWindow.showAtLocation(mContext.getWindow().peekDecorView(), Gravity.BOTTOM, 0, 0);
+                } else {
+                    ///如果正在显示等待框，，，则结束掉等待框然后重新显示
+                    popupWindow.dismiss();
+                    popupWindow.showAtLocation(mContext.getWindow().peekDecorView(), Gravity.BOTTOM, 0, 0);
+                }
+
+                WindowManager.LayoutParams layoutParams = mContext.getWindow().getAttributes();
+                layoutParams.alpha = 0.7f;
+                mContext.getWindow().setAttributes(layoutParams);
+
+
+                TextView tvCancel = contentView.findViewById(R.id.tv_cancel_menu);
+                View viewDivier = contentView.findViewById(R.id.view_menu_divider);
+                RecyclerView rvMenu = contentView.findViewById(R.id.rv_menu);
+
+
+                if (!TextUtils.isEmpty(menuBean.getCancelBtnText())){
+                    tvCancel.setVisibility(View.VISIBLE);
+                    tvCancel.setText(menuBean.getCancelBtnText());
+                    tvCancel.setVisibility(View.VISIBLE);
+                    viewDivier.setVisibility(View.VISIBLE);
+                }else {
+                    tvCancel.setVisibility(View.GONE);
+                    viewDivier.setVisibility(View.GONE);
+                }
+
+                rvMenu.setLayoutManager(new LinearLayoutManager(mContext));
+                BaseQuickAdapter<String, BaseViewHolder> adapter =
+                        new BaseQuickAdapter<String, BaseViewHolder>(R.layout.layout_item_menu,menuBean.getMenuList()) {
+                            @Override
+                            protected void convert(BaseViewHolder helper, String item) {
+                                helper.setText(R.id.tv_menu_item,item);
+                            }
+
+                        };
+                rvMenu.setAdapter(adapter);
+                adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        sendCallBack(menuBean.getCallback(),"200","success",menuBean.getMenuList().get(position));
+                        popupWindow.dismiss();
+                    }
+                });
+
+                tvCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sendCallBack(menuBean.getCallback(),"200","success",menuBean.getCancelBtnText());
+                        popupWindow.dismiss();
+                    }
+                });
+
+
+                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        layoutParams.alpha = 1.0f;
+                        mContext.getWindow().setAttributes(layoutParams);
+                    }
+                });
+            }
+        });
+    }
+
 
     public void shareText(String callBack, String title, String content) {
-        if (BaseUnits.getInstance().getShareList(CardContentActivity.getInstance()).length == 0) {
+        if (BaseUnits.getInstance().getShareList(mContext).length == 0) {
             ViewUnits.getInstance().showToast("您未安装微信、微博和QQ");
             return;
         }
 
-        new ShareAction(CardContentActivity.getInstance())
+        new ShareAction(mContext)
                 .withText(content)
-                .setDisplayList(BaseUnits.getInstance().getShareList(CardContentActivity.getInstance()))
+                .setDisplayList(BaseUnits.getInstance().getShareList(mContext))
                 .setCallback(new MyUMShareListener(callBack, this))
                 .open();
     }
@@ -2391,7 +2717,7 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         Log.e(TAG, content);
         Log.e(TAG, url);
         Log.e(TAG, image);
-        if (BaseUnits.getInstance().getShareList(CardContentActivity.getInstance()).length == 0) {
+        if (BaseUnits.getInstance().getShareList(mContext).length == 0) {
             ViewUnits.getInstance().showToast("您未安装微信、微博和QQ");
             return;
         }
@@ -2400,37 +2726,37 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         web.setTitle(title);//标题
 
         if (image.startsWith("http")) {
-            web.setThumb(new UMImage(CardContentActivity.getInstance(), image));
+            web.setThumb(new UMImage(mContext, image));
         } else {
-            web.setThumb(new UMImage(CardContentActivity.getInstance(), BaseUnits.getInstance().base64ToBitmap(image)));  //缩略图
+            web.setThumb(new UMImage(mContext, BaseUnits.getInstance().base64ToBitmap(image)));  //缩略图
         }
 
 
         web.setDescription(content);//描述
 
-        new ShareAction(CardContentActivity.getInstance())
-                .setDisplayList(BaseUnits.getInstance().getShareList(CardContentActivity.getInstance()))
+        new ShareAction(mContext)
+                .setDisplayList(BaseUnits.getInstance().getShareList(mContext))
                 .setCallback(new MyUMShareListener(callBack, this))
                 .withMedia(web)
                 .open();
     }
 
     public void shareImage(String callBack, String image) {
-        if (BaseUnits.getInstance().getShareList(CardContentActivity.getInstance()).length == 0) {
+        if (BaseUnits.getInstance().getShareList(mContext).length == 0) {
             ViewUnits.getInstance().showToast("您未安装微信、微博和QQ");
             return;
         }
 
         UMImage umImage;
         if (image.startsWith("http")) {
-            umImage = new UMImage(CardContentActivity.getInstance(), image);
+            umImage = new UMImage(mContext, image);
         } else {
-            umImage = new UMImage(CardContentActivity.getInstance(), BaseUnits.getInstance().base64ToBitmap(image));
+            umImage = new UMImage(mContext, BaseUnits.getInstance().base64ToBitmap(image));
         }
 
 
-        new ShareAction(CardContentActivity.getInstance())
-                .setDisplayList(BaseUnits.getInstance().getShareList(CardContentActivity.getInstance()))
+        new ShareAction(mContext)
+                .setDisplayList(BaseUnits.getInstance().getShareList(mContext))
                 .setCallback(new MyUMShareListener(callBack, this))
                 .withMedia(umImage)
                 .open();
@@ -2468,63 +2794,10 @@ public class AndroidtoJS implements QrCodeScanInter, PayResultInter, ShareResult
         }
     }
 
-    @Override
-    public void getPayResult(String type, String resultCode, JSONObject message, String callBack) {
-        CheckstandActivity.mInstance.close();
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("type", type);
-            jsonObject.put("result", resultCode);
-            jsonObject.put("source", message);
-        } catch (JSONException e) {
-            Log.e(TAG, e.toString());
-            e.printStackTrace();
-        }
-
-        Log.e(TAG, "支付结果：" + jsonObject.toString());
-        mCallBack.callBackResult(callBack, jsonObject.toString());
-    }
-
-    @Override
-    public void getQrCodeScanResult(String callBack, String result) {
-        sendCallBack(callBack, "200", "success", result);
-        ScanQRCodeActivity.mQrCodeScanInter = null;
-    }
 
     @Override
     public void getShareResult(String callBack, String status, String message) {
         sendCallBack(callBack, status, message, message);
     }
-
-    @Override
-    public void getLoginResultListener(String callBack, String result) {
-        Log.d("aaa", "getLoginResultListener: " + callBack);
-        sendCallBack(callBack, "200", "success", result);
-        LoginActivity.mListener = null;
-    }
-
-    @Override
-    public void getCityPickerResultListener(String callBack, JSONObject result) {
-        sendCallBackJson(callBack, "200", "success", result);
-        CityPickerActivity.mListener = null;
-    }
-
-
-    @Override
-    public void onVideoRecorder(String callback, String path) {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                LogUtils.log(System.currentTimeMillis() + "sound1");
-                String data = Base64Utils.fileToBase64(path);
-                LogUtils.log(System.currentTimeMillis() + "b");
-                sendCallBack(callback, "200", "success", data);
-
-                VideoRecorderActivity.mVideoRecorderListener = null;
-            }
-        }).start();
-    }
-
 
 }

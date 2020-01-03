@@ -12,9 +12,12 @@ import android.view.View;
 import com.cjt2325.cameralibrary.JCameraView;
 import com.cjt2325.cameralibrary.listener.JCameraListener;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import tendency.hz.zhihuijiayuan.R;
+import tendency.hz.zhihuijiayuan.bean.VideoRecorderBean;
 import tendency.hz.zhihuijiayuan.bean.base.Uri;
 import tendency.hz.zhihuijiayuan.inter.OnVideoRecorderListener;
 import tendency.hz.zhihuijiayuan.units.LogUtils;
@@ -27,7 +30,7 @@ public class VideoRecorderActivity extends BaseActivity {
     @BindView(R.id.camera_view)
     JCameraView cameraView;
     private String callback;
-    public static OnVideoRecorderListener mVideoRecorderListener;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,8 +58,7 @@ public class VideoRecorderActivity extends BaseActivity {
             public void recordSuccess(String url, Bitmap firstFrame) {
                 LogUtils.log(url);
                 VideoRecorderActivity.this.finish();
-                mVideoRecorderListener.onVideoRecorder(callback, url);
-
+                EventBus.getDefault().post(new VideoRecorderBean(callback,url));
             }
 
             @Override
@@ -66,11 +68,6 @@ public class VideoRecorderActivity extends BaseActivity {
 
         });
 
-    }
-
-
-    public static void setOnVideoRecorderListener(OnVideoRecorderListener videoRecorderListener) {
-        mVideoRecorderListener = videoRecorderListener;
     }
 
 

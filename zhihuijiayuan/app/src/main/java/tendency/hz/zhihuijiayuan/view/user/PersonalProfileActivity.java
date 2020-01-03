@@ -64,7 +64,6 @@ import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
  */
 
 public class PersonalProfileActivity extends BaseActivity implements AllViewInter, OnAddressSelectedListener {
-    private static final String TAG = "Personal---";
     private ActivityPersonalProfileBinding mBinding;
     private PersonalPrenInter mPersonalPrenInter;
     private BasePrenImpl mBasePrenInter;
@@ -166,7 +165,6 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
     }
 
     private void updateView() {
-        Log.e(TAG, "用户信息为：" + mUser.toString());
         if (!FormatUtils.getInstance().isEmpty(mUser.getNickName())) {
             mBinding.textName.setText(mUser.getNickName());
             mBinding.textName.setTextColor(this.getResources().getColor(R.color.colorTextGray));
@@ -368,7 +366,6 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Request.StartActivityRspCode.RSET_NICKNAME && resultCode == RESULT_OK) {
-            Log.e(TAG, data.getStringExtra("nickName"));
             mNickName = data.getStringExtra("nickName");
             mBinding.textName.setText(mNickName);
         }
@@ -395,7 +392,6 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
                 break;
             case NetCode.Base.uploadImg:
                 mHeadUrl = (String) object;
-                Log.e(TAG, "头像图片:" + Config.UPLOADIMG + mHeadUrl);
                 mBinding.headImage.setImageURI(Config.UPLOADIMG + mHeadUrl);
                 break;
             case NetCode.Personal.editPersonInfo:
@@ -447,12 +443,13 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mBasePrenInter = null;
         mUser = null;
         mAddressPicker = null;
         mTimePickerView = null;
 
         PictureFileUtils.deleteCacheDirFile(this);
+
+        super.onDestroy();
     }
 }

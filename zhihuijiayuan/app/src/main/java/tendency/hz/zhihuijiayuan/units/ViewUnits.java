@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.application.MyApplication;
+import tendency.hz.zhihuijiayuan.bean.ToastBean;
 import tendency.hz.zhihuijiayuan.inter.PopWindowOnClickInter;
 
 /**
@@ -39,18 +40,14 @@ import tendency.hz.zhihuijiayuan.inter.PopWindowOnClickInter;
  */
 
 public class ViewUnits {
-    private static final String TAG = "ViewUnits--";
-    public static ViewUnits mInstance = null;
+    private static ViewUnits mInstance;
 
     //缓存等待框
     private LoadingDialog.Builder mLoadBuilder;
-    private static LoadingDialog mDialog;
+    private LoadingDialog mDialog;
 
     //弹出的选项框
-    public PopupWindow mPopupWindow; //返回消息框
-    public TextView mTextViewLeft, mTextViewRight; //消息框左右按钮
-    public TextView mTextViewMsg; //消息文本
-    private View mPopBackView;
+    private PopupWindow mPopupWindow; //返回消息框
 
     private Toast mToast;
 
@@ -96,7 +93,7 @@ public class ViewUnits {
 
         try {
             if (mToast == null) {
-                mToast = Toast.makeText(MyApplication.getInstance().getApplicationContext(), message, Toast.LENGTH_SHORT);
+                mToast = Toast.makeText(MyApplication.getInstance(), message, Toast.LENGTH_SHORT);
                 mToast.setGravity(Gravity.CENTER, 0, 0);
             } else {
                 mToast.setText(message);
@@ -112,8 +109,8 @@ public class ViewUnits {
             mToast.show();
 
         } catch (Exception e) {
-        }
 
+        }
     }
 
     /**
@@ -174,7 +171,6 @@ public class ViewUnits {
      */
     public int px2dip(int px) {
         float scale = MyApplication.getInstance().getResources().getDisplayMetrics().density;
-        Log.e(TAG, "密实系数：" + scale);
         return (int) (px / scale + 0.5f);
     }
 
@@ -244,12 +240,14 @@ public class ViewUnits {
             return;
         }
         mPopupWindow = new PopupWindow();
-        mPopBackView = LayoutInflater.from(context).inflate(R.layout.popup_msg, null);
+        View mPopBackView = LayoutInflater.from(context).inflate(R.layout.popup_msg, null);
 
         //设置Popup具体控件
-        mTextViewLeft = mPopBackView.findViewById(R.id.text_left_msg);
-        mTextViewRight = mPopBackView.findViewById(R.id.text_right_msg);
-        mTextViewMsg = mPopBackView.findViewById(R.id.text_msg);
+        TextView mTextViewLeft = mPopBackView.findViewById(R.id.text_left_msg);
+        //消息框左右按钮
+        TextView mTextViewRight = mPopBackView.findViewById(R.id.text_right_msg);
+        //消息文本
+        TextView mTextViewMsg = mPopBackView.findViewById(R.id.text_msg);
 
         mTextViewMsg.setText(message);
 
@@ -296,7 +294,7 @@ public class ViewUnits {
     public void showQrCodePopView(Context context, View view, String uri) {
         if (((Activity) context).isFinishing()) return;
         mPopupWindow = new PopupWindow();
-        mPopBackView = LayoutInflater.from(context).inflate(R.layout.layout_pop_img, null);
+        View mPopBackView = LayoutInflater.from(context).inflate(R.layout.layout_pop_img, null);
 
         //设置Popup具体参数
         mPopupWindow.setContentView(mPopBackView);

@@ -124,18 +124,8 @@ public class LoginSmsActivity extends BaseActivity implements AllViewInter {
             case NetCode.Personal.getPersonalInfo:
                 ViewUnits.getInstance().missLoading();
                 ViewUnits.getInstance().showToast("登录成功");
-                if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) {   //改标识表示从卡片页面跳转过来
-                    if (mListener !=null){
-                        mListener.getLoginResultListener(mCallBack, "1");
-                        EventBus.getDefault().post("login_success");
-                        finish();
-                    }
-                } else {
-                    Intent intent = new Intent(this, MainActivity.class);  //跳转至首页
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                }
+                EventBus.getDefault().post("login_success");
+                finish();
                 break;
             case NetCode.User2.sendLoginSms:
                 ViewUnits.getInstance().missLoading();

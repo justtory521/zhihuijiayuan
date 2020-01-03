@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupWindow;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +31,7 @@ import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.adapter.CityListAdapter;
 import tendency.hz.zhihuijiayuan.adapter.ResultListAdapter;
 import tendency.hz.zhihuijiayuan.bean.City;
+import tendency.hz.zhihuijiayuan.bean.SelectCityBean;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.databinding.CpActivityCityListBinding;
 import tendency.hz.zhihuijiayuan.databinding.LayoutVoicePopupBinding;
@@ -68,8 +70,8 @@ public class CityPickerActivity extends BaseActivity implements AllViewInter, Vi
     private WindowManager.LayoutParams mLayoutParams;
     private LayoutVoicePopupBinding mBindingPop;
 
-    public static CityPickerResultListener mListener;
-    private static String mCallBack;
+
+    private  String mCallBack;
     private LinearLayoutManager mManager;
     private City mNowSelectedCity;  //当前城市
 
@@ -264,21 +266,20 @@ public class CityPickerActivity extends BaseActivity implements AllViewInter, Vi
             return;
         }
 
-        if (mListener != null) {
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("cityCode", mSelectCity.getID());
-                jsonObject.put("cityName", mSelectCity.getName());
-                mListener.getCityPickerResultListener(mCallBack, jsonObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        Intent intent1 = getIntent();
+        int flag = intent1.getIntExtra("flag",0);
+        if (flag == Request.StartActivityRspCode.CARD_JUMP_TO_CITYPICKER){
+            String callback = intent1.getStringExtra("callback");
+            EventBus.getDefault().post(new SelectCityBean(callback,mSelectCity.getID(),mSelectCity.getName()));
+            finish();
+        }else {
+            UserUnits.getInstance().setSelectCity(mSelectCity.getName());
+            Intent intent = new Intent();
+            intent.putExtra("selectCity", mSelectCity);
+            setResult(RESULT_OK, intent);
+            finish();
         }
-        UserUnits.getInstance().setSelectCity(mSelectCity.getName());
-        Intent intent = new Intent();
-        intent.putExtra("selectCity", mSelectCity);
-        setResult(RESULT_OK, intent);
-        finish();
+
     }
 
     /**
@@ -293,10 +294,6 @@ public class CityPickerActivity extends BaseActivity implements AllViewInter, Vi
         mHandler.postDelayed(mRunable, 200);
     }
 
-    public static void setCityPickerResultListener(String callBack, CityPickerResultListener listener) {
-        mCallBack = callBack;
-        mListener = listener;
-    }
 
     @Override
     public void onSuccessed(int what, Object object) {
@@ -335,7 +332,6 @@ public class CityPickerActivity extends BaseActivity implements AllViewInter, Vi
         mPopBackView = null;
         mLayoutParams = null;
         mBindingPop = null;
-        mListener = null;
         mCallBack = null;
         mManager = null;
         mNowSelectedCity = null;

@@ -500,8 +500,9 @@ public class CacheUnits {
                 downloadBean.setFile_type(cursor.getString(3));
                 downloadBean.setFile_size(cursor.getString(4));
                 downloadBean.setFile_url(cursor.getString(5));
-                downloadBean.setCard_id(cursor.getString(6));
-                downloadBean.setUser_id(cursor.getString(7));
+                downloadBean.setUser_id(cursor.getString(6));
+                downloadBean.setCard_id(cursor.getString(7));
+
                 downloadList.add(downloadBean);
             }
         }
@@ -526,8 +527,8 @@ public class CacheUnits {
                 downloadBean.setFile_type(cursor.getString(3));
                 downloadBean.setFile_size(cursor.getString(4));
                 downloadBean.setFile_url(cursor.getString(5));
-                downloadBean.setCard_id(cursor.getString(6));
-                downloadBean.setUser_id(cursor.getString(7));
+                downloadBean.setUser_id(cursor.getString(6));
+                downloadBean.setCard_id(cursor.getString(7));
                 downloadList.add(downloadBean);
             }
         }
@@ -552,8 +553,8 @@ public class CacheUnits {
                 downloadBean.setFile_type(cursor.getString(3));
                 downloadBean.setFile_size(cursor.getString(4));
                 downloadBean.setFile_url(cursor.getString(5));
-                downloadBean.setCard_id(cursor.getString(6));
-                downloadBean.setUser_id(cursor.getString(7));
+                downloadBean.setUser_id(cursor.getString(6));
+                downloadBean.setCard_id(cursor.getString(7));
                 downloadList.add(downloadBean);
             }
         }
@@ -578,8 +579,8 @@ public class CacheUnits {
                 downloadBean.setFile_type(cursor.getString(3));
                 downloadBean.setFile_size(cursor.getString(4));
                 downloadBean.setFile_url(cursor.getString(5));
-                downloadBean.setCard_id(cursor.getString(6));
-                downloadBean.setUser_id(cursor.getString(7));
+                downloadBean.setUser_id(cursor.getString(6));
+                downloadBean.setCard_id(cursor.getString(7));
                 downloadList.add(downloadBean);
             }
         }
@@ -611,8 +612,8 @@ public class CacheUnits {
                 downloadBean.setFile_type(cursor.getString(3));
                 downloadBean.setFile_size(cursor.getString(4));
                 downloadBean.setFile_url(cursor.getString(5));
-                downloadBean.setCard_id(cursor.getString(6));
-                downloadBean.setUser_id(cursor.getString(7));
+                downloadBean.setUser_id(cursor.getString(6));
+                downloadBean.setCard_id(cursor.getString(7));
                 downloadList.add(downloadBean);
             }
         }

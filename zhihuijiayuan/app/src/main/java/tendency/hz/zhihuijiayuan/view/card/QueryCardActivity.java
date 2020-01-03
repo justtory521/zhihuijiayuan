@@ -371,10 +371,6 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
                 ViewUnits.getInstance().showToast("搜索到" + mList.size() + "张卡");
                 hideInput();
                 break;
-//            case NetCode.Card.anonymousFocus:
-//            case NetCode.Card.cardAttentionAdd:
-//                jumpToCard(mCardItem);
-//                break;
             case NetCode.Card.getAppCardInfo:
                 AppCardItem appCardItem = (AppCardItem) object;
                 if (BaseUnits.getInstance().isApkInstalled(this, appCardItem.getAndroidAppID())) {  //应用卡，先判断手机是否下载该app
@@ -438,7 +434,6 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         mCardPrenInter = null;
         mSreachContent = null;
         mList = null;
-        mAdapter = null;
         mImm = null;
         mView = null;
         mBindingPop = null;

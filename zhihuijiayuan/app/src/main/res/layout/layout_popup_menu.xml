@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:id="@+id/view_menu_divider"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/gray_ee"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/tv_cancel_menu"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="15sp"
+        android:textColor="@color/gray_33"
+        android:gravity="center"
+        android:visibility="gone"/>
+
+
+</LinearLayout>

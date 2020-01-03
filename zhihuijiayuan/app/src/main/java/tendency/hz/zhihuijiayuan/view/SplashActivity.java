@@ -477,7 +477,6 @@ public class SplashActivity extends BaseActivity implements AllViewInter {
 
         mSetPrenInter = null;
         mCardPrenInter = null;
-        mBasePrenInter = null;
         mCode = null;
         mCardItem = null;
 

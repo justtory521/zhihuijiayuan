@@ -23,12 +23,14 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
@@ -57,9 +59,7 @@ import tendency.hz.zhihuijiayuan.widget.CommomDialog;
  */
 
 public class BaseUnits {
-    private static final String TAG = "BaseUnits--";
-    public static BaseUnits mInstance = null;
-    private TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
+    public static BaseUnits mInstance;
 
     /**
      * 私有化构造方法
@@ -204,7 +204,7 @@ public class BaseUnits {
      * @return
      */
     public boolean isApkInstalled(Context context, String packageName) {
-        if (FormatUtils.getInstance().isEmpty(packageName)) {
+        if (TextUtils.isEmpty(packageName)) {
             return false;
         }
 
@@ -337,19 +337,15 @@ public class BaseUnits {
 
     /**
      * 判断某个Activity是否正在运行
-     *
-     * @param mContext
      * @param activityClassName
      * @return
      */
-    public boolean isActivityRunning(Context mContext, String activityClassName) {
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+    public boolean isActivityRunning(String activityClassName) {
+        ActivityManager activityManager = (ActivityManager) MyApplication.getInstance().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> info = activityManager.getRunningTasks(1);
         if (info != null && info.size() > 0) {
             ComponentName component = info.get(0).topActivity;
-            if (activityClassName.equals(component.getClassName())) {
-                return true;
-            }
+            return activityClassName.equals(component.getClassName());
         }
         return false;
     }
@@ -378,8 +374,6 @@ public class BaseUnits {
         if (resourceId > 0) {
             result = MyApplication.getInstance().getResources().getDimensionPixelSize(resourceId);
         }
-
-        Log.e(TAG, "状态栏高度dp：" + ViewUnits.getInstance().px2dip(result));
         return result;
     }
 
@@ -452,9 +446,7 @@ public class BaseUnits {
 
         byte[] decode = Base64.decode(base64String, Base64.DEFAULT);
 
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
-
-        return bitmap;
+        return BitmapFactory.decodeByteArray(decode, 0, decode.length);
     }
 
     /**
@@ -473,10 +465,9 @@ public class BaseUnits {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Log.e(TAG, "有权限");
+            TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
             return tm.getLine1Number();
         }
-        Log.e(TAG, "无权限");
         return "";
     }
 
@@ -498,7 +489,7 @@ public class BaseUnits {
         }
     }
 
-    public static String getIpAddress(Context context) {
+    public  String getIpAddress(Context context) {
         NetworkInfo info = ((ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
         if (info != null && info.isConnected()) {
@@ -676,7 +667,7 @@ public class BaseUnits {
         return manager.getActiveNetworkInfo() != null;
     }
 
-    public static String getAuthorizeURL(String appId, String scene, String template_id, String redirectUri, String reserved) throws UnsupportedEncodingException {
+    public  String getAuthorizeURL(String appId, String scene, String template_id, String redirectUri, String reserved) throws UnsupportedEncodingException {
         StringBuffer sbf = new StringBuffer();
         sbf.append("https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm").append("&appid=").append(appId)
                 .append("&scene=").append(scene)
@@ -715,4 +706,8 @@ public class BaseUnits {
 
         return shareMedia.toArray(new SHARE_MEDIA[shareMedia.size()]);
     }
+
+
+
+
 }

@@ -30,7 +30,6 @@ import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
  * Created by JasonYao on 2018/11/16.
  */
 public class SetActivity extends BaseActivity implements AllViewInter {
-    private static final String TAG = "SetActivity---";
     private ActivitySetBinding mBinding;
     private UserPrenInter mUserPrenInter;
 
@@ -98,9 +97,6 @@ public class SetActivity extends BaseActivity implements AllViewInter {
                 finish();
                 break;
             case NetCode.Set.getVersion:
-                Log.e(TAG, object.toString());
-                Log.e(TAG, BaseUnits.getInstance().getVerName(this));
-
                 boolean isUpdate = false;
                 String[] newVersion = ((String) object).split("\\.");
 

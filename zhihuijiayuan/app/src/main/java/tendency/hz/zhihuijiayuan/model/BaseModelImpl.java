@@ -84,7 +84,7 @@ public class BaseModelImpl extends AllModelInter implements BaseModelInter {
         params.add(new NoHttpUtil.Param("ClientId", BaseUnits.getInstance().getPhoneKey()));
         params.add(new NoHttpUtil.Param("AppType", "1"));
         params.add(new NoHttpUtil.Param("OSVersion", BaseUnits.getInstance().getOSVersion()));
-        params.add(new NoHttpUtil.Param("MAC", MacUtils.getMobileMAC(MyApplication.getInstance())));
+        params.add(new NoHttpUtil.Param("MAC", MacUtils.getMobileMAC()));
         params.add(new NoHttpUtil.Param("PhoneModel", BaseUnits.getInstance().getPhoneModel()));
         params.add(new NoHttpUtil.Param("Message", MacUtils.MESSAGE.toString()));
         params.add(new NoHttpUtil.Param("IMEI", BaseUnits.getInstance().getIMEI()));

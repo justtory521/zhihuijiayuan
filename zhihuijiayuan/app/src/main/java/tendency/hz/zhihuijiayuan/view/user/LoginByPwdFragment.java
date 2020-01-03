@@ -16,8 +16,11 @@ import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Objects;
+
 import tendency.hz.zhihuijiayuan.MainActivity;
 import tendency.hz.zhihuijiayuan.R;
+import tendency.hz.zhihuijiayuan.bean.LoginResultBean;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.databinding.FragmentLoginByPwdBinding;
@@ -44,9 +47,6 @@ public class LoginByPwdFragment extends Fragment implements AllViewInter, View.O
     private PersonalPrenInter mPersonalPrenInter;
 
     private FragmentLoginByPwdBinding mBinding;
-
-    private static LoginResultListener mListener;
-    private static String mCallBack;
 
     @Nullable
     @Override
@@ -118,10 +118,6 @@ public class LoginByPwdFragment extends Fragment implements AllViewInter, View.O
         }
     }
 
-    public static void setLoginResultListener(String callBack, LoginResultListener listener) {
-        mListener = listener;
-        mCallBack = callBack;
-    }
 
     @Override
     public void onSuccessed(int what, Object object) {
@@ -138,17 +134,15 @@ public class LoginByPwdFragment extends Fragment implements AllViewInter, View.O
                 break;
             case NetCode.Personal.getPersonalInfo:
                 ViewUnits.getInstance().missLoading();
-                if (LoginActivity.mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //改标识表示从卡片页面跳转过来
-                    if (mListener !=null){
-                        mListener.getLoginResultListener(mCallBack, "1");
-                    }
-                    EventBus.getDefault().post("login_success");
-                    getActivity().finish();
+                if (((LoginActivity)getActivity()).mFlag == Request.StartActivityRspCode.CARD_JUMP_TO_LOGIN) { //改标识表示从卡片页面跳转过来
+
+                    EventBus.getDefault().post(new LoginResultBean(((LoginActivity)getActivity()).mCallback));
+                    Objects.requireNonNull(getActivity()).finish();
                 } else {
                     Intent intent = new Intent(getActivity(), MainActivity.class);  //跳转至首页
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                    getActivity().finish();
+                    Objects.requireNonNull(getActivity()).finish();
                 }
                 break;
         }
