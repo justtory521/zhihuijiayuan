@@ -19,7 +19,7 @@ public class ToastBean {
 
     private String position;
     private String message;
-    private String duration;
+    private int duration;
     private String iconType;
     private String msgColor;
     private String bgColor;
@@ -49,11 +49,11 @@ public class ToastBean {
         this.message = message;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 

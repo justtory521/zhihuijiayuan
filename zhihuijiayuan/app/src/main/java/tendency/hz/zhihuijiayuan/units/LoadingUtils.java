@@ -67,8 +67,8 @@ public class LoadingUtils {
 
         //显示时间
         int duration = 2000;
-        if (!TextUtils.isEmpty(toastBean.getDuration())) {
-            duration = Integer.parseInt(toastBean.getDuration());
+        if (toastBean.getDuration() != 0) {
+            duration = toastBean.getDuration();
         }
 
         //显示logo

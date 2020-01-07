@@ -130,32 +130,35 @@ public class ToastDialog extends Dialog {
             }
 
             Window window = loadingDialog.getWindow();
-            WindowManager.LayoutParams lp = window.getAttributes();
-            lp.width = WindowManager.LayoutParams.MATCH_PARENT;//宽高可设置具体大小
-            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            switch (position){
-                case 0:
-                    window.setGravity(Gravity.CENTER);
-                    break;
-                case 1:
-                    window.setGravity(Gravity.TOP);
-                    lp.y = 200;
-                    break;
-                case 2:
-                    window.setGravity(Gravity.BOTTOM);
-                    lp.y = 200;
-                    break;
+            WindowManager.LayoutParams lp;
+            if (window != null) {
+                lp = window.getAttributes();
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;//宽高可设置具体大小
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                switch (position){
+                    case 0:
+                        window.setGravity(Gravity.CENTER);
+                        break;
+                    case 1:
+                        window.setGravity(Gravity.TOP);
+                        lp.y = 200;
+                        break;
+                    case 2:
+                        window.setGravity(Gravity.BOTTOM);
+                        lp.y = 200;
+                        break;
+                }
+
+                window.setAttributes(lp);
+
+                if (this.isCancelOutside){
+                    window.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                }
             }
 
-            window.setAttributes(lp);
-
-            if (this.isCancelOutside){
-                window.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-            }
             loadingDialog.setCanceledOnTouchOutside(this.isCancelOutside);
             loadingDialog.setContentView(view);
             loadingDialog.setCancelable(this.cancelable);
-
             return loadingDialog;
         }
     }

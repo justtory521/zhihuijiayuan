@@ -2699,6 +2699,37 @@ public class AndroidtoJS implements ShareResultInter {
     }
 
 
+//    /**
+//     * 播放语音
+//     *
+//     * @param value
+//     */
+//    @JavascriptInterface
+//    public void LXPlayAudio(String value) {
+//        Log.d("libin", value);
+//        try {
+//            JSONObject jsonObject = new JSONObject(value);
+//            int type = jsonObject.getInt("type");
+//            switch (type) {
+//                case 1:
+//                    MediaUtils.getInstance().playAudio(R.raw.patrol_warn);
+//                    break;
+//                case 2:
+//                    MediaUtils.getInstance().playAudio(R.raw.patrol_finish);
+//                    break;
+//            }
+//
+//            Vibrator vibrator = (Vibrator) mContext.getSystemService(VIBRATOR_SERVICE);
+//            if (vibrator != null) {
+//                vibrator.vibrate(2000);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+
     public void shareText(String callBack, String title, String content) {
         if (BaseUnits.getInstance().getShareList(mContext).length == 0) {
             ViewUnits.getInstance().showToast("您未安装微信、微博和QQ");

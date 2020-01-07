@@ -47,8 +47,8 @@ android {
         }
     }
     defaultConfig {
-        versionCode 26
-        versionName "2.1.3"
+        versionCode 27
+        versionName "2.1.4"
         applicationId "tendency.hz.zhihuijiayuan"
         minSdkVersion 19
         targetSdkVersion 28

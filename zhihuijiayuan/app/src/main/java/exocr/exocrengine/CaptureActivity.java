@@ -9,6 +9,7 @@ import android.hardware.Camera;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import tendency.hz.zhihuijiayuan.bean.IDCardBean;
+import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.ScanResultActivity;
 
 import butterknife.BindView;
@@ -74,6 +76,27 @@ public class CaptureActivity extends BaseActivity implements SurfaceHolder.Callb
 
         setContentView(R.layout.activity_idcard);
         ButterKnife.bind(this);
+
+        ViewUnits.getInstance().showLoading(this,"引擎初始化中");
+        new CountDownTimer(10000, 200) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                initSuccess = EXOCRDict.InitDict(CaptureActivity.this);
+                if (initSuccess) {
+                    ViewUnits.getInstance().missLoading();
+                    cancel();
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                if (!initSuccess){
+                    ViewUnits.getInstance().showToast("引擎初始化失败,请重试");
+                    ViewUnits.getInstance().missLoading();
+                    CaptureActivity.this.finish();
+                }
+            }
+        }.start();
 
         isFront = getIntent().getBooleanExtra("is_front", true);
         callback = getIntent().getStringExtra("callback");
