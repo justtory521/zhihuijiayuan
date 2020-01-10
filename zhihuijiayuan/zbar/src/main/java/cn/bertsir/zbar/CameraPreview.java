@@ -59,6 +59,10 @@ public class CameraPreview extends FrameLayout implements SurfaceHolder.Callback
         mPreviewCallback.setScanCallback(callback);
     }
 
+    public CameraManager getmCameraManager() {
+        return mCameraManager;
+    }
+
     /**
      * Camera start preview.
      */

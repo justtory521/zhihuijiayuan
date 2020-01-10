@@ -246,6 +246,7 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
             }
 
             if (!TextUtils.isEmpty(resultStr)) {
+                Log.d(TAG, "zbar: "+resultStr);
                 ScanResult scanResult = new ScanResult();
                 scanResult.setContent(resultStr);
                 scanResult.setType(resultType == Symbol.QRCODE ? ScanResult.CODE_QR : ScanResult.CODE_BAR);
@@ -309,6 +310,7 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
             String resultStr = rawResult.toString();
             BarcodeFormat resultFormat = rawResult.getBarcodeFormat();
             if (!TextUtils.isEmpty(resultStr)) {
+                Log.d(TAG, "zxing: "+resultStr);
                 ScanResult scanResult = new ScanResult();
                 scanResult.setContent(resultStr);
                 scanResult.setType(resultFormat == BarcodeFormat.QR_CODE ? ScanResult.CODE_QR : ScanResult.CODE_BAR);

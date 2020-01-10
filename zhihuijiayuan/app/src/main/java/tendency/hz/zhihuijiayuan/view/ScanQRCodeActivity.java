@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Point;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,12 +13,14 @@ import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -27,6 +31,8 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bertsir.zbar.CameraConfiguration;
+import cn.bertsir.zbar.CameraManager;
 import cn.bertsir.zbar.CameraPreview;
 import cn.bertsir.zbar.Qr.ScanResult;
 import cn.bertsir.zbar.Qr.Symbol;
@@ -37,7 +43,10 @@ import cn.bertsir.zbar.view.ScanView;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.bean.ScanResultBean;
 import tendency.hz.zhihuijiayuan.bean.base.Uri;
+import tendency.hz.zhihuijiayuan.bean.base.What;
 import tendency.hz.zhihuijiayuan.inter.QrCodeScanInter;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
+import tendency.hz.zhihuijiayuan.units.ScreenUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 
 /**
@@ -67,7 +76,6 @@ public class ScanQRCodeActivity extends BaseActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Symbol.doubleEngine =true;
 
-
         setContentView(R.layout.activity_scan_qrcode);
         ButterKnife.bind(this);
         init();
@@ -76,7 +84,6 @@ public class ScanQRCodeActivity extends BaseActivity {
     private void init() {
         mCallBack = super.getIntent().getStringExtra("callBack");
 
-
         cbFlashLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -84,7 +91,6 @@ public class ScanQRCodeActivity extends BaseActivity {
             }
         });
 
-        cpScan.setZoom(2);
     }
 
 
@@ -112,6 +118,19 @@ public class ScanQRCodeActivity extends BaseActivity {
             cpScan.setScanCallback(resultCallback);
             cpScan.start();
 
+            //CameraPreview设置宽高
+            CameraManager cameraManager = cpScan.getmCameraManager();
+            Camera camera = cameraManager.getmCamera();
+            Camera.Parameters parameters = camera.getParameters();
+            Point screenResolutionForCamera = new Point();
+            screenResolutionForCamera.x = ScreenUtils.getScreenHeight();
+            screenResolutionForCamera.y = ScreenUtils.getScreenWidth();
+            Point bestPreviewSizeValue = CameraConfiguration.findBestPreviewSizeValue(parameters, screenResolutionForCamera);
+            ViewGroup.LayoutParams layoutParams = cpScan.getLayoutParams();
+            layoutParams.width = ScreenUtils.getScreenWidth();
+            layoutParams.height =ScreenUtils.getScreenWidth() * bestPreviewSizeValue.x / bestPreviewSizeValue.y;
+            LogUtils.log("sss"+layoutParams.width+","+layoutParams.height);
+            cpScan.setLayoutParams(layoutParams);
         }
     }
 
