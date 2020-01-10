@@ -65,7 +65,7 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
     private ImageScanner mImageScanner;
     private Handler mHandler;
     private ScanCallback mCallback;
-    private static final String TAG = "CameraScanAnalysis";
+    private static final String TAG = "libin";
 
     private boolean allowAnalysis = true;
     private Image barcode;
@@ -202,7 +202,7 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
                         size.height, Symbol.cropX, Symbol.cropY, cropWidth, cropHeight, true);
                 if (source != null) {
                     BinaryBitmap bitmap;
-                    if (count % 6 < 3) {
+                    if (count % 4 < 2) {
                         count++;
                         bitmap = new BinaryBitmap(new HybridBinarizer(source));
                     } else {
@@ -288,47 +288,43 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
         height = tmp;
         data = rotatedData;
         PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(data, width, height, 0,
-                0, width, height, true);
-        ;
+                0, width, height, false);
         Hashtable<DecodeHintType, Object> scanOption = new Hashtable<>();
         scanOption.put(DecodeHintType.CHARACTER_SET, "utf-8");
         Collection<Reader> readers = new ArrayList<>();
         readers.add((new QRCodeReader()));
         scanOption.put(DecodeHintType.POSSIBLE_FORMATS, readers);
         multiFormatReader.setHints(scanOption);
-        if (source != null) {
-            BinaryBitmap bitmap;
-            if (count % 6 < 3) {
-                count++;
-                bitmap = new BinaryBitmap(new HybridBinarizer(source));
-            } else {
-                count++;
-                bitmap = new BinaryBitmap(new HybridBinarizer(source.invert()));
-            }
-            try {
-                rawResult = multiFormatReader.decodeWithState(bitmap);
-                String resultStr = rawResult.toString();
-                BarcodeFormat resultFormat = rawResult.getBarcodeFormat();
-                if (!TextUtils.isEmpty(resultStr)) {
-                    ScanResult scanResult = new ScanResult();
-                    scanResult.setContent(resultStr);
-                    scanResult.setType(resultFormat == BarcodeFormat.QR_CODE ? ScanResult.CODE_QR : ScanResult.CODE_BAR);
-                    Message message = mHandler.obtainMessage();
-                    message.obj = scanResult;
-                    message.sendToTarget();
-                    lastResultTime = System.currentTimeMillis();
-                    if (Symbol.looperScan) {
-                        allowAnalysis = true;
-                    }
-                } else allowAnalysis = true;
-            } catch (ReaderException re) {
-                allowAnalysis = true;
-                //Log.i("解码异常",re.toString());
-            } finally {
-                multiFormatReader.reset();
-            }
+        BinaryBitmap bitmap;
+        if (count % 4 < 2) {
+            count++;
+            bitmap = new BinaryBitmap(new HybridBinarizer(source));
         } else {
+            count++;
+            bitmap = new BinaryBitmap(new HybridBinarizer(source.invert()));
+        }
+
+        try {
+            rawResult = multiFormatReader.decodeWithState(bitmap);
+            String resultStr = rawResult.toString();
+            BarcodeFormat resultFormat = rawResult.getBarcodeFormat();
+            if (!TextUtils.isEmpty(resultStr)) {
+                ScanResult scanResult = new ScanResult();
+                scanResult.setContent(resultStr);
+                scanResult.setType(resultFormat == BarcodeFormat.QR_CODE ? ScanResult.CODE_QR : ScanResult.CODE_BAR);
+                Message message = mHandler.obtainMessage();
+                message.obj = scanResult;
+                message.sendToTarget();
+                lastResultTime = System.currentTimeMillis();
+                if (Symbol.looperScan) {
+                    allowAnalysis = true;
+                }
+            } else allowAnalysis = true;
+        } catch (ReaderException re) {
             allowAnalysis = true;
+            //Log.i("解码异常",re.toString());
+        } finally {
+            multiFormatReader.reset();
         }
 
     }

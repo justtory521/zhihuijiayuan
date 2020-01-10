@@ -34,7 +34,7 @@ import java.util.List;
  */
 public final class CameraConfiguration {
 
-    private static final String TAG = "CameraConfiguration";
+    private static final String TAG = "libin";
 
     private static final int MIN_PREVIEW_PIXELS = 480 * 320;
     private static final double MAX_ASPECT_DISTORTION = 0.15;
@@ -84,16 +84,18 @@ public final class CameraConfiguration {
             Log.w(TAG, "Device error: no camera parameters are available. Proceeding without configuration.");
             return;
         }
-
+        Log.d(TAG, "setDesiredCameraParameters: "+cameraResolution.x+","+cameraResolution.y);
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
         camera.setParameters(parameters);
 
         Camera.Parameters afterParameters = camera.getParameters();
         Camera.Size afterSize = afterParameters.getPreviewSize();
+        Log.d(TAG, "afterSize: "+afterSize.width+","+afterSize.height);
         if (afterSize != null && (cameraResolution.x != afterSize.width || cameraResolution.y != afterSize.height)) {
             cameraResolution.x = afterSize.width;
             cameraResolution.y = afterSize.height;
         }
+        Log.d(TAG, "setDesiredCameraParameters1: "+cameraResolution.x+","+cameraResolution.y);
         camera.setDisplayOrientation(90);
     }
 
@@ -159,13 +161,16 @@ public final class CameraConfiguration {
         }
 
         double screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
+        Log.d(TAG, "screen: "+screenResolution.x +","+screenResolution.y);
 
         // Remove sizes that are unsuitable
         Iterator<Camera.Size> it = supportedPreviewSizes.iterator();
         while (it.hasNext()) {
             Camera.Size supportedPreviewSize = it.next();
+
             int realWidth = supportedPreviewSize.width;
             int realHeight = supportedPreviewSize.height;
+            Log.d(TAG, "supportedPreviewSize111: "+realWidth+","+realHeight);
             if (realWidth * realHeight < MIN_PREVIEW_PIXELS) {
                 it.remove();
                 continue;
@@ -177,14 +182,17 @@ public final class CameraConfiguration {
 
             double aspectRatio = (double) maybeFlippedWidth / (double) maybeFlippedHeight;
             double distortion = Math.abs(aspectRatio - screenAspectRatio);
+            Log.d(TAG, "ddddddd: " + aspectRatio+","+screenAspectRatio);
             if (distortion > MAX_ASPECT_DISTORTION) {
                 it.remove();
                 continue;
             }
 
-            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
+            //zxing扫码近距离无法扫描
+            Log.d(TAG, "aaaaaaa: " + maybeFlippedWidth+","+screenResolution.x);
+            if (maybeFlippedWidth <1500){
                 Point exactPoint = new Point(realWidth, realHeight);
-                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
+                Log.d(TAG, "Found preview size exactly matching screen size: " + exactPoint);
                 return exactPoint;
             }
         }

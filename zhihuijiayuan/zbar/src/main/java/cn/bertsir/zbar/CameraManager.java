@@ -76,21 +76,6 @@ public final class CameraManager {
     }
 
 
-    //设置相机反色效果
-    public void setEffectNegative(){
-        Camera.Parameters parameters = mCamera.getParameters();
-        List<String> colorEffects = parameters.getSupportedColorEffects();
-        Iterator<String> cei = colorEffects.iterator();
-        while (cei.hasNext()) {
-            String currentEffect = cei.next();
-            if (currentEffect.equals(Camera.Parameters.EFFECT_NEGATIVE)) {
-                parameters.setColorEffect(Camera.Parameters.EFFECT_NEGATIVE);
-                break;
-            }
-        }
-        mCamera.setParameters(parameters);
-    }
-
 
     /**
      * Closes the camera driver if still in use.

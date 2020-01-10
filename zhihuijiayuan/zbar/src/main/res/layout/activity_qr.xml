@@ -13,7 +13,9 @@
     <cn.bertsir.zbar.CameraPreview
         android:id="@+id/cp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></cn.bertsir.zbar.CameraPreview>
+        android:layout_height="match_parent">
+
+    </cn.bertsir.zbar.CameraPreview>
 
 
     <cn.bertsir.zbar.view.ScanView

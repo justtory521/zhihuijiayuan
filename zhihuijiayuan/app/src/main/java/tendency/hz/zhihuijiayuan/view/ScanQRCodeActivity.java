@@ -65,9 +65,6 @@ public class ScanQRCodeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        Symbol.scanType = QrConfig.TYPE_CUSTOM;
-        Symbol.is_only_scan_center = true;
         Symbol.doubleEngine =true;
 
 
@@ -87,6 +84,7 @@ public class ScanQRCodeActivity extends BaseActivity {
             }
         });
 
+        cpScan.setZoom(2);
     }
 
 
@@ -113,6 +111,7 @@ public class ScanQRCodeActivity extends BaseActivity {
         if (cpScan != null) {
             cpScan.setScanCallback(resultCallback);
             cpScan.start();
+
         }
     }
 
