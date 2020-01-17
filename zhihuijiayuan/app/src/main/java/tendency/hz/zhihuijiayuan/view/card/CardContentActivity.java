@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -1356,6 +1357,11 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         }
     }
 
+    //调用系统相机activity被销毁
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 
     /**
      * 蓝牙发送

@@ -2,10 +2,16 @@ package tendency.hz.zhihuijiayuan.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -54,7 +60,7 @@ import tendency.hz.zhihuijiayuan.units.ViewUnits;
  * Email：1993911441@qq.com
  * Describe：扫码
  */
-public class ScanQRCodeActivity extends BaseActivity {
+public class ScanQRCodeActivity extends BaseActivity{
     @BindView(R.id.cp_scan)
     CameraPreview cpScan;
     @BindView(R.id.scan_view)
@@ -69,16 +75,18 @@ public class ScanQRCodeActivity extends BaseActivity {
     private String mCallBack;
     private String scanResult;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        Symbol.doubleEngine =true;
-
+        Symbol.scanType =  QrConfig.TYPE_CUSTOM;
+        Symbol.doubleEngine = true;
         setContentView(R.layout.activity_scan_qrcode);
         ButterKnife.bind(this);
         init();
+
     }
 
     private void init() {
@@ -90,7 +98,6 @@ public class ScanQRCodeActivity extends BaseActivity {
                 cpScan.setFlash(isChecked);
             }
         });
-
     }
 
 
@@ -118,19 +125,24 @@ public class ScanQRCodeActivity extends BaseActivity {
             cpScan.setScanCallback(resultCallback);
             cpScan.start();
 
-            //CameraPreview设置宽高
-            CameraManager cameraManager = cpScan.getmCameraManager();
-            Camera camera = cameraManager.getmCamera();
-            Camera.Parameters parameters = camera.getParameters();
-            Point screenResolutionForCamera = new Point();
-            screenResolutionForCamera.x = ScreenUtils.getScreenHeight();
-            screenResolutionForCamera.y = ScreenUtils.getScreenWidth();
-            Point bestPreviewSizeValue = CameraConfiguration.findBestPreviewSizeValue(parameters, screenResolutionForCamera);
-            ViewGroup.LayoutParams layoutParams = cpScan.getLayoutParams();
-            layoutParams.width = ScreenUtils.getScreenWidth();
-            layoutParams.height =ScreenUtils.getScreenWidth() * bestPreviewSizeValue.x / bestPreviewSizeValue.y;
-            LogUtils.log("sss"+layoutParams.width+","+layoutParams.height);
-            cpScan.setLayoutParams(layoutParams);
+            try{
+                //CameraPreview设置宽高
+                CameraManager cameraManager = cpScan.getmCameraManager();
+                Camera camera = cameraManager.getmCamera();
+                Camera.Parameters parameters = camera.getParameters();
+                Point screenResolutionForCamera = new Point();
+                screenResolutionForCamera.x = ScreenUtils.getScreenHeight();
+                screenResolutionForCamera.y = ScreenUtils.getScreenWidth();
+                Point bestPreviewSizeValue = CameraConfiguration.findBestPreviewSizeValue(parameters, screenResolutionForCamera);
+                ViewGroup.LayoutParams layoutParams = cpScan.getLayoutParams();
+                layoutParams.width = ScreenUtils.getScreenWidth();
+                layoutParams.height = ScreenUtils.getScreenWidth() * bestPreviewSizeValue.x / bestPreviewSizeValue.y;
+                LogUtils.log("sss" + layoutParams.width + "," + layoutParams.height);
+                cpScan.setLayoutParams(layoutParams);
+            }catch (Exception e){
+
+            }
+
         }
     }
 
@@ -144,7 +156,6 @@ public class ScanQRCodeActivity extends BaseActivity {
     };
 
 
-
     private void scanResult(String result) {
         vibrate();
         Intent intent = new Intent();
@@ -152,7 +163,7 @@ public class ScanQRCodeActivity extends BaseActivity {
         this.setResult(RESULT_OK, intent);
         //如果QrCodeScan不为空，这执行相关回调，同时销毁对象，防止内存堆积
         if (!TextUtils.isEmpty(result)) {
-            EventBus.getDefault().post(new ScanResultBean(mCallBack,result));
+            EventBus.getDefault().post(new ScanResultBean(mCallBack, result));
         }
         finish();
     }
@@ -164,6 +175,7 @@ public class ScanQRCodeActivity extends BaseActivity {
         if (cpScan != null) {
             cpScan.stop();
         }
+
     }
 
     @Override

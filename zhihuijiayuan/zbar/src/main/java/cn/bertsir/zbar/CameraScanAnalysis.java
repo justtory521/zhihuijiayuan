@@ -322,9 +322,9 @@ class CameraScanAnalysis implements Camera.PreviewCallback {
                     allowAnalysis = true;
                 }
             } else allowAnalysis = true;
-        } catch (ReaderException re) {
+        } catch (Exception re) {
             allowAnalysis = true;
-            //Log.i("解码异常",re.toString());
+            Log.i("libin",re.toString());
         } finally {
             multiFormatReader.reset();
         }

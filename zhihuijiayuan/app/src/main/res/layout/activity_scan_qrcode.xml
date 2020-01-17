@@ -95,7 +95,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="center"
                 android:text="开灯"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite" />
 
         </LinearLayout>
     </LinearLayout>

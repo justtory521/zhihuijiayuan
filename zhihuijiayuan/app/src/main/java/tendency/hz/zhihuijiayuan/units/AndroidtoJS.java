@@ -2081,6 +2081,7 @@ public class AndroidtoJS implements ShareResultInter {
      */
     @JavascriptInterface
     public void freeMemory(String value) {
+
         LogUtils.log(value);
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -2301,7 +2302,7 @@ public class AndroidtoJS implements ShareResultInter {
     public void setClipboard(String value) {
         LogUtils.log(value);
         int timeout;
-        String callback = null;
+        String callback;
         String data;
         try {
             JSONObject jsonObject = new JSONObject(value);
@@ -2310,12 +2311,11 @@ public class AndroidtoJS implements ShareResultInter {
             //获取剪贴板管理器
             ClipboardManager cm = (ClipboardManager) MyApplication.getInstance().getSystemService(CLIPBOARD_SERVICE);
             // 创建普通字符型ClipData
-            ClipData mClipData = ClipData.newPlainText(null, data
-
-            );
+            ClipData mClipData = ClipData.newPlainText(null, data);
             // 将ClipData内容放到系统剪贴板里。
             cm.setPrimaryClip(mClipData);
-            sendCallBack(callback, "200", "success", data);
+            sendCallBack(callback, "200", "success", "成功");
+
             timeout = jsonObject.getInt("timeout");
 
             new CountDownTimer(timeout, 1000) {
@@ -2334,7 +2334,6 @@ public class AndroidtoJS implements ShareResultInter {
         } catch (JSONException e) {
             e.printStackTrace();
             LogUtils.log("无定时清剪切板");
-            sendCallBack(callback, "200", "success", "");
         }
     }
 

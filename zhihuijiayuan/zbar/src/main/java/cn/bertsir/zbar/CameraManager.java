@@ -16,7 +16,10 @@
 package cn.bertsir.zbar;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -44,6 +47,9 @@ public final class CameraManager {
     public CameraManager(Context context) {
         this.context = context;
         this.mConfiguration = new CameraConfiguration(context);
+
+        PackageManager pm=context.getPackageManager();
+
     }
 
     /**

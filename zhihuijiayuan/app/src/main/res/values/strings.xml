@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">智慧家园</string>
+    <string name="app_name_debug">智慧家园(开发版)</string>
+    <string name="app_name_test">智慧家园(测试版)</string>
     <string name="app_name_beta">智慧家园beta</string>
     <string name="launcher_name">@string/app_name</string>
     <string name="activity_name">@string/launcher_name</string>
