@@ -155,7 +155,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name="tendency.hz.zhihuijiayuan.view.set.ValidateActivity"
-
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"/>
         <activity
             android:name="tendency.hz.zhihuijiayuan.view.user.ResetPwdActivity"

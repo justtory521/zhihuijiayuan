@@ -204,6 +204,16 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
 
     }
 
+    /**
+     * 禁止横竖屏切换
+     *
+     * @param requestedOrientation
+     */
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        return;
+    }
+
     @Override
     public void onFailed(int what, Object object) {
         ViewUnits.getInstance().showToast(object.toString());
