@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+
 import tendency.hz.zhihuijiayuan.MainActivity;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.databinding.ActivityAdBinding;
@@ -31,7 +33,6 @@ public class AdActivity extends BaseActivity implements AllViewInter {
             if (mBinding.textTime !=null){
                 mBinding.textTime.setText("跳过广告 " + l / 1000 + "S");
             }
-
         }
 
         @Override

@@ -220,4 +220,11 @@ public interface CardModelInter {
      * @param netCode
      */
     void getCardHotSearch(int netCode);
+
+    /**
+     * 获取卡片Code
+     *
+     * @param netCode
+     */
+    void getCardCode(int netCode,String cardId);
 }

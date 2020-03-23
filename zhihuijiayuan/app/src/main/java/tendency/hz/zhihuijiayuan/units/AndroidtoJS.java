@@ -2,10 +2,7 @@ package tendency.hz.zhihuijiayuan.units;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothGatt;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -27,14 +24,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.StatFs;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -99,18 +94,15 @@ import tendency.hz.zhihuijiayuan.bean.DialogBean;
 import tendency.hz.zhihuijiayuan.bean.MenuBean;
 import tendency.hz.zhihuijiayuan.bean.ToastBean;
 import tendency.hz.zhihuijiayuan.bean.base.Config;
+import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.bean.base.Request;
 import tendency.hz.zhihuijiayuan.bean.base.What;
 import tendency.hz.zhihuijiayuan.fragment.DownLoadFragment;
 import tendency.hz.zhihuijiayuan.fragment.FingerPrintFragment;
 import tendency.hz.zhihuijiayuan.fragment.PlayAudioFragment;
+import tendency.hz.zhihuijiayuan.fragment.PlayAudioFragment1;
 import tendency.hz.zhihuijiayuan.fragment.RecordAudioFragment;
 import tendency.hz.zhihuijiayuan.inter.AndroidToJSCallBack;
-import tendency.hz.zhihuijiayuan.inter.CityPickerResultListener;
-import tendency.hz.zhihuijiayuan.inter.LoginResultListener;
-import tendency.hz.zhihuijiayuan.inter.OnVideoRecorderListener;
-import tendency.hz.zhihuijiayuan.inter.PayResultInter;
-import tendency.hz.zhihuijiayuan.inter.QrCodeScanInter;
 import tendency.hz.zhihuijiayuan.inter.ShareResultInter;
 import tendency.hz.zhihuijiayuan.inter.ValidateListener;
 import tendency.hz.zhihuijiayuan.listener.MyUMShareListener;
@@ -121,12 +113,6 @@ import tendency.hz.zhihuijiayuan.view.picker.CheckstandActivity;
 import tendency.hz.zhihuijiayuan.view.picker.CityPickerActivity;
 import tendency.hz.zhihuijiayuan.view.set.ValidateActivity;
 import tendency.hz.zhihuijiayuan.view.user.LoginActivity;
-import tendency.hz.zhihuijiayuan.view.user.LoginByPwdFragment;
-import tendency.hz.zhihuijiayuan.view.user.LoginSmsActivity;
-import tendency.hz.zhihuijiayuan.view.user.RegisterSetPwdActivity;
-import tendency.hz.zhihuijiayuan.view.user.RegisterSmsActivity;
-import tendency.hz.zhihuijiayuan.view.user.UserCreditActivity;
-import tendency.hz.zhihuijiayuan.view.user.UserInfoActivity;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
@@ -1629,6 +1615,40 @@ public class AndroidtoJS implements ShareResultInter {
         }
     }
 
+//    /**
+//     * 音频播放
+//     *
+//     * @param value
+//     */
+//    @JavascriptInterface
+//    public void audioPlay(String value) {
+//
+//
+//        Log.d("libin", "audioPlay: " + value);
+//        String audio;
+//        try {
+//            JSONObject jsonObject = new JSONObject(value);
+//            audio = jsonObject.getString("value");
+//            LogUtils.log("audio_length:"+audio.length());
+//            byte[] decode = Base64Utils.decodeAudio(audio);
+//            LogUtils.log("byte_length:"+decode.length);
+//            String audioPath = FileUtils.getInstance().saveAudioToFile(decode);
+//            mContext.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    PlayAudioFragment1 playAudioFragment = PlayAudioFragment1.newInstance(audioPath);
+//                    playAudioFragment.show(mContext.getFragmentManager(), "audio");
+//                }
+//            });
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            ViewUnits.getInstance().showToast(e.toString());
+//
+//        }
+//    }
+
+
     /**
      * 音频播放
      *
@@ -1638,12 +1658,14 @@ public class AndroidtoJS implements ShareResultInter {
     public void audioPlay(String value) {
 
 
-        Log.d("audioPlay", "audioPlay: " + value);
+        Log.d("libin", "audioPlay: " + value);
         String audio;
         try {
             JSONObject jsonObject = new JSONObject(value);
             audio = jsonObject.getString("value");
+            LogUtils.log("audio_length:"+audio.length());
             byte[] decode = Base64Utils.decode(audio);
+            LogUtils.log("byte_length:"+decode.length);
             String audioPath = FileUtils.getInstance().saveAudioToFile(decode);
             mContext.runOnUiThread(new Runnable() {
                 @Override
@@ -1652,6 +1674,8 @@ public class AndroidtoJS implements ShareResultInter {
                     playAudioFragment.show(mContext.getFragmentManager(), "audio");
                 }
             });
+
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2695,6 +2719,17 @@ public class AndroidtoJS implements ShareResultInter {
                 });
             }
         });
+    }
+
+
+    /**
+     * @param value  获取卡片code
+     */
+    @JavascriptInterface
+    public void getCardCode(String value) {
+        LogUtils.log(value);
+        mContext.cardCodeCallback = value;
+        mContext.mCardPrenInter.getCardCode(NetCode.Card2.getCardCode,mContext.getCardId());
     }
 
 

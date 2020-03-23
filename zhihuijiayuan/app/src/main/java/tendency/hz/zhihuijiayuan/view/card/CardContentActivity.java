@@ -164,6 +164,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     private CountDownTimer countDownTimer;
     //手动断开
     private boolean disconnectOnclick;
+    //卡片code  callback
+    public String cardCodeCallback;
 
 
     @Override
@@ -339,6 +341,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         titleLayoutBtn.height = (int) (BaseUnits.getInstance().getStatusBarHeight() + ViewUnits.getInstance().jsPX2AndroidPX(44));
         mBinding.btnTitle.setLayoutParams(titleLayoutBtn);
         startAnimation();
+
+
     }
 
 
@@ -746,6 +750,13 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
             case NetCode.Card.cardAttentionAdd:
                 mBinding.rlFocusCard.setVisibility(View.GONE);
                 CacheUnits.getInstance().insertMyCacheCard(mCardItem);
+                break;
+            case NetCode.Card2.getCardCode:
+                String cardCode = (String) object;
+                if (!TextUtils.isEmpty(cardCodeCallback)){
+                    LogUtils.log(cardCodeCallback+","+cardCode);
+                    sendCallback(cardCodeCallback,"200","success",cardCode);
+                }
                 break;
         }
     }

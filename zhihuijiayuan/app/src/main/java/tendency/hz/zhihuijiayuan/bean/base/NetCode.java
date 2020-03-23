@@ -126,6 +126,7 @@ public class NetCode {
         public static final int getChoiceCardSearch = 0x50d; //按主题搜索卡片
         public static final int getCardHotSearch = 0x50e; //获取卡片热搜榜
         public static final int previewCard = 0x50f; //卡片内关闭并打卡卡片时预览卡片
+        public static final int getCardCode = 0x511; //获取卡片Code
     }
 
     public static final class Set {

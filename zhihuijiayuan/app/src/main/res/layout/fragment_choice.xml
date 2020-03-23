@@ -68,10 +68,20 @@
             </LinearLayout>
         </LinearLayout>
 
+        <uk.co.imallan.jellyrefresh.JellyRefreshLayout
+            android:id="@+id/jelly_refresh_choice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:headerHeight="0dp"
+            app:jellyColor="@color/colorPrimary"
+            app:pullHeight="200dp"
+            app:triggerHeight="200dp">
+
         <tendency.hz.zhihuijiayuan.widget.MyScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,19 +89,21 @@
                 android:background="@color/colorWhite"
                 android:orientation="vertical">
 
-                <com.youth.banner.Banner
-                    android:id="@+id/banner"
+                <com.zhpan.bannerview.BannerViewPager
+                    android:id="@+id/banner_view"
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
-                    app:banner_default_image="@mipmap/banner_default"
-                    app:delay_time="4000"
-                    app:indicator_drawable_selected="@drawable/shape_point_banner_selected"
-                    app:indicator_drawable_unselected="@drawable/shape_point_banner_unselected"
-                    app:indicator_height="6dp"
-                    app:indicator_margin="5dp"
-                    app:indicator_width="6dp">
-
-                </com.youth.banner.Banner>
+                    app:bvp_indicator_slide_mode="normal"
+                    app:bvp_page_margin="10dp"
+                    app:bvp_reveal_width="10dp"
+                    app:bvp_interval="4000"
+                    app:bvp_can_loop="true"
+                    app:bvp_indicator_checked_color="@color/colorAccent"
+                    app:bvp_indicator_normal_color="@color/colorGray"
+                    app:bvp_indicator_radius="6dp"
+                    app:bvp_auto_play="true"
+                    app:bvp_page_style="multi_page_scale"
+                    app:bvp_indicator_style="circle" />
 
                 <LinearLayout
                     android:id="@+id/layout_recommend"
@@ -213,5 +225,8 @@
             </LinearLayout>
 
         </tendency.hz.zhihuijiayuan.widget.MyScrollView>
+
+        </uk.co.imallan.jellyrefresh.JellyRefreshLayout>
+
     </LinearLayout>
 </layout>

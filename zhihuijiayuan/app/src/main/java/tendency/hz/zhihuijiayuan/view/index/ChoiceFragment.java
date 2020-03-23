@@ -3,12 +3,21 @@ package tendency.hz.zhihuijiayuan.view.index;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.cjt2325.cameralibrary.util.LogUtil;
+import com.youth.banner.Transformer;
+import com.zhpan.bannerview.BannerViewPager;
+import com.zhpan.bannerview.constants.IndicatorSlideMode;
+import com.zhpan.bannerview.holder.HolderCreator;
+import com.zhpan.bannerview.holder.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +38,15 @@ import tendency.hz.zhihuijiayuan.presenter.CardPrenImpl;
 import tendency.hz.zhihuijiayuan.presenter.prenInter.CardPrenInter;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.UserUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.card.BannerDetailsActivity;
 import tendency.hz.zhihuijiayuan.view.card.CardContentActivity;
 import tendency.hz.zhihuijiayuan.view.card.SearchCardActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
+import tendency.hz.zhihuijiayuan.widget.NetViewHolder;
+import uk.co.imallan.jellyrefresh.PullToRefreshLayout;
 
 /**
  * Created by JasonYao on 2018/11/14.
@@ -86,12 +98,23 @@ public class ChoiceFragment extends Fragment implements AllViewInter {
         mManager2 = new LinearLayoutManager(getActivity());
         mManager2.setOrientation(LinearLayoutManager.VERTICAL);
 
-        mBinding.banner.setImageLoader(new GlideImageLoader());
-        mBinding.banner.setOnBannerListener(position -> {
-            Intent intent1 = new Intent(getActivity(), BannerDetailsActivity.class);
-            intent1.putExtra("img", mBanners.get(position).getInnerImg());
-            startActivity(intent1);
-        });
+
+        mBinding.bannerView
+                .setHolderCreator(new HolderCreator() {
+                    @Override
+                    public ViewHolder createViewHolder() {
+                        return new NetViewHolder();
+                    }
+                })
+
+                .setOnPageClickListener(new BannerViewPager.OnPageClickListener() {
+                    @Override
+                    public void onPageClick(int position) {
+                        Intent intent1 = new Intent(getActivity(), BannerDetailsActivity.class);
+                        intent1.putExtra("img", mBanners.get(position).getInnerImg());
+                        startActivity(intent1);
+                    }
+                });
 
         mRecommendAdapter = new ChoiceCardRecyclerAdapter(mCardsRecommend, getActivity());
         mThemeAdapter = new ThemeRecyclerAdapter(getActivity(), mTheme);
@@ -100,6 +123,18 @@ public class ChoiceFragment extends Fragment implements AllViewInter {
         mBinding.recyclerTheme.setLayoutManager(mManager2);
         mBinding.recyclerRecommend.setAdapter(mRecommendAdapter);
         mBinding.recyclerTheme.setAdapter(mThemeAdapter);
+
+        mBinding.jellyRefreshChoice.setPullToRefreshListener(new PullToRefreshLayout.PullToRefreshListener() {
+            @Override
+            public void onRefresh(PullToRefreshLayout pullToRefreshLayout) {
+                pullToRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBinding.jellyRefreshChoice.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        });
     }
 
     private void setListener() {
@@ -133,7 +168,7 @@ public class ChoiceFragment extends Fragment implements AllViewInter {
         if (cardItem.getCardType().equals(What.CardType.businessCard)) {
             Intent intent = new Intent(getActivity(), CardContentActivity.class);
             intent.putExtra("cardItem", cardItem);
-            getActivity().startActivity(intent);
+            startActivity(intent);
         } else {
             ViewUnits.getInstance().showLoading(getActivity(), "请稍等");
             mCardPrenInter.getAppCardInfo(NetCode.Card.getAppCardInfo, cardItem.getCardID());
@@ -215,8 +250,8 @@ public class ChoiceFragment extends Fragment implements AllViewInter {
                 for (Banner banner : mBanners) {
                     mBannersUri.add(banner.getOuterImg());
                 }
-                mBinding.banner.setImages(mBannersUri);
-                mBinding.banner.start();
+
+                mBinding.bannerView.create(mBannersUri);
                 break;
             case NetCode.Card.anonymousCancel:
             case NetCode.Card.deleteCard:

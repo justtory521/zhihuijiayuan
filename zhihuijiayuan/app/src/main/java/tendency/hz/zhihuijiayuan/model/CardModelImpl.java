@@ -409,6 +409,16 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
     }
 
     @Override
+    public void getCardCode(int netCode, String cardId) {
+        if (netCode != NetCode.Card2.getCardCode) {
+            return;
+        }
+        List<NoHttpUtil.Param> params = new ArrayList<>();
+        params.add(new NoHttpUtil.Param("cardId", cardId));
+        NoHttpUtil.get(netCode, Uri.Card.GETCARDCODE, onResponseListener, params);
+    }
+
+    @Override
     public void rspSuccess(int what, Object object) throws JSONException {
         switch (what) {
             case NetCode.Card.findListRefresh:  //刷新数据
@@ -542,6 +552,10 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
                 List<CardItem> hotCardItems = mGson.fromJson(jsaHotSearch.toString(), new TypeToken<List<CardItem>>() {
                 }.getType());
                 mAllPrenInter.onSuccess(what, hotCardItems);
+                break;
+            case NetCode.Card2.getCardCode:
+                String cardCode = ((JSONObject) object).getString("Data");
+                mAllPrenInter.onSuccess(what, cardCode);
                 break;
         }
     }

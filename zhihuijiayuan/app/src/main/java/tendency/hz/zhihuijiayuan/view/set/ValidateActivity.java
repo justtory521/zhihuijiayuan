@@ -1,6 +1,8 @@
 package tendency.hz.zhihuijiayuan.view.set;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -266,8 +269,22 @@ public class ValidateActivity extends BaseActivity implements AllViewInter {
                 startActivity(new Intent(ValidateActivity.this, PrivacyStatementActivity.class));
                 break;
             case R.id.btn_send:
+                anim();
                 update();
                 break;
         }
+    }
+
+    /**
+     * 缩放动画
+     */
+    private void anim(){
+        AnimatorSet shrink = new AnimatorSet();//组合动画
+        ObjectAnimator scaleX2 = ObjectAnimator.ofFloat(btnSend, "scaleX", 1, 0.8f,1);
+        ObjectAnimator scaleY2 = ObjectAnimator.ofFloat(btnSend, "scaleY", 1,0.8f,1);
+        shrink.setDuration(300);
+        shrink.setInterpolator(new BounceInterpolator());
+        shrink.play(scaleX2).with(scaleY2);//两个动画同时开始
+        shrink.start();
     }
 }

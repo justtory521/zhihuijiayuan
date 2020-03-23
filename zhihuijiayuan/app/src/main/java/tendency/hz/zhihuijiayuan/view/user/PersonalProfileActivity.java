@@ -1,5 +1,7 @@
 package tendency.hz.zhihuijiayuan.view.user;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.BounceInterpolator;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -321,8 +324,19 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
      * 上传个人信息
      */
     public void updatePersonalInfo(View view) {
+        shakeAnim();
         ViewUnits.getInstance().showLoading(this, "修改中");
         mPersonalPrenInter.editPersonInfo(NetCode.Personal.editPersonInfo, mHeadUrl, mNickName, mSex, mBirthDay, mAddress);
+    }
+
+    private void shakeAnim(){
+        AnimatorSet shrink = new AnimatorSet();//组合动画
+        ObjectAnimator scaleX2 = ObjectAnimator.ofFloat(mBinding.btnEditInfo, "scaleX", 1, 0.8f,1);
+        ObjectAnimator scaleY2 = ObjectAnimator.ofFloat(mBinding.btnEditInfo, "scaleY", 1,0.8f,1);
+        shrink.setDuration(300);
+        shrink.setInterpolator(new BounceInterpolator());
+        shrink.play(scaleX2).with(scaleY2);//两个动画同时开始
+        shrink.start();
     }
 
     public void downloadData(View view) {

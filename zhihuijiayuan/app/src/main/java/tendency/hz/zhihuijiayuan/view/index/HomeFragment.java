@@ -25,6 +25,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.zhy.m.permission.MPermissions;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import tendency.hz.zhihuijiayuan.view.picker.CityPickerActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.CradItemDecoration;
 import tendency.hz.zhihuijiayuan.widget.ItemTouchCallback;
+import uk.co.imallan.jellyrefresh.PullToRefreshLayout;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -99,6 +101,18 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
 
         mAdapter = new MainCardRecyclerAdapter(getActivity(), mCardItems);
         mManager = new LinearLayoutManager(getActivity());
+
+        mBinding.jellyRefresh.setPullToRefreshListener(new PullToRefreshLayout.PullToRefreshListener() {
+            @Override
+            public void onRefresh(PullToRefreshLayout pullToRefreshLayout) {
+                pullToRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBinding.jellyRefresh.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        });
         mBinding.recyclerCardMain.addItemDecoration(new CradItemDecoration(ViewUnits.getInstance().dp2px(getActivity(), 6)));
         mBinding.recyclerCardMain.setLayoutManager(mManager);
         mBinding.recyclerCardMain.setAdapter(mAdapter);
@@ -212,6 +226,7 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
                     UserUnits.getInstance().setLocation(bdLocation.getCity());
 
                     if (FormatUtils.getInstance().isEmpty(UserUnits.getInstance().getSelectCity())) {
+
                         UserUnits.getInstance().setSelectCity(bdLocation.getCity());
                     }
 
@@ -219,7 +234,6 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
                         ConfigUnits.getInstance().setFirstInstallStatus(false);
                         mCardPrenInter.authFocusCard(NetCode.Card2.autoFocusCard);
                     }
-
 
                     mBinding.textCityName.setText(UserUnits.getInstance().getSelectCity());
 

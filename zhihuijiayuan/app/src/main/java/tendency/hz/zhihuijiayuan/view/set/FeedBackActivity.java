@@ -1,10 +1,13 @@
 package tendency.hz.zhihuijiayuan.view.set;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.animation.BounceInterpolator;
 
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.bean.base.NetCode;
@@ -44,16 +47,19 @@ public class FeedBackActivity extends BaseActivity implements AllViewInter {
         mBinding.btnFeedback.setOnClickListener(view -> {
             mContentFeedBack = mBinding.edtFeedback.getText().toString();
             if (FormatUtils.getInstance().isEmpty(mContentFeedBack)) {
+                shrinkAnim();
                 ViewUnits.getInstance().showToast("内容不能为空!");
                 return;
             }
 
             if (!FormatUtils.getInstance().isEmpty(mBinding.edtContact.getText().toString()) &&
                     !FormatUtils.getInstance().isPhone(mBinding.edtContact.getText().toString())) {
+                shrinkAnim();
                 ViewUnits.getInstance().showToast("手机号格式错误");
                 return;
             }
 
+            shakeAnim();
             ViewUnits.getInstance().showLoading(this, "反馈中");
             mSetPrenInter.feedBack(NetCode.Set.feedBack, "", mContentFeedBack, "", mBinding.edtContact.getText().toString());
         });
@@ -103,4 +109,24 @@ public class FeedBackActivity extends BaseActivity implements AllViewInter {
         mContentFeedBack = null;
         mSetPrenInter = null;
     }
+
+
+    private void shakeAnim(){
+        AnimatorSet shrink = new AnimatorSet();//组合动画
+        ObjectAnimator scaleX2 = ObjectAnimator.ofFloat(mBinding.btnFeedback, "scaleX", 1, 0.8f,1);
+        ObjectAnimator scaleY2 = ObjectAnimator.ofFloat(mBinding.btnFeedback, "scaleY", 1,0.8f,1);
+        shrink.setDuration(300);
+        shrink.setInterpolator(new BounceInterpolator());
+        shrink.play(scaleX2).with(scaleY2);//两个动画同时开始
+        shrink.start();
+    }
+
+    private void shrinkAnim(){
+        ObjectAnimator translationX = new ObjectAnimator().ofFloat(mBinding.btnFeedback,"translationX",0,20,0);
+        translationX.setDuration(300);  //设置动画时间
+        translationX.setInterpolator(new BounceInterpolator());
+        translationX.start(); //启动
+    }
+
+
 }

@@ -2,8 +2,10 @@ package tendency.hz.zhihuijiayuan.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.adapters.SeekBarBindingAdapter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +22,13 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.cjt2325.cameralibrary.util.LogUtil;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -28,7 +36,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import tendency.hz.zhihuijiayuan.R;
+import tendency.hz.zhihuijiayuan.application.MyApplication;
 import tendency.hz.zhihuijiayuan.units.LogUtils;
+import tendency.hz.zhihuijiayuan.units.ViewUnits;
 
 
 /**
@@ -96,13 +106,28 @@ public class PlayAudioFragment extends DialogFragment {
      */
     private void prepareAudio() {
 
+        getDialog().setCancelable(false);
+        getDialog().setCanceledOnTouchOutside(false);
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                return keyCode == KeyEvent.KEYCODE_BACK;
+            }
+        });
+
+
         mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(audioPath);
-            mediaPlayer.prepare();
+
+            FileInputStream fis = new FileInputStream(new File(audioPath));
+            mediaPlayer.setDataSource(fis.getFD());
+//            mediaPlayer.setDataSource(audioPath);
+            mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
 
 
         sbPlayAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -127,20 +152,34 @@ public class PlayAudioFragment extends DialogFragment {
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                totalTime = mediaPlayer.getDuration() / 1000;
+                totalTime = mp.getDuration() / 1000;
+                LogUtils.log("总时长："+mp.getDuration());
                 sbPlayAudio.setMax(totalTime);
                 tvTotalTime.setText(getTime(totalTime));
 
 
+                AudioManager am = (AudioManager) MyApplication.getInstance().getSystemService(Context.AUDIO_SERVICE);
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
                 onPlay(false);
                 isPlay = true;
-            }
-        });
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                dismiss();
+
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        stopPlaying();
+                    }
+                });
+
+
+                mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(MediaPlayer mp, int what, int extra) {
+                        ViewUnits.getInstance().showToast("错误码："+what+"       "+extra);
+                        return false;
+                    }
+                });
             }
         });
 
@@ -150,15 +189,23 @@ public class PlayAudioFragment extends DialogFragment {
     private void getData() {
         Bundle bundle = getArguments();
         audioPath = bundle.getString("audio");
+
+
+        getDialog().setCancelable(false);
+        getDialog().setCanceledOnTouchOutside(false);
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                return keyCode == KeyEvent.KEYCODE_BACK;
+            }
+        });
     }
 
     // Play start/stop
     private void onPlay(boolean isPlaying) {
         if (!isPlaying) {
             //currently MediaPlayer is not playing audio
-            if (mediaPlayer == null) {
-                startPlaying(); //start from beginning
-            } else {
+            if (mediaPlayer != null) {
                 resumePlaying(); //resume the currently paused MediaPlayer
             }
         } else {
@@ -181,12 +228,23 @@ public class PlayAudioFragment extends DialogFragment {
     }
 
 
-    private void startPlaying() {
-        mHandler.post(mRunnable);
-        mediaPlayer.start();
-        //keep screen on while playing audio
-        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
+
+//    //updating
+//    private Runnable mRunnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            if (mediaPlayer != null) {
+//                time++;
+//                if (tvCurrentTime != null && time <= totalTime) {
+//                    sbPlayAudio.setProgress(time);
+//                    tvCurrentTime.setText(getTime(time));
+//                    mHandler.postDelayed(mRunnable, 1000);
+//                } else {
+//                  stopPlaying();
+//                }
+//            }
+//        }
+//    };
 
 
     //updating
@@ -195,12 +253,12 @@ public class PlayAudioFragment extends DialogFragment {
         public void run() {
             if (mediaPlayer != null) {
                 time++;
-                if (tvCurrentTime != null && time <= totalTime) {
+                if (tvCurrentTime != null) {
                     sbPlayAudio.setProgress(time);
                     tvCurrentTime.setText(getTime(time));
                     mHandler.postDelayed(mRunnable, 1000);
                 } else {
-                    dismiss();
+                    stopPlaying();
                 }
             }
         }
@@ -215,13 +273,9 @@ public class PlayAudioFragment extends DialogFragment {
         mediaPlayer = null;
         isPlay = !isPlay;
 
+        dismiss();
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        stopPlaying();
-    }
 
     @Override
     public void onDestroyView() {
@@ -249,8 +303,10 @@ public class PlayAudioFragment extends DialogFragment {
                 }
                 break;
             case R.id.tv_cancel_play:
-                dismiss();
+               stopPlaying();
                 break;
         }
     }
+
+
 }

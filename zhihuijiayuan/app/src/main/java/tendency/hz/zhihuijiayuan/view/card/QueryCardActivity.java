@@ -6,12 +6,16 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +24,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -120,14 +125,14 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
 
     private void initView() {
         mBinding.recyclerSreachResult.setLayoutManager(new LinearLayoutManager(this));
-        mBinding.recyclerSreachResult.setAdapter(mAdapter);
-        mPopupWindow = new PopupWindow();
-        mLayoutParams = getWindow().getAttributes();
+
         mPopBackView = LayoutInflater.from(this).inflate(R.layout.layout_voice_popup, null);
+        mPopupWindow = new PopupWindow(mPopBackView,
+                ViewGroup.LayoutParams.MATCH_PARENT,ViewUnits.getInstance().dp2px(this,180));
+        mLayoutParams = getWindow().getAttributes();
+
         //设置Popup具体参数
         mPopupWindow.setContentView(mPopBackView);
-        mPopupWindow.setWidth(LinearLayoutCompat.LayoutParams.MATCH_PARENT);//设置宽
-        mPopupWindow.setHeight(LinearLayoutCompat.LayoutParams.WRAP_CONTENT);//设置高
         mPopupWindow.setFocusable(true);//点击空白，popup不自动消失
         mPopupWindow.setOutsideTouchable(true);//非popup区域可触摸
         mPopupWindow.setAnimationStyle(R.style.ActionSheetDialogAnimation);
@@ -199,17 +204,26 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
             getWindow().setAttributes(mLayoutParams);
         });
 
+        mBindingPop.waveView.setDuration(5000);
+        mBindingPop.waveView.setStyle(Paint.Style.FILL);
+        mBindingPop.waveView.setColor(ContextCompat.getColor(this,R.color.colorAccent));
+        mBindingPop.waveView.setInterpolator(new LinearOutSlowInInterpolator());
+
         mBindingPop.btnClear.setOnClickListener(view -> mBinding.edtSreachQuery.setText(""));
         mBindingPop.btnCancel.setOnClickListener(view -> mPopupWindow.dismiss());
 
         mBindingPop.btnVoice.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_UP:
+                    mBindingPop.waveView.stopImmediately();
+                    mBindingPop.btnVoice.setVisibility(View.VISIBLE);
                     mBindingPop.textTitle.setText("按住说话");
                     mBindingPop.textTitle.setTextColor(QueryCardActivity.this.getResources().getColor(R.color.colorTextGray));
                     SpeechUnits.getInstance().stopListening();
                     break;
                 case MotionEvent.ACTION_DOWN:
+                    mBindingPop.btnVoice.setVisibility(View.INVISIBLE);
+                    mBindingPop.waveView.start();
                     mBindingPop.textTitle.setText("请开始说话...");
                     mBindingPop.textTitle.setTextColor(QueryCardActivity.this.getResources().getColor(R.color.colorPrimary));
                     SpeechUnits.getInstance().startListening(result -> {

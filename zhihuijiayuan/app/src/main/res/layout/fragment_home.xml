@@ -157,16 +157,27 @@
             android:background="@color/colorWhite"
             android:orientation="vertical">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_card_main"
+            <uk.co.imallan.jellyrefresh.JellyRefreshLayout
+                android:id="@+id/jelly_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="none"
-                android:visibility="gone"
-                android:layout_marginBottom="45dp"
-                android:layoutAnimation="@anim/anim_recyclerview_item">
+                app:headerHeight="0dp"
+                app:jellyColor="@color/colorPrimary"
+                app:pullHeight="200dp"
+                app:triggerHeight="200dp">
 
-            </android.support.v7.widget.RecyclerView>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_card_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="none"
+                    android:visibility="gone"
+                    android:layout_marginBottom="45dp"
+                    android:layoutAnimation="@anim/anim_recyclerview_item">
+                </android.support.v7.widget.RecyclerView>
+
+            </uk.co.imallan.jellyrefresh.JellyRefreshLayout>
+
 
             <pl.droidsonroids.gif.GifImageView
                 android:id="@+id/img_loading"

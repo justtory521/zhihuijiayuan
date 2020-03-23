@@ -184,6 +184,11 @@ public class CardPrenImpl implements CardPrenInter, AllPrenInter {
     }
 
     @Override
+    public void getCardCode(int netCode, String cardId) {
+        mCardModelInter.getCardCode(netCode,cardId);
+    }
+
+    @Override
     public void onSuccess(int what, Object object) {
         mAllViewInter.onSuccessed(what, object);
     }

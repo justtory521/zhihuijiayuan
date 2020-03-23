@@ -2,9 +2,11 @@ package tendency.hz.zhihuijiayuan.units;
 
 import android.text.TextUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import tendency.hz.zhihuijiayuan.bean.base.Uri;
 
@@ -80,6 +82,8 @@ public class FileUtils {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(data, 0, data.length);
             fos.close();
+
+
             return file.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();

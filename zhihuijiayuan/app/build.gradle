@@ -48,8 +48,8 @@ android {
     }
 
     defaultConfig {
-        versionCode 27
-        versionName "2.1.4"
+        versionCode 28
+        versionName "2.1.5"
         applicationId "tendency.hz.zhihuijiayuan"
         minSdkVersion 19
         targetSdkVersion 28
@@ -162,6 +162,7 @@ dependencies {
 
     //轮播图
     implementation 'com.youth.banner:banner:1.4.10'
+    implementation 'com.zhpan.library:bannerview:2.7.1'
 
     //右滑返回
     implementation 'me.imid.swipebacklayout.lib:library:1.0.0'
@@ -242,4 +243,5 @@ dependencies {
     //zbar扫描
 //    implementation 'cn.bertsir.zbarLibary:zbarlibary:1.4.1'
     implementation 'com.google.zxing:core:3.3.3'
+    implementation project(path: ':jellyrefresh')
 }

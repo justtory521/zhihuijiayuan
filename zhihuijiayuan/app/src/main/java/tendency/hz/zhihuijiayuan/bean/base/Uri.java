@@ -130,6 +130,7 @@ public class Uri {
         public static final String CHOICECARDTHEME = URL + "/api/CardTheme"; //按主题拉取卡片接口
         public static final String CHOICECARDSEARCH = URL + "/api/CardSearch"; //卡片搜索
         public static final String GETCARDHOTSEARCH = URL + "/api/CardHotSearch"; //获取卡片热搜榜
+        public static final String GETCARDCODE = URL + "/api/CardQRCode/GetQRCodeID"; //获取卡片热搜榜
 
         public static final String MYCARDLISTLEXUN = URL + "/api/CardAttentionLeXun/List";  //乐巡个人卡片列表
         public static final String MYCARDLISTLEXUNANONYMOUS = URL + "/api/CardAttentionLeXun/AnonymousList"; //乐巡个人卡片列表（匿名）

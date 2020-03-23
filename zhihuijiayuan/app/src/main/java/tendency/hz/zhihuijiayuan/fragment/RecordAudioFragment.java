@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,16 @@ public class RecordAudioFragment extends DialogFragment {
         callback = bundle.getString("callback");
         time = bundle.getInt("time");
         tvRecordLimitTime.setText("点击按钮录音，最长" + time + "秒");
+
+
+        getDialog().setCancelable(false);
+        getDialog().setCanceledOnTouchOutside(false);
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                return keyCode == KeyEvent.KEYCODE_BACK;
+            }
+        });
     }
 
     @Override
@@ -94,6 +105,7 @@ public class RecordAudioFragment extends DialogFragment {
     }
 
     private void initRecord() {
+
         recordManager.init(MyApplication.getInstance(), BuildConfig.DEBUG);
         recordManager.changeFormat(RecordConfig.RecordFormat.MP3);
         recordManager.changeRecordDir(Uri.audioPath + "/");
@@ -105,7 +117,6 @@ public class RecordAudioFragment extends DialogFragment {
                     countDownTimer = new CountDownTimer(time * 1000, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
-                            LogUtils.log(millisUntilFinished+"aaa");
                             if (tvRecordLimitTime != null) {
 
                                 String s = new BigDecimal(millisUntilFinished * 0.001).setScale(0, BigDecimal.ROUND_HALF_UP).toString();
