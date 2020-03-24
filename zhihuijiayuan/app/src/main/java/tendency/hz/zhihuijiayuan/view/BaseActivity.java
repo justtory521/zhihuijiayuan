@@ -28,7 +28,6 @@ public class BaseActivity extends AppCompatActivity implements AllViewInter {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //keep screen on while playing audio
-        StatusBarUtils.getInstance().setStatusBarFontDark(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 

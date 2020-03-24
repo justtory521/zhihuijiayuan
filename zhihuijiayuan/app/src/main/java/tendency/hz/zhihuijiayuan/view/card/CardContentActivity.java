@@ -104,6 +104,7 @@ import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.PermissionUtils;
 import tendency.hz.zhihuijiayuan.units.QrCodeUnits;
 import tendency.hz.zhihuijiayuan.units.SPUtils;
+import tendency.hz.zhihuijiayuan.units.StatusBarUtils;
 import tendency.hz.zhihuijiayuan.units.UserUnits;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
@@ -171,6 +172,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtils.getInstance().setStatusBarFontDark(this);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_card_content);
         mWebView = new WebView(this);

@@ -116,6 +116,7 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
     private void initData() {
         mThemeVal = super.getIntent().getStringExtra("ThemeVal");
         mAdapter = new FindCardRecyclerAdapter(this, mList);
+        mBinding.recyclerSreachResult.setAdapter(mAdapter);
         mHotSreachAdapter = new HotSreachRecyclerAdapter(this, mHotSreachLists);
         mCardPrenInter = new CardPrenImpl(this);
         mCardPrenInter.getCardHotSearch(NetCode.Card2.getCardHotSearch);
@@ -125,6 +126,7 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
 
     private void initView() {
         mBinding.recyclerSreachResult.setLayoutManager(new LinearLayoutManager(this));
+        mBinding.recyclerSreachResult.setAdapter(mAdapter);
 
         mPopBackView = LayoutInflater.from(this).inflate(R.layout.layout_voice_popup, null);
         mPopupWindow = new PopupWindow(mPopBackView,
