@@ -13,6 +13,7 @@ import com.tencent.bugly.beta.Beta;
 import com.umeng.analytics.MobclickAgent;
 import tendency.hz.zhihuijiayuan.R;
 import tendency.hz.zhihuijiayuan.units.BaseUnits;
+import tendency.hz.zhihuijiayuan.units.StatusBarUtils;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 import tendency.hz.zhihuijiayuan.widget.NoInternetDialog;
 
@@ -27,6 +28,7 @@ public class BaseActivity extends AppCompatActivity implements AllViewInter {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //keep screen on while playing audio
+        StatusBarUtils.getInstance().setStatusBarFontDark(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
