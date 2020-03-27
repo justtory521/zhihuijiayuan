@@ -74,8 +74,8 @@
             android:layout_height="match_parent"
             app:headerHeight="0dp"
             app:jellyColor="@color/colorPrimary"
-            app:pullHeight="200dp"
-            app:triggerHeight="200dp">
+            app:pullHeight="100dp"
+            app:triggerHeight="100dp">
 
         <tendency.hz.zhihuijiayuan.widget.MyScrollView
             android:layout_width="match_parent"
@@ -94,8 +94,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
                     app:bvp_indicator_slide_mode="normal"
-                    app:bvp_page_margin="10dp"
-                    app:bvp_reveal_width="10dp"
+                    app:bvp_page_margin="15dp"
+                    app:bvp_reveal_width="15dp"
                     app:bvp_interval="4000"
                     app:bvp_can_loop="true"
                     app:bvp_indicator_checked_color="@color/colorAccent"
@@ -103,7 +103,9 @@
                     app:bvp_indicator_radius="6dp"
                     app:bvp_auto_play="true"
                     app:bvp_page_style="multi_page_scale"
-                    app:bvp_indicator_style="circle" />
+                    app:bvp_indicator_style="circle"
+                    app:bvp_indicator_visibility="visible"
+                    android:layout_marginTop="10dp"/>
 
                 <LinearLayout
                     android:id="@+id/layout_recommend"

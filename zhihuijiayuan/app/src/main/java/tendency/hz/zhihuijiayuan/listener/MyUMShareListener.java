@@ -11,7 +11,7 @@ import tendency.hz.zhihuijiayuan.inter.ShareResultInter;
  * Created by JasonYao on 2018/9/12.
  */
 public class MyUMShareListener implements UMShareListener {
-    private static final String TAG = "MyUMShareListener---";
+    private static final String TAG = "libin";
     private ShareResultInter mListener;
     private String mCallBack;
 

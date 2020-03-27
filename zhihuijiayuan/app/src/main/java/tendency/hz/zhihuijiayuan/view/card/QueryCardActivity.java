@@ -204,12 +204,9 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         mPopupWindow.setOnDismissListener(() -> {
             mLayoutParams.alpha = 1.0f;
             getWindow().setAttributes(mLayoutParams);
+            mBindingPop.spreadView.setVisibility(View.GONE);
         });
 
-        mBindingPop.waveView.setDuration(5000);
-        mBindingPop.waveView.setStyle(Paint.Style.FILL);
-        mBindingPop.waveView.setColor(ContextCompat.getColor(this,R.color.colorAccent));
-        mBindingPop.waveView.setInterpolator(new LinearOutSlowInInterpolator());
 
         mBindingPop.btnClear.setOnClickListener(view -> mBinding.edtSreachQuery.setText(""));
         mBindingPop.btnCancel.setOnClickListener(view -> mPopupWindow.dismiss());
@@ -217,15 +214,14 @@ public class QueryCardActivity extends BaseActivity implements AllViewInter {
         mBindingPop.btnVoice.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_UP:
-                    mBindingPop.waveView.stopImmediately();
-                    mBindingPop.btnVoice.setVisibility(View.VISIBLE);
+//
+                    mBindingPop.spreadView.setVisibility(View.GONE);
                     mBindingPop.textTitle.setText("按住说话");
                     mBindingPop.textTitle.setTextColor(QueryCardActivity.this.getResources().getColor(R.color.colorTextGray));
                     SpeechUnits.getInstance().stopListening();
                     break;
                 case MotionEvent.ACTION_DOWN:
-                    mBindingPop.btnVoice.setVisibility(View.INVISIBLE);
-                    mBindingPop.waveView.start();
+                    mBindingPop.spreadView.setVisibility(View.VISIBLE);
                     mBindingPop.textTitle.setText("请开始说话...");
                     mBindingPop.textTitle.setTextColor(QueryCardActivity.this.getResources().getColor(R.color.colorPrimary));
                     SpeechUnits.getInstance().startListening(result -> {

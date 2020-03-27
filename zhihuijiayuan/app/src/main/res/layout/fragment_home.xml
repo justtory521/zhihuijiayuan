@@ -163,8 +163,8 @@
                 android:layout_height="match_parent"
                 app:headerHeight="0dp"
                 app:jellyColor="@color/colorPrimary"
-                app:pullHeight="200dp"
-                app:triggerHeight="200dp">
+                app:pullHeight="100dp"
+                app:triggerHeight="100dp">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_card_main"

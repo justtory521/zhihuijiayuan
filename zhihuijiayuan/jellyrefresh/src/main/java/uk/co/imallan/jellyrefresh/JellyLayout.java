@@ -5,7 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.RequiresApi;
@@ -83,18 +86,20 @@ class JellyLayout extends FrameLayout {
         final int width = canvas.getWidth();
         final float mDisplayX = (mPointX - width / 2f) * 0.5f + width / 2f;
         mPaint.setColor(mColor);
+        mPaint.setAntiAlias(true);
 
         int headerHeight = (int) mHeaderHeight;
         int pullHeight = (int) mPullHeight;
 
 
         mPath.rewind();
+
         mPath.moveTo(0, 0);
         mPath.lineTo(0, headerHeight);
         mPath.quadTo(mDisplayX, pullHeight*2, width, headerHeight);
         mPath.lineTo(width, 0);
         mPath.close();
-
+        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG));
         canvas.drawPath(mPath, mPaint);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

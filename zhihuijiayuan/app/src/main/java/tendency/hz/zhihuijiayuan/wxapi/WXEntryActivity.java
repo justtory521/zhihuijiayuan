@@ -37,7 +37,7 @@ import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
 
 public class WXEntryActivity extends WXCallbackActivity implements IWXAPIEventHandler, AllViewInter {
-    private static final String TAG = "WXEntryActivity---";
+    private static final String TAG = "libin";
     private IWXAPI api;
     private SetPrenInter mSetPrenInter;
 

@@ -162,7 +162,7 @@ dependencies {
 
     //轮播图
     implementation 'com.youth.banner:banner:1.4.10'
-    implementation 'com.zhpan.library:bannerview:2.7.1'
+//    implementation 'com.zhpan.library:bannerview:2.7.1'
 
     //右滑返回
     implementation 'me.imid.swipebacklayout.lib:library:1.0.0'
@@ -244,4 +244,5 @@ dependencies {
 //    implementation 'cn.bertsir.zbarLibary:zbarlibary:1.4.1'
     implementation 'com.google.zxing:core:3.3.3'
     implementation project(path: ':jellyrefresh')
+    implementation project(path: ':bannerview')
 }

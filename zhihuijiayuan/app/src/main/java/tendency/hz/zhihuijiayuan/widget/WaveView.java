@@ -12,11 +12,14 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import tendency.hz.zhihuijiayuan.R;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 
 /**
  * Author：Libin on 2020-03-23 11:39
@@ -24,11 +27,11 @@ import tendency.hz.zhihuijiayuan.R;
  * Describe：水波纹扩散
  * */
 public class WaveView extends View {
-    private float mInitialRadius = 30;   // 初始波纹半径
+    private float mInitialRadius = 120;   // 初始波纹半径
     private float mMaxRadius;   // 最大波纹半径
-    private long mDuration = 2000; // 一个波纹从创建到消失的持续时间
-    private int mSpeed = 500;   // 波纹的创建速度，每500ms创建一个
-    private float mMaxRadiusRate = 0.85f;
+    private long mDuration = 6000; // 一个波纹从创建到消失的持续时间
+    private int mSpeed = 800;   // 波纹的创建速度，每800ms创建一个
+    private float mMaxRadiusRate = 1f;
     private boolean mMaxRadiusSet;
 
     private boolean mIsRunning;
@@ -64,7 +67,7 @@ public class WaveView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (!mMaxRadiusSet) {
-            mMaxRadius = Math.min(w, h) * mMaxRadiusRate / 2.0f;
+            mMaxRadius = Math.min(w, h) * mMaxRadiusRate / 1.0f;
         }
     }
 
@@ -107,6 +110,7 @@ public class WaveView extends View {
         while (iterator.hasNext()) {
             Circle circle = iterator.next();
             float radius = circle.getCurrentRadius();
+            LogUtils.log(radius+"aaaa");
             if (System.currentTimeMillis() - circle.mCreateTime < mDuration) {
                 mPaint.setAlpha(circle.getAlpha());
                 canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, mPaint);
@@ -160,8 +164,10 @@ public class WaveView extends View {
         }
 
         float getCurrentRadius() {
+            LogUtils.log((System.currentTimeMillis() - mCreateTime)+"ddd");
             float percent = (System.currentTimeMillis() - mCreateTime) * 1.0f / mDuration;
-            return mInitialRadius + mInterpolator.getInterpolation(percent) * (mMaxRadius - mInitialRadius);
+            LogUtils.log(percent+"ccc");
+            return mInitialRadius + percent * (mMaxRadius - mInitialRadius);
         }
     }
 
