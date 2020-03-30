@@ -149,6 +149,7 @@ public class Uri {
         public static final String EDITMESSAGEPREVENT = URL + "/api/MessagePrevent/Edit"; //编辑消息免打扰
         public static final String VERSION = URL + "/api/YiKaHuiAppVersion/Version"; //智慧家园最新版本号接口地址
         public static final String WXSUBSCRIBEMESSAGE = PAY_URL + "/api/WXSubscribeMessae"; //微信开放平台订阅消息发送接口
+        public static final String WXOPENID = PAY_URL + "/api/OpenId/GetOpenIdByClientId"; //获取微信OpenId
     }
 
     public static final class Pay {

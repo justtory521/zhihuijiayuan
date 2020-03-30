@@ -419,6 +419,16 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
     }
 
     @Override
+    public void getWXOpenId(int netCode, String clientId) {
+        if (netCode != NetCode.Set.wxOpenId) {
+            return;
+        }
+        List<NoHttpUtil.Param> params = new ArrayList<>();
+        params.add(new NoHttpUtil.Param("ClientID", clientId));
+        NoHttpUtil.get(netCode, Uri.Set.WXOPENID, onResponseListener, params);
+    }
+
+    @Override
     public void rspSuccess(int what, Object object) throws JSONException {
         switch (what) {
             case NetCode.Card.findListRefresh:  //刷新数据
@@ -556,6 +566,10 @@ public class CardModelImpl extends AllModelInter implements CardModelInter {
             case NetCode.Card2.getCardCode:
                 String cardCode = ((JSONObject) object).getString("Data");
                 mAllPrenInter.onSuccess(what, cardCode);
+                break;
+            case NetCode.Set.wxOpenId:
+                String openId = ((JSONObject) object).getString("Data");
+                mAllPrenInter.onSuccess(what, openId);
                 break;
         }
     }

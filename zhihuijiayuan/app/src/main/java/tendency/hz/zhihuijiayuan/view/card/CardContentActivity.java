@@ -167,7 +167,8 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
     private boolean disconnectOnclick;
     //卡片code  callback
     public String cardCodeCallback;
-
+    //微信openId callback
+    public String openIdCallback;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -245,7 +246,6 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         } else {  //推送跳转过来
             mCardPrenInter.previewCard(NetCode.Card.previewCard, mCardItem.getCardID());
         }
-
     }
 
     private void initView() {
@@ -343,6 +343,7 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
         titleLayoutBtn.height = (int) (BaseUnits.getInstance().getStatusBarHeight() + ViewUnits.getInstance().jsPX2AndroidPX(44));
         mBinding.btnTitle.setLayoutParams(titleLayoutBtn);
         startAnimation();
+
 
 
     }
@@ -757,7 +758,31 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
                 String cardCode = (String) object;
                 if (!TextUtils.isEmpty(cardCodeCallback)){
                     LogUtils.log(cardCodeCallback+","+cardCode);
-                    sendCallback(cardCodeCallback,"200","success",cardCode);
+                    if (!TextUtils.isEmpty(cardCode)){
+                        sendCallback(cardCodeCallback,"200","success",cardCode);
+                    }else {
+                        sendCallback(cardCodeCallback,"500","fail","获取失败");
+                    }
+
+                }
+                break;
+            case NetCode.Set.wxOpenId:
+                String openId = (String) object;
+                if (!TextUtils.isEmpty(openIdCallback)){
+                    LogUtils.log(openIdCallback+","+openId);
+                    if (!TextUtils.isEmpty(openId) && !"0".equals(openId)){
+                        sendCallback(openIdCallback,"200","success",openId);
+                    }else {
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("code", "2");
+                            jsonObject.put("msg", "账号未绑定公众号");
+                            androidtoJS.sendCallBackJson(openIdCallback, "500", "账号未绑定公众号", jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
                 break;
         }
@@ -765,8 +790,29 @@ public class CardContentActivity extends BaseActivity implements AllViewInter, A
 
     @Override
     public void onFailed(int what, Object object) {
-        if (what != NetCode.Card.clickVolumeAdd) {
+        if (what != NetCode.Card.clickVolumeAdd && what != NetCode.Card2.getCardCode && what != NetCode.Set.wxOpenId) {
             ViewUnits.getInstance().showToast(object.toString());
+        }
+
+
+        if (what == NetCode.Card2.getCardCode){
+            if (!TextUtils.isEmpty(cardCodeCallback)){
+                sendCallback(cardCodeCallback,"500","fail","获取失败");
+            }
+        }
+
+
+        if (what == NetCode.Set.wxOpenId){
+            if (!TextUtils.isEmpty(openIdCallback)){
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("code", "3");
+                    jsonObject.put("msg", "获取失败");
+                    androidtoJS.sendCallBackJson(openIdCallback, "500", "获取失败", jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

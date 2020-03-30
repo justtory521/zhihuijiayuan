@@ -2732,6 +2732,29 @@ public class AndroidtoJS implements ShareResultInter {
         mContext.mCardPrenInter.getCardCode(NetCode.Card2.getCardCode,mContext.getCardId());
     }
 
+    /**
+     * @param value  获取微信openId
+     */
+    @JavascriptInterface
+    public void getWXopenId(String value) {
+        LogUtils.log(value);
+        mContext.openIdCallback = value;
+        if (!TextUtils.isEmpty(UserUnits.getInstance().getToken())){
+            mContext.mCardPrenInter.getWXOpenId(NetCode.Set.wxOpenId,BaseUnits.getInstance().getPhoneKey());
+        }else {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("code", "1");
+                jsonObject.put("value", "用户未登录");
+                sendCallBackJson(value, "500", "用户未登录", jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
 
 //    /**
 //     * 播放语音

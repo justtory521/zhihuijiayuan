@@ -211,4 +211,11 @@ public interface CardPrenInter {
      * @param netCode
      */
     void getCardCode(int netCode,String cardId);
+
+    /**
+     * 获取微信openid
+     *
+     * @param netCode
+     */
+    void getWXOpenId(int netCode,String clientId);
 }

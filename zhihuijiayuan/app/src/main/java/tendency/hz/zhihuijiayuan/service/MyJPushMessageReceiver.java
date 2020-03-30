@@ -2,8 +2,11 @@ package tendency.hz.zhihuijiayuan.service;
 
 import android.content.Context;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
+
 import cn.jpush.android.api.JPushMessage;
 import cn.jpush.android.service.JPushMessageReceiver;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.TagAliasOperatorHelper;
 
 /**

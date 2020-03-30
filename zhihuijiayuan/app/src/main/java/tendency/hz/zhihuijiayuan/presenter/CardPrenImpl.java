@@ -189,6 +189,11 @@ public class CardPrenImpl implements CardPrenInter, AllPrenInter {
     }
 
     @Override
+    public void getWXOpenId(int netCode, String clientId) {
+        mCardModelInter.getWXOpenId(netCode,clientId);
+    }
+
+    @Override
     public void onSuccess(int what, Object object) {
         mAllViewInter.onSuccessed(what, object);
     }

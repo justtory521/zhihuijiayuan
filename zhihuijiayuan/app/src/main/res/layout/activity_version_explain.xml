@@ -87,8 +87,7 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="61dp"
             android:textColor="@color/colorAccent"
-            android:textSize="13sp"
-            android:text="1111111111"/>
+            android:textSize="13sp" />
 
 
         <LinearLayout

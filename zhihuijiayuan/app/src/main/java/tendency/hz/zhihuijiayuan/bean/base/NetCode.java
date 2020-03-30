@@ -141,7 +141,8 @@ public class NetCode {
         public static final int getVersion = 0x409; //获取版本号
         public static final int wxSubscribeMessage = 0x40a; //微信开放平台订阅消息发送接口
         public static final int uploadFrontIDCard = 0x40b; //发送身份证正面照片
-        public static final int uploadBackIDCard = 0x40c; //发送身份证背面照片
+        public static final int uploadBackIDCard = 0x40c; //发送身份证背面照片d
+        public static final int wxOpenId = 0x40d; //获取微信openid
     }
 
     public static final class Pay {
