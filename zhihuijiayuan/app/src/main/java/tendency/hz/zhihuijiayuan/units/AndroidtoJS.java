@@ -259,6 +259,7 @@ public class AndroidtoJS implements ShareResultInter {
         Beta.checkUpgrade();
     }
 
+
     /**
      * 扫描二维码
      *
@@ -266,7 +267,7 @@ public class AndroidtoJS implements ShareResultInter {
      */
     @JavascriptInterface
     public void qrScan(String callBack) {
-
+        LogUtils.log(callBack);
         if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(MyApplication.getInstance().getBaseContext(), ScanQRCodeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -730,7 +731,7 @@ public class AndroidtoJS implements ShareResultInter {
      * @param data
      */
     public String getWakeUpAMapUrl(String data) {
-
+        LogUtils.log(data);
         String end, start, title, content;
         String slat, slon, dlat, dlon;
         String url = null;
@@ -1484,7 +1485,7 @@ public class AndroidtoJS implements ShareResultInter {
             FingerPrintFragment fragment = new FingerPrintFragment();
             fragment.setCipher(cipher);
             fragment.setCallback(callback);
-            fragment.show(mContext.getFragmentManager(), "fingerprint");
+            fragment.show(mContext.getSupportFragmentManager(), "fingerprint");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1604,7 +1605,7 @@ public class AndroidtoJS implements ShareResultInter {
 
             if (BaseUnits.getInstance().checkPermission(mContext, Manifest.permission.RECORD_AUDIO)) {
                 RecordAudioFragment recordAudioFragment = RecordAudioFragment.newInstance(callBack, time > 60 ? 60 : time);
-                recordAudioFragment.show(mContext.getFragmentManager(), "record_audio");
+                recordAudioFragment.show(mContext.getSupportFragmentManager(), "record_audio");
             } else {
                 ActivityCompat.requestPermissions(mContext,
                         new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_PERMISSIONS);
@@ -1671,7 +1672,7 @@ public class AndroidtoJS implements ShareResultInter {
                 @Override
                 public void run() {
                     PlayAudioFragment playAudioFragment = PlayAudioFragment.newInstance(audioPath);
-                    playAudioFragment.show(mContext.getFragmentManager(), "audio");
+                    playAudioFragment.show(mContext.getSupportFragmentManager(), "audio");
                 }
             });
 
@@ -2194,7 +2195,7 @@ public class AndroidtoJS implements ShareResultInter {
             String url = jsonObject.getString("url");
             DownLoadFragment downLoadFragment = DownLoadFragment.newInstance(callback,
                     url, mContext.getCardId());
-            downLoadFragment.show(mContext.getFragmentManager(), "download");
+            downLoadFragment.show(mContext.getSupportFragmentManager(), "download");
 
 
         } catch (JSONException e) {

@@ -136,7 +136,7 @@ public class FileManagerFragment extends BaseFragment {
                         break;
                     case 2:
                         PlayAudioFragment playAudioFragment = PlayAudioFragment.newInstance(dataList.get(position).getFile_path());
-                        playAudioFragment.show(getActivity().getFragmentManager(), "audio");
+                        playAudioFragment.show(getActivity().getSupportFragmentManager(), "audio");
                         break;
                     case 3:
                         Intent intent = new Intent(getActivity(), PreviewImgActivity.class);

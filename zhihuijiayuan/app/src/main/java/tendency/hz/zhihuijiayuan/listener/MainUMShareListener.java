@@ -23,7 +23,7 @@ public class MainUMShareListener implements UMShareListener {
     @Override
     public void onResult(SHARE_MEDIA share_media) {
         LogUtils.log(share_media.getName()+"：分享成功");
-        ViewUnits.getInstance().showToast("分享成功");
+//        ViewUnits.getInstance().showToast("分享成功");
     }
 
     @Override
@@ -34,6 +34,6 @@ public class MainUMShareListener implements UMShareListener {
     @Override
     public void onCancel(SHARE_MEDIA share_media) {
         LogUtils.log(share_media.getName()+"：分享取消");
-        ViewUnits.getInstance().showToast("分享取消");
+//        ViewUnits.getInstance().showToast("分享取消");
     }
 }

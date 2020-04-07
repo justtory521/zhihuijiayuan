@@ -1,6 +1,5 @@
 package tendency.hz.zhihuijiayuan.fragment;
 
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -12,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;

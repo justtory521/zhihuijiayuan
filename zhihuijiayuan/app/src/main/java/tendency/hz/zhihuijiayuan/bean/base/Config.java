@@ -9,13 +9,13 @@ public class Config {
     /**
      * 开发环境
      */
-    public static final String URL = "http://183.129.130.119:12012"; //杭州测试环境（外网地址）
-    public static final String PAY_URL = "http://183.129.130.119:34805";  //杭州支付测试接口
-    public static final String UPLOADIMG = "http://183.129.130.119:12015";  //上传头像
-
-    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
-    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly开发环境
-    public static String VERSION = "-开发版"; //开发版
+//    public static final String URL = "http://183.129.130.119:12012"; //杭州测试环境（外网地址）
+//    public static final String PAY_URL = "http://183.129.130.119:34805";  //杭州支付测试接口
+//    public static final String UPLOADIMG = "http://183.129.130.119:12015";  //上传头像
+//
+//    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
+//    public static final String BUGLY_APPID = "e73b57ee1b";  //bugly开发环境
+//    public static String VERSION = "-开发版"; //开发版
 
 
 
@@ -35,13 +35,13 @@ public class Config {
     /**
      * 测试环境
      */
-//    public static final String URL = "http://183.129.130.119:13104"; //杭州测试环境（外网地址）
-//    public static final String PAY_URL = "http://183.129.130.119:13100";  //杭州支付测试接口
-//    public static final String UPLOADIMG = "http://183.129.130.119:13107";  //上传头像
-//
-//    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
-//    public static final String BUGLY_APPID = "cc7d63e069";  //bugly测试环境
-//    public static String VERSION = "-测试版"; //测试版
+    public static final String URL = "http://183.129.130.119:13104"; //杭州测试环境（外网地址）
+    public static final String PAY_URL = "http://183.129.130.119:13100";  //杭州支付测试接口
+    public static final String UPLOADIMG = "http://183.129.130.119:13107";  //上传头像
+
+    public static final String UM_CHANNEL = "测试环境";  //友盟渠道信息
+    public static final String BUGLY_APPID = "cc7d63e069";  //bugly测试环境
+    public static String VERSION = "-测试版"; //测试版
 
 
 

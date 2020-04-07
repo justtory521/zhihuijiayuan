@@ -122,7 +122,7 @@ public class FeedBackActivity extends BaseActivity implements AllViewInter {
     }
 
     private void shrinkAnim(){
-        ObjectAnimator translationX = new ObjectAnimator().ofFloat(mBinding.btnFeedback,"translationX",0,20,0);
+        ObjectAnimator translationX = ObjectAnimator.ofFloat(mBinding.btnFeedback,"translationX",0,20,0);
         translationX.setDuration(300);  //设置动画时间
         translationX.setInterpolator(new BounceInterpolator());
         translationX.start(); //启动

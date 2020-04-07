@@ -220,8 +220,11 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
                 if (bdLocation != null && !TextUtils.isEmpty(bdLocation.getCity())) {
-                    mLocationClient.stop();
-                    mLocationClient = null;
+                    if (mLocationClient!=null){
+                        mLocationClient.stop();
+                        mLocationClient = null;
+                    }
+
 
                     UserUnits.getInstance().setLocation(bdLocation.getCity());
 
@@ -273,6 +276,9 @@ public class HomeFragment extends Fragment implements AllViewInter, OnItemDragLi
             @Override
             public void onLocDiagnosticMessage(int i, int i1, String s) {
                 LogUtils.log("定位失败：" + i1 + "," + s);
+                if (!TextUtils.isEmpty(UserUnits.getInstance().getSelectCity())){
+                    mBinding.textCityName.setText(UserUnits.getInstance().getSelectCity());
+                }
 
                 if (ConfigUnits.getInstance().getFirstInstallStatus()) {  //第一次安装
                     ConfigUnits.getInstance().setFirstInstallStatus(false);

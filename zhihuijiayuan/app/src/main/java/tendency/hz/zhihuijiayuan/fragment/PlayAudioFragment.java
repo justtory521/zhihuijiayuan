@@ -1,7 +1,5 @@
 package tendency.hz.zhihuijiayuan.fragment;
 
-import android.annotation.SuppressLint;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.adapters.SeekBarBindingAdapter;
@@ -12,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -157,9 +156,6 @@ public class PlayAudioFragment extends DialogFragment {
                 sbPlayAudio.setMax(totalTime);
                 tvTotalTime.setText(getTime(totalTime));
 
-
-                AudioManager am = (AudioManager) MyApplication.getInstance().getSystemService(Context.AUDIO_SERVICE);
-                am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
 
                 onPlay(false);
                 isPlay = true;
@@ -307,6 +303,4 @@ public class PlayAudioFragment extends DialogFragment {
                 break;
         }
     }
-
-
 }
