@@ -24,6 +24,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.bigkoo.pickerview.TimePickerView;
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -32,6 +33,7 @@ import com.smarttop.library.bean.City;
 import com.smarttop.library.bean.County;
 import com.smarttop.library.bean.Province;
 import com.smarttop.library.bean.Street;
+import com.smarttop.library.widget.AddressSelector;
 import com.smarttop.library.widget.BottomDialog;
 import com.smarttop.library.widget.OnAddressSelectedListener;
 
@@ -57,6 +59,7 @@ import tendency.hz.zhihuijiayuan.units.Base64Utils;
 import tendency.hz.zhihuijiayuan.units.ConfigUnits;
 import tendency.hz.zhihuijiayuan.units.FormatUtils;
 import tendency.hz.zhihuijiayuan.units.ImageUtils;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.PermissionUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
@@ -107,6 +110,15 @@ public class PersonalProfileActivity extends BaseActivity implements AllViewInte
         mAddressPicker.setTextSelectedColor(R.color.colorPrimary);
         mAddressPicker.setTextUnSelectedColor(R.color.colorTextBlack);
         mAddressPicker.setOnAddressSelectedListener(this);
+        mAddressPicker.setDialogDismisListener(new AddressSelector.OnDialogCloseListener() {
+            @Override
+            public void dialogclose() {
+                LogUtils.log("aaa");
+                if(mAddressPicker!=null){
+                    mAddressPicker.dismiss();
+                }
+            }
+        });
 
         Calendar startTime = Calendar.getInstance();
         startTime.set(1900, 0, 1);

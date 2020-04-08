@@ -169,7 +169,7 @@ dependencies {
     implementation 'me.imid.swipebacklayout.lib:library:1.0.0'
 
     //地址选择器
-    implementation 'com.smartTop:jd-address:1.0.3'
+//    implementation 'com.smartTop:jd-address:1.0.3'
 
     //选择器
     implementation 'com.contrarywind:Android-PickerView:3.2.4'
@@ -248,4 +248,5 @@ dependencies {
     implementation project(path: ':bannerview')
     //图片选择器
     implementation project(path: ':picture_library')
+    implementation project(path: ':address')
 }

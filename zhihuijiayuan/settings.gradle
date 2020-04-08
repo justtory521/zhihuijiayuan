@@ -1,2 +1,2 @@
 // GENERATED FILE - DO NOT EDIT
-include ":app", ':camera', ':bluetooth', ':zbar', ':jellyrefresh', ':bannerview', ':picture_library', ':ucrop'
+include ":app", ':camera', ':bluetooth', ':zbar', ':jellyrefresh', ':bannerview', ':picture_library', ':ucrop', ':address'

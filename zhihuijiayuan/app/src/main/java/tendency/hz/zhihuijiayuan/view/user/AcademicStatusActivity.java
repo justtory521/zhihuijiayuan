@@ -16,10 +16,12 @@ import android.widget.TextView;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.bigkoo.pickerview.TimePickerView;
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.smarttop.library.bean.City;
 import com.smarttop.library.bean.County;
 import com.smarttop.library.bean.Province;
 import com.smarttop.library.bean.Street;
+import com.smarttop.library.widget.AddressSelector;
 import com.smarttop.library.widget.BottomDialog;
 import com.smarttop.library.widget.OnAddressSelectedListener;
 
@@ -38,6 +40,7 @@ import tendency.hz.zhihuijiayuan.bean.base.NetCode;
 import tendency.hz.zhihuijiayuan.presenter.PersonalPrenImpl;
 import tendency.hz.zhihuijiayuan.presenter.prenInter.PersonalPrenInter;
 import tendency.hz.zhihuijiayuan.units.DateUtils;
+import tendency.hz.zhihuijiayuan.units.LogUtils;
 import tendency.hz.zhihuijiayuan.units.ViewUnits;
 import tendency.hz.zhihuijiayuan.view.BaseActivity;
 import tendency.hz.zhihuijiayuan.view.viewInter.AllViewInter;
@@ -177,6 +180,13 @@ public class AcademicStatusActivity extends BaseActivity implements AllViewInter
         mAddressPicker.setTextSelectedColor(R.color.colorPrimary);
         mAddressPicker.setTextUnSelectedColor(R.color.colorTextBlack);
         mAddressPicker.setOnAddressSelectedListener(this);
+        mAddressPicker.setDialogDismisListener(new AddressSelector.OnDialogCloseListener() {
+            @Override
+            public void dialogclose() {
+                mAddressPicker.dismiss();
+            }
+        });
+
 
         Calendar startTime = Calendar.getInstance();
         startTime.set(1900, 0, 1);
@@ -253,20 +263,20 @@ public class AcademicStatusActivity extends BaseActivity implements AllViewInter
         OptionsPickerView build = new OptionsPickerView.Builder(AcademicStatusActivity.this, new OptionsPickerView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
-            educationType = options1 + 1;
-            tvSelectAcademic.setText(typeList.get(educationType - 1));
-            isEditFinish();
-        }
-    }).setCancelText("取消")//取消按钮文字
+                educationType = options1 + 1;
+                tvSelectAcademic.setText(typeList.get(educationType - 1));
+                isEditFinish();
+            }
+        }).setCancelText("取消")//取消按钮文字
                 .setSubmitText("确定")//确认按钮文字
                 .setContentTextSize(15)//滚轮文字大小
                 .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
                 .setTextColorCenter(Color.BLACK)//设置选中项的颜色
                 .setSubmitColor(getResources().getColor(R.color.colorPrimary))//确定按钮文字颜色
-            .setSubCalSize(13)
+                .setSubCalSize(13)
                 .setCancelColor(getResources().getColor(R.color.colorTextBlack))//取消按钮文字颜色
-            .setTitleBgColor(getResources().getColor(R.color.commom_background2))//标题背景颜色 Night mode
-            .build();
+                .setTitleBgColor(getResources().getColor(R.color.commom_background2))//标题背景颜色 Night mode
+                .build();
         build.setPicker(typeList);
         build.show();
     }
